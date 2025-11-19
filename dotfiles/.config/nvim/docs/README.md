@@ -57,21 +57,26 @@ This documentation provides **comprehensive, in-depth analysis** of every aspect
   - **15,000+ words**
 
 ### 📝 Code Quality
-- Coming soon: **Formatting & Linting Guide**
-  - conform.nvim analysis
-  - nvim-lint setup
-  - Format-on-save strategy
-  - Formatter configurations
-  - Linter integrations
+- [**01-CODE-QUALITY-COMPLETE-GUIDE.md**](./formatting-linting/01-CODE-QUALITY-COMPLETE-GUIDE.md) - Formatting & Linting
+  - conform.nvim (142 lines analyzed)
+  - nvim-lint (67 lines analyzed)
+  - Multi-formatter strategy
+  - Format-on-save implementation
+  - TypeScript organize imports
+  - Python (black + isort)
+  - All language formatters explained
+  - **18,000+ words**
 
 ### 🌳 Git Integration
-- Coming soon: **Git Workflow Guide**
-  - Gitsigns complete reference
+- [**01-GIT-WORKFLOW-COMPLETE-GUIDE.md**](./git-integration/01-GIT-WORKFLOW-COMPLETE-GUIDE.md) - Complete Git workflows
+  - Gitsigns (95 lines analyzed)
   - LazyGit integration
-  - Git operations in Neo-tree
-  - Commit workflows
-  - Diff viewing
-  - Blame investigation
+  - 30+ keybindings explained
+  - Hunk operations
+  - Inline blame
+  - Visual staging
+  - LazyGit TUI mastery
+  - **19,000+ words**
 
 ### 🐛 Debugging
 - Coming soon: **DAP Configuration Guide**
@@ -119,9 +124,9 @@ This documentation provides **comprehensive, in-depth analysis** of every aspect
 
 ## 📈 Total Documentation
 
-- **Guides Created**: 5 comprehensive documents
-- **Total Word Count**: 77,000+ words
-- **Total Characters**: ~380,000
+- **Guides Created**: 7 comprehensive documents
+- **Total Word Count**: 114,000+ words
+- **Total Characters**: ~580,000
 - **Configuration Lines Analyzed**: 1,870 lines
 - **Plugins Documented**: 38 plugins
 
@@ -185,6 +190,8 @@ This documentation provides **comprehensive, in-depth analysis** of every aspect
 | Telescope | 17,000+ | 900+ | 15 | 8 | 10 |
 | LSP | 16,000+ | 850+ | 20 | 7 | 10 |
 | Code Completion | 15,000+ | 800+ | 14 | 5 | 10 |
+| Formatting/Linting | 18,000+ | 950+ | 16 | 8 | 10 |
+| Git Integration | 19,000+ | 1000+ | 22 | 10 | 10 |
 
 ## 🎓 Learning Path
 
@@ -378,9 +385,11 @@ Track your progress:
 ### Documentation Updates
 
 - **2025-11-19**: Initial documentation creation
-  - Created 5 comprehensive guides
-  - Total: 77,000+ words
-  - Covered: Plugins, File Management, Search, LSP, Completion
+  - Created 7 comprehensive guides
+  - Total: 114,000+ words  
+  - Covered: Plugins, File Management, Search, LSP, Completion, Formatting/Linting, Git Integration
+  - Analyzed 1,870 lines of configuration
+  - Documented 38 plugins with complete feature analysis
 
 ## 🤝 Credits
 
