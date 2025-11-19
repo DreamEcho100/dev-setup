@@ -1,0 +1,51 @@
+-- 📏 Line and indentation
+column_limit = 120
+indent_width = 2
+use_tab = false
+tab_width = 2
+continuation_indent_width = 2
+
+-- 🔤 Spacing
+spaces_before_call = 0
+spaces_inside_functioncall_parens = false
+spaces_inside_functiondef_parens = false
+spaces_inside_table_braces = true
+spaces_around_equals_in_field = true
+
+-- 🎯 Control blocks and functions
+keep_simple_control_block_one_line = true
+keep_simple_function_one_line = true
+
+-- 📐 Alignment
+align_args = true
+align_parameter = true
+align_table_field = true
+
+-- 🔧 Function calls
+break_after_functioncall_lp = false
+break_before_functioncall_rp = false
+chop_down_parameter = false
+
+-- 📝 Function definitions
+break_after_functiondef_lp = false
+break_before_functiondef_rp = false
+
+-- 📦 Tables
+break_after_table_lb = true
+break_before_table_rb = true
+chop_down_table = false
+chop_down_kv_table = true
+table_sep = ","
+column_table_limit = 0
+extra_sep_at_table_end = true
+
+-- 🔄 Operators
+break_after_operator = true
+
+-- 🎭 Quotes
+double_quote_to_single_quote = true
+single_quote_to_double_quote = false
+
+-- 🔚 Line endings
+line_breaks_after_function_body = 1
+line_separator = "input"

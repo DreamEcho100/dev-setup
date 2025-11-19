@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [[ -x ".ready-tmux" ]]; then
+	./.ready-tmux
+	echo "Ran local .ready-tmux"
+elif [[ -x "~/.ready-tmux" ]]; then
+	~/.ready-tmux
+	echo "Ran home .ready-tmux"
+else
+	echo "No .ready-tmux found"
+fi
+# clear

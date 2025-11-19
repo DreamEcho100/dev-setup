@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+echo "script_dir: $script_dir"
+
+chmod +x $script_dir/runs/* 
+chmod +x $script_dir/../dotfiles/.local/scripts/* 
+
+filter="$1"
+dry="0"
+
+cd "$script_dir"
+scripts=$(find ./runs -maxdepth 1 -mindepth 1 -executable -type f)
+
+while [[ $# > 0 ]]; do
+    if [[ "$1" == "--dry" ]]; then
+        dry="1"
+    else
+        filter="$1"
+    fi
+    shift
+done
+
+log() {
+    if [[ $dry == "1" ]]; then
+        echo "[DRY_RUN]: $@"
+    else
+        echo "$@"
+    fi
+}
+
+excute() {
+    log "execute: $@"
+    if [[ $dry == "1" ]]; then
+        return;
+    fi    
+
+    "$@"
+}
+
+log "run: filter=$filter"
+
+
+for script in $scripts; do
+    if echo "$script" | grep -qv "$filter"; then
+        log "Filtered: $filter -- $script"
+        continue
+    fi
+    log "Running script: $script"
+    excute ./$script
+done

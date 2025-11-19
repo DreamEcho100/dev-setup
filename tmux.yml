@@ -1,0 +1,133 @@
+# 🎯 Playbook: Install Latest Tmux from Source
+# Terminal multiplexer - split your terminal into multiple panes/windows
+
+- name: Install Tmux from source
+  hosts: localhost # Run on your local machine
+  tasks:
+    # 📡 API Call: Fetch latest release info from GitHub
+    # Similar to: fetch('https://api.github.com/repos/tmux/tmux/releases/latest')
+    - name: Get latest stable Tmux version
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/tmux/tmux/releases/latest
+        return_content: true
+      register: tmux_release # Store response (like: const tmuxRelease = await fetch(...))
+
+    # 📦 Extract version tag from response
+    # Like: const version = tmuxRelease.json.tag_name
+    - name: Set Tmux version
+      ansible.builtin.set_fact:
+        tmux_version: "{{ tmux_release.json.tag_name }}"
+
+    # 🖨️ Debug: Show which version we're installing
+    # Like: console.log(`Installing Tmux ${version}`)
+    - name: Display version being installed
+      ansible.builtin.debug:
+        msg: "Installing Tmux {{ tmux_version }}"
+
+    # 📚 Install build dependencies
+    # ⚠️ IMPORTANT: If build fails, check https://github.com/tmux/tmux/blob/master/INSTALL
+    - name: Install Tmux build dependencies
+      become: true # Use sudo
+      ansible.builtin.apt:
+        name:
+          - libevent-dev # Event notification library (required)
+          - ncurses-dev # Terminal handling library (required)
+          - build-essential # gcc, make, etc.
+          - bison # Parser generator
+          - pkg-config # Helper tool for compiling
+          - autotools-dev # Build configuration tools
+          - automake # Makefile generator
+        state: present
+        update_cache: true
+
+    # 🔽 Download and extract Tmux source tarball
+    # Like: curl -L https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz | tar xz
+    - name: Download Tmux source tarball
+      ansible.builtin.unarchive:
+        src: "https://github.com/tmux/tmux/releases/download/{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
+        dest: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal"
+        remote_src: true # Download from URL (not local file)
+        creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/tmux-{{ tmux_version }}" # Skip if already exists
+
+    # 🔧 Configure the build
+    # Like: ./configure --prefix=/usr/local
+    - name: Configure Tmux build
+      ansible.builtin.command:
+        cmd: ./configure --prefix=/usr/local
+        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/tmux-{{ tmux_version }}"
+        creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/tmux-{{ tmux_version }}/Makefile"
+      register: configure_result
+      ignore_errors: true
+
+    # 🚨 Show helpful error message if configure failed
+    - name: Check configure status and provide help
+      ansible.builtin.fail:
+        msg: |
+          ❌ Configure failed! This usually means missing dependencies.
+
+          🔍 To find what's needed:
+          1. Check the error output above for missing libraries
+          2. Visit: https://github.com/tmux/tmux/blob/{{ tmux_version }}/INSTALL
+          3. Or run: cat ~/personal/tmux-{{ tmux_version }}/INSTALL
+
+          💡 Common fixes:
+          - Add missing package to the 'Install Tmux build dependencies' task
+          - Re-run: ansible-playbook tmux.yml -K
+      when: configure_result.failed
+
+    # 🔨 Build Tmux
+    # Like: cd ~/personal/tmux-3.4 && make
+    - name: Build Tmux from source
+      make:
+        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/tmux-{{ tmux_version }}"
+      register: build_result
+      ignore_errors: true
+
+    # 🚨 Show helpful error message if build failed
+    - name: Check build status and provide help
+      ansible.builtin.fail:
+        msg: |
+          ❌ Build failed! This usually means missing dependencies.
+
+          🔍 To find what's needed:
+          1. Check the build output above for missing libraries
+          2. Visit: https://github.com/tmux/tmux/blob/{{ tmux_version }}/INSTALL
+          3. Or run: cat ~/personal/tmux-{{ tmux_version }}/INSTALL
+
+          💡 Common fixes:
+          - Add missing package to the 'Install Tmux build dependencies' task
+          - Re-run: ansible-playbook tmux.yml -K
+      when: build_result.failed
+
+    # ⚙️ Install Tmux system-wide (needs sudo)
+    # Like: cd ~/personal/tmux-3.4 && sudo make install
+    - name: Install Tmux system-wide
+      become: true # Use sudo
+      make:
+        target: install
+        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/tmux-{{ tmux_version }}"
+
+    # 🎉 Verify installation
+    - name: Verify Tmux installation
+      ansible.builtin.command: tmux -V
+      register: tmux_version_output
+      changed_when: false
+
+    - name: Display installed version
+      ansible.builtin.debug:
+        msg: "✓ {{ tmux_version_output.stdout }}"
+# 🚀 Run with: ansible-playbook tmux.yml -K
+# The -K flag prompts for your sudo password
+
+# 💡 Quick start after installation:
+#   tmux          - Start new session
+#   Ctrl+b %      - Split pane vertically
+#   Ctrl+b "      - Split pane horizontally
+#   Ctrl+b d      - Detach from session
+#   tmux attach   - Reattach to session
+
+# 🔄 Maintenance Strategy:
+# 1. Build fails? Check error message for missing library names
+# 2. Visit INSTALL file URL shown in error
+# 3. Add missing packages to the dependencies list
+# 4. Commit your updated tmux.yml

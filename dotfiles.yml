@@ -1,0 +1,124 @@
+# 🎯 Playbook: Setup Dotfiles
+# Copy your configuration files to their proper locations
+
+- name: Setup dotfiles
+  hosts: localhost
+  connection: local
+  vars:
+    # Get real user (current user, even if running with sudo)
+    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+    # Get real user's home
+    real_home: "{{ lookup('env', 'HOME') if lookup('env', 'SUDO_USER') == '' else lookup('pipe', 'getent passwd ' + lookup('env', 'SUDO_USER') + ' | cut -d: -f6') }}"
+    # Set XDG_CONFIG_HOME (default to ~/.config if not set)
+    xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(real_home + '/.config', true) }}"
+    # Dotfiles source directory
+    dotfiles_dir: "{{ playbook_dir }}/dotfiles"
+
+  tasks:
+    # 🖨️ Debug: Show paths being used
+    - name: Display configuration paths
+      ansible.builtin.debug:
+        msg:
+          - "Real user: {{ real_user }}"
+          - "Real user home: {{ real_home }}"
+          - "XDG_CONFIG_HOME: {{ xdg_config_home }}"
+          - "Dotfiles directory: {{ dotfiles_dir }}"
+
+    # 📁 Ensure target directories exist
+    - name: Create XDG_CONFIG_HOME directory
+      ansible.builtin.file:
+        path: "{{ xdg_config_home }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ real_user }}"
+
+    # 🔍 Check if .config directory exists in dotfiles
+    - name: Check if dotfiles/.config exists
+      ansible.builtin.stat:
+        path: "{{ dotfiles_dir }}/.config"
+      register: config_dir_stat
+
+    # 📂 Find all subdirectories in dotfiles/.config
+    # Like: find .config -maxdepth 1 -mindepth 1 -type d
+    - name: Find config directories to copy
+      ansible.builtin.find:
+        paths: "{{ dotfiles_dir }}/.config"
+        file_type: directory
+        recurse: false
+      register: config_dirs
+      when: config_dir_stat.stat.exists and config_dir_stat.stat.isdir
+
+    # 🖨️ Debug: Show what will be copied
+    - name: Display config directories found
+      ansible.builtin.debug:
+        msg: "Found {{ config_dirs.files | length }} config directories"
+      when: config_dirs is defined and config_dirs.files is defined
+
+    # 📋 Copy each config directory
+    # Like: cp -r .config/nvim ~/.config/nvim
+    - name: Copy config directories
+      ansible.builtin.copy:
+        src: "{{ item.path }}/"
+        dest: "{{ xdg_config_home }}/{{ item.path | basename }}"
+        mode: preserve
+        owner: "{{ real_user }}"
+        force: true # Overwrite existing files
+      loop: "{{ config_dirs.files }}"
+      when: config_dirs is defined and config_dirs.files is defined
+      loop_control:
+        label: "{{ item.path | basename }}"
+
+    # 📄 Find individual dotfiles to copy (files in root of dotfiles/)
+    # Like: .bashrc, .zshrc, .gitconfig
+    - name: Find individual dotfiles
+      ansible.builtin.find:
+        paths: "{{ dotfiles_dir }}"
+        patterns: ".*" # Files starting with dot
+        hidden: true # Include hidden files
+        file_type: file
+        recurse: false
+      register: dotfiles
+
+    # 🖨️ Debug: Show individual files found
+    - name: Display individual dotfiles found
+      ansible.builtin.debug:
+        msg: "Found {{ dotfiles.files | length }} dotfiles: {{ dotfiles.files | map(attribute='path') | map('basename') | list }}"
+      when: dotfiles.files | length > 0
+
+    # 📋 Copy individual dotfiles to home directory
+    # Like: cp .bashrc ~/.bashrc
+    - name: Copy individual dotfiles
+      ansible.builtin.copy:
+        src: "{{ item.path }}"
+        dest: "{{ real_home }}/{{ item.path | basename }}"
+        mode: preserve
+        owner: "{{ real_user }}"
+        force: true
+      loop: "{{ dotfiles.files }}"
+      when: dotfiles.files | length > 0
+      loop_control:
+        label: "{{ item.path | basename }}"
+
+    # ✅ Success message
+    - name: Dotfiles setup complete
+      ansible.builtin.debug:
+        msg: "✓ Dotfiles setup complete!"
+# 🚀 Run with: ansible-playbook dotfiles.yml
+# No -K needed for dotfiles! (they're user files, not system files)
+
+# 💡 Expected directory structure:
+# dotfiles/
+# ├── .config/
+# │   ├── nvim/
+# │   ├── tmux/
+# │   └── ...
+# ├── .bashrc
+# ├── .zshrc
+# └── .gitconfig
+
+# 🔄 What this does:
+# 1. Finds all directories in dotfiles/.config/
+# 2. Copies them to ~/.config/
+# 3. Finds all dotfiles (.*) in dotfiles/
+# 4. Copies them to ~/
+# 5. Preserves permissions and ownership

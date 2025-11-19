@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+echo "Preparing tmux environment..."
+
+# tmux rename-window viavi
+
+# Create new window named "viavi"
+tmux neww -n viavi
+
+# First pane: cd ui
+tmux send-keys -t viavi "cd ui" C-m
+
+# Split the first pane horizontally to create second pane (empty)
+tmux split-window -h -t viavi
+
+# Select the first pane (ui), and split it vertically to create second pane
+tmux select-pane -t viavi.0
+tmux split-window -v -t viavi
+tmux send-keys -t viavi "cd node-server" C-m
+
+tmux select-pane -t viavi.2
+
+echo "Tmux environment ready."

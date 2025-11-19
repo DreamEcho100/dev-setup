@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+# 🎯 Script: Install Latest Tmux from Source
+# Terminal multiplexer - split your terminal into multiple panes/windows
+
+echo "------------------- dev-env/tmux -------------------"
+
+# Exit on any error (like throwing an error in JS)
+set -e
+
+# Print each command before running it (helpful for debugging)
+set -x
+
+echo "📡 Fetching latest Tmux version..."
+
+# Fetch latest release from GitHub API
+RESPONSE=$(curl -sL https://api.github.com/repos/tmux/tmux/releases/latest)
+
+# Extract version tag (e.g., "3.4")
+TMUX_VERSION=$(echo "$RESPONSE" | jq -r '.tag_name')
+
+echo "✓ Found version: $TMUX_VERSION"
+
+echo "🔽 Downloading Tmux source..."
+
+# Set destination path
+TMUX_DIR="$HOME/personal/tmux"
+
+# Remove existing directory if it exists
+rm -rf "$TMUX_DIR"
+
+# Create directory
+mkdir -p "$TMUX_DIR"
+
+# Download the tarball
+# GitHub releases use .tar.gz format for tmux
+DOWNLOAD_URL="https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
+
+echo "Downloading from: $DOWNLOAD_URL"
+
+# Download and extract in one step
+# -L = follow redirects
+# tar xzf - = extract gzipped tarball from stdin
+# --strip-components=1 = remove top-level directory from archive
+curl -sL "$DOWNLOAD_URL" | tar xzf - -C "$TMUX_DIR" --strip-components=1
+
+echo "✓ Source downloaded and extracted"
+
+echo "📚 Installing build dependencies..."
+
+# Update package list
+sudo apt update
+
+# Install dependencies needed to build tmux
+sudo apt install -y \
+  libevent-dev \
+  ncurses-dev \
+  build-essential \
+  bison \
+  pkg-config
+
+echo "✓ Dependencies installed"
+
+echo "🔨 Building Tmux..."
+
+# Navigate to tmux directory
+cd "$TMUX_DIR"
+
+# Configure the build
+# ./configure = prepare the build system (like cmake)
+# --prefix=/usr/local = install to /usr/local (standard location)
+if ! ./configure --prefix=/usr/local; then
+  echo "❌ Configure failed! This usually means missing dependencies."
+  echo ""
+  echo "🔍 To find what's needed:"
+  echo "1. Check the error output above"
+  echo "2. Visit: https://github.com/tmux/tmux/blob/${TMUX_VERSION}/INSTALL"
+  echo ""
+  echo "💡 Add missing packages to the script and re-run"
+  exit 1
+fi
+
+# Build tmux
+# make = compile the source code
+if ! make; then
+  echo "❌ Build failed! Check error output above."
+  echo ""
+  echo "Visit: https://github.com/tmux/tmux/blob/${TMUX_VERSION}/INSTALL"
+  exit 1
+fi
+
+echo "✓ Build complete"
+
+echo "⚙️ Installing Tmux system-wide..."
+
+# Install to /usr/local/bin
+sudo make install
+
+echo "✓ Tmux installed!"
+echo ""
+echo "🎉 Done! Run 'tmux -V' to verify"
+echo ""
+echo "💡 Quick start:"
+echo "  tmux          - Start new session"
+echo "  tmux attach -t <name> - Attach to session"
+echo "  tmux detach -t <name> - Detach from session"
+echo "  tmux ls       - List sessions"
+echo "  tmux kill-session -t <name> - Kill session"
+echo "  tmux new -s <name> - Create new session with name"
+echo "  Ctrl+b %      - Split pane vertically"
+echo "  Ctrl+b \"      - Split pane horizontally"
+echo "  Ctrl+b d      - Detach from session"
+echo "  Ctrl+b arrow keys - Switch panes"
+echo "  Ctrl+b space  - Toggle between layouts"
+echo "  Ctrl+b c 		- Create new window"
+echo "  Ctrl+b n/p    - Next/Previous window"
+echo "  Ctrl+b w      - List windows"
+echo "  Ctrl+b x      - Close pane"
+echo "  Ctrl+b ,			- Rename window"
+echo "  Ctrl+b [      - Enter copy mode"
+echo "  	In copy mode: v = start selection, y = copy to clipboard"
+echo "  Ctrl+b ]      - Paste from clipboard"
+echo "  Ctrl+b r      - Reload tmux config"
+echo "  Ctrl+b ?      - List key bindings"
+echo "  Ctrl+b t      - Show current time"
+echo "  Ctrl+b &      - Close current window"
+echo "  Ctrl+b o      - Switch to next pane"
+echo "  Ctrl+b q      - Show pane numbers"
+echo "  Ctrl+b arrow keys - Switch panes"
+echo "  Ctrl+b space  - Toggle between layouts"
+echo "  Ctrl+b Alt+arrow keys - Resize pane"
+echo "  Ctrl+b Alt+1/2/3 - Switch to layout 1/2/3"
+echo "  Ctrl+b z      - Toggle zoom for current pane"
+echo "  Ctrl+b m      - Toggle mouse mode"
+echo "  Ctrl+b f      - Search for text in scrollback"
+echo "  Ctrl+b :      - Enter command mode"
+echo "  Ctrl+b S      - Choose session from list"
+echo "  Ctrl+b L      - Switch to last active session"
+echo "www.tmuxcheatsheet.com"

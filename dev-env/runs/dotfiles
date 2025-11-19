@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+dry="0"
+
+while [[ $# > 0 ]]; do
+    if [[ "$1" == "--dry" ]]; then
+        dry="1"
+    fi
+    shift
+done
+
+log() {
+    if [[ $dry == "1" ]]; then
+        echo "[DRY_RUN]: $@"
+    else
+        echo "$@"
+    fi
+}
+
+execute() {
+    log "execute: $dry $@"
+    # if [[ $dry == "1" ]]; then
+    #     return
+    # fi
+    "$@"
+}
+
+log "------------------- dev-env/dotfiles -------------------"
+# Get the REAL user's home, even if running with sudo
+# $SUDO_USER = the user who ran sudo (your actual username)
+# getent = get user info from system database
+if [[ -n "$SUDO_USER" ]]; then
+    # Running with sudo - get the actual user's home
+    REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+else
+    # Not running with sudo - use current HOME
+    REAL_HOME="$HOME"
+fi
+
+log "Real user home: $REAL_HOME"
+
+# Set XDG_CONFIG_HOME
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$REAL_HOME/.config}"
+log "XDG_CONFIG_HOME: $XDG_CONFIG_HOME"
+
+# Navigate to the dotfiles directory
+cd "$script_dir/../../dotfiles"
+
+log "Dotfiles directory: $(pwd)"
+
+# Function: Copy all subdirectories from source to target
+# Example: copy_dir .config ~/.config
+copy_dir() {
+    from=$1  # Source directory (e.g., ".config")
+    to=$2    # Target directory (e.g., "~/.config")
+    
+    if [[ ! -d "$from" ]]; then
+        log "⚠️  Source directory '$from' not found, skipping"
+        return
+    fi
+		
+    # pushd = cd but saves current location (like a stack)
+    pushd "$from" > /dev/null
+    
+    # Find all directories in current location (depth 1)
+    dirs=$(find . -maxdepth 1 -mindepth 1 -type d)
+
+		echo "dirs: $dirs"
+    
+    # Loop through each directory
+    for dir in $dirs; do
+        log "  Copying: $dir → $to/$dir"
+        # Remove existing directory at destination
+        execute rm -rf "$to/$dir"
+        # Copy directory to destination
+        execute cp -r "$dir" "$to/$dir"
+    done
+    
+    # popd = return to previous directory
+    popd > /dev/null
+}
+
+
+# Function: Copy individual file from source to target
+# Example: copy_file .bashrc ~/
+copy_file() {
+    from=$1  # Source file path (e.g., ".bashrc")
+    to=$2    # Target directory (e.g., "~/")
+    
+    if [[ ! -f "$from" ]]; then
+        log "⚠️  Source file '$from' not found, skipping"
+        return
+    fi
+    
+    # basename = get filename from path
+    # e.g., "/path/to/.bashrc" → ".bashrc"
+    name=$(basename "$from")
+    
+    # Remove existing file at destination
+    execute rm -f "$to/$name"
+    
+    # Copy file to destination
+    execute cp "$from" "$to/$name"
+}
+
+
+# Copy directories
+copy_dir .config "$XDG_CONFIG_HOME"
+copy_dir .local "$HOME/.local"
+
+# # Copy individual files
+# copy_file .bashrc "$REAL_HOME"
+# copy_file .zshrc "$REAL_HOME"
+# copy_file .gitconfig "$REAL_HOME"
+
+log "✓ Dotfiles setup complete!"
