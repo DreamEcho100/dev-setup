@@ -57,9 +57,9 @@ keymap.set('n', '<Tab>', ':bnext<CR>',
            vim.tbl_extend('force', opts, {desc = 'Next buffer'}))
 keymap.set('n', '<S-Tab>', ':bprevious<CR>',
            vim.tbl_extend('force', opts, {desc = 'Previous buffer'}))
-keymap.set('n', '<leader>x', ':bdelete!<CR>',
+keymap.set('n', '<leader>bx', ':bdelete!<CR>',
            vim.tbl_extend('force', opts, {desc = 'Close current buffer'}))
-keymap.set('n', '<leader>b', '<cmd> enew <CR>',
+keymap.set('n', '<leader>bo', '<cmd> enew <CR>',
            vim.tbl_extend('force', opts, {desc = 'Open new buffer'}))
 
 -- Window management

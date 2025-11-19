@@ -3,6 +3,7 @@
 ## VSCode Feature Replacement
 
 Telescope replaces **multiple VSCode features**:
+
 - ✅ Quick Open (Ctrl+P)
 - ✅ Command Palette (Ctrl+Shift+P)
 - ✅ Find in Files (Ctrl+Shift+F)
@@ -43,74 +44,74 @@ event = 'VimEnter'  -- Loads when Vim starts (not lazy)
 
 ### File & Search Operations
 
-| Keybinding | Picker | VSCode Equivalent | Description |
-|------------|--------|-------------------|-------------|
-| `<leader>sf` | `find_files` | Ctrl+P | Search files by name |
-| `<leader>sg` | `live_grep` | Ctrl+Shift+F | Search text in files |
-| `<leader>sw` | `grep_string` | - | Search current word globally |
-| `<leader>s.` | `oldfiles` | Ctrl+R | Recently opened files |
-| `<leader>sr` | `resume` | - | Resume last search |
-| `<leader><leader>` | `buffers` | Ctrl+Tab | Open buffers |
-| `<leader>/` | `current_buffer_fuzzy_find` | Ctrl+F | Search in current file |
-| `<leader>s/` | `live_grep` (open files) | - | Search in open files only |
+| Keybinding         | Picker                      | VSCode Equivalent | Description                  |
+| ------------------ | --------------------------- | ----------------- | ---------------------------- |
+| `<leader>sf`       | `find_files`                | Ctrl+P            | Search files by name         |
+| `<leader>sg`       | `live_grep`                 | Ctrl+Shift+F      | Search text in files         |
+| `<leader>sw`       | `grep_string`               | -                 | Search current word globally |
+| `<leader>s.`       | `oldfiles`                  | Ctrl+R            | Recently opened files        |
+| `<leader>sr`       | `resume`                    | -                 | Resume last search           |
+| `<leader><leader>` | `buffers`                   | Ctrl+Tab          | Open buffers                 |
+| `<leader>/`        | `current_buffer_fuzzy_find` | Ctrl+F            | Search in current file       |
+| `<leader>s/`       | `live_grep` (open files)    | -                 | Search in open files only    |
 
 ### Help & Config
 
-| Keybinding | Picker | Description |
-|------------|--------|-------------|
-| `<leader>sh` | `help_tags` | Search Neovim help |
-| `<leader>sk` | `keymaps` | Search keybindings |
-| `<leader>ss` | `builtin` | Select Telescope picker |
-| `<leader>sd` | `diagnostics` | Search LSP diagnostics |
+| Keybinding   | Picker        | Description             |
+| ------------ | ------------- | ----------------------- |
+| `<leader>sh` | `help_tags`   | Search Neovim help      |
+| `<leader>sk` | `keymaps`     | Search keybindings      |
+| `<leader>ss` | `builtin`     | Select Telescope picker |
+| `<leader>sd` | `diagnostics` | Search LSP diagnostics  |
 
 ## Inside Telescope: Navigation
 
 ### Your Custom Mappings (Insert Mode)
 
-| Keybinding | Action | Default | Description |
-|------------|--------|---------|-------------|
-| `<C-k>` | Previous | `<Up>` | Move to previous result |
-| `<C-j>` | Next | `<Down>` | Move to next result |
-| `<C-l>` | Select | `<CR>` | Open selected file |
+| Keybinding | Action   | Default  | Description             |
+| ---------- | -------- | -------- | ----------------------- |
+| `<C-k>`    | Previous | `<Up>`   | Move to previous result |
+| `<C-j>`    | Next     | `<Down>` | Move to next result     |
+| `<C-l>`    | Select   | `<CR>`   | Open selected file      |
 
 ### Additional Built-in Mappings
 
 #### Insert Mode (while typing)
 
-| Keybinding | Action |
-|------------|--------|
-| `<C-c>` / `<Esc>` | Close Telescope |
-| `<C-u>` | Clear prompt |
-| `<C-q>` | Send to quickfix list |
-| `<M-q>` | Send selected to quickfix |
-| `<C-/>` | Show mappings help |
-| `<C-w>` | Delete word backward |
+| Keybinding        | Action                    |
+| ----------------- | ------------------------- |
+| `<C-c>` / `<Esc>` | Close Telescope           |
+| `<C-u>`           | Clear prompt              |
+| `<C-q>`           | Send to quickfix list     |
+| `<M-q>`           | Send selected to quickfix |
+| `<C-/>`           | Show mappings help        |
+| `<C-w>`           | Delete word backward      |
 
 #### Normal Mode (after Esc)
 
-| Keybinding | Action |
-|------------|--------|
-| `j` / `k` | Navigate results |
-| `gg` / `G` | First / Last result |
-| `<CR>` | Select |
-| `?` | Show mappings help |
-| `q` / `<Esc>` | Close |
+| Keybinding    | Action              |
+| ------------- | ------------------- |
+| `j` / `k`     | Navigate results    |
+| `gg` / `G`    | First / Last result |
+| `<CR>`        | Select              |
+| `?`           | Show mappings help  |
+| `q` / `<Esc>` | Close               |
 
 #### Preview Navigation
 
-| Keybinding | Action |
-|------------|--------|
-| `<C-d>` / `<C-u>` | Scroll preview down/up |
+| Keybinding        | Action                  |
+| ----------------- | ----------------------- |
+| `<C-d>` / `<C-u>` | Scroll preview down/up  |
 | `<C-f>` / `<C-b>` | Page down/up in preview |
 
 #### Multi-Select
 
-| Keybinding | Action |
-|------------|--------|
-| `<Tab>` | Toggle selection |
-| `<S-Tab>` | Toggle selection (reverse) |
-| `<C-q>` | Send all to quickfix |
-| `<M-q>` | Send selected to quickfix |
+| Keybinding | Action                     |
+| ---------- | -------------------------- |
+| `<Tab>`    | Toggle selection           |
+| `<S-Tab>`  | Toggle selection (reverse) |
+| `<C-q>`    | Send all to quickfix       |
+| `<M-q>`    | Send selected to quickfix  |
 
 ## Configuration Deep Dive
 
@@ -149,6 +150,7 @@ require('telescope').load_extension('fzf')
 ```
 
 **Benefits**:
+
 - 10-100x faster than Lua sorting
 - Better fuzzy matching algorithm
 - Handles large file lists efficiently
@@ -166,6 +168,7 @@ extensions = {
 ```
 
 **Purpose**: Replaces Vim's default picker for:
+
 - Code actions (`<leader>ca`)
 - LSP implementations
 - References
@@ -178,6 +181,7 @@ extensions = {
 ### 1. Find Files (`<leader>sf`)
 
 **Your Configuration**:
+
 ```lua
 find_files = {
     file_ignore_patterns = {'node_modules', '.git', '.venv'},
@@ -186,11 +190,13 @@ find_files = {
 ```
 
 **How It Works**:
+
 1. Uses `fd` if available (faster), falls back to `find`
 2. Respects `.gitignore` by default
 3. Shows hidden files (dotfiles)
 
 **Pro Tips**:
+
 - Type partial path: `src/com/But` → finds `src/components/Button.tsx`
 - Use `/`: Search in subdirectories explicitly
 - Case-insensitive by default
@@ -207,6 +213,7 @@ find_files = {
 ### 2. Live Grep (`<leader>sg`)
 
 **Your Configuration**:
+
 ```lua
 live_grep = {
     file_ignore_patterns = {'node_modules', '.git', '.venv'},
@@ -219,12 +226,14 @@ live_grep = {
 **Backend**: Uses `ripgrep` (rg)
 
 **Capabilities**:
+
 - Search across all files in project
 - Real-time results as you type
 - Preview with line context
 - Jump directly to matches
 
 **Advanced Searches**:
+
 ```
 # Literal string
 hello world
@@ -240,6 +249,7 @@ function.*\(
 ```
 
 **Pro Tips**:
+
 1. Use `<C-q>` to send all results to quickfix
 2. Navigate quickfix with `:cnext` / `:cprev`
 3. Open quickfix list with `:copen`
@@ -258,11 +268,13 @@ function.*\(
 **Purpose**: Search for the word under cursor across entire project
 
 **Workflow**:
+
 1. Cursor on a variable/function name
 2. Press `<leader>sw`
 3. See all occurrences instantly
 
 **Use Cases**:
+
 - Find where a function is called
 - Find all usages of a variable
 - Check where a class is imported
@@ -275,11 +287,13 @@ function.*\(
 **Purpose**: Switch between open files (like Alt+Tab for buffers)
 
 **Features**:
+
 - Shows all open buffers
 - Preview buffer content
 - Sort by: Most recent, Name, Modification time
 
 **Workflow**:
+
 ```vim
 <leader><leader>  " Open buffer picker
 Type partial name
@@ -287,6 +301,7 @@ Type partial name
 ```
 
 **Better than VSCode's Ctrl+Tab**:
+
 - Shows more than 2 files
 - Has fuzzy finding
 - Shows preview
@@ -301,12 +316,14 @@ Type partial name
 The `.` represents "repeat" or "again" - searching files you've used again.
 
 **Comparison to VSCode**:
+
 - VSCode: File → Open Recent (menu)
 - Telescope: `<leader>s.` (instant, fuzzy searchable)
 
 ### 6. Current Buffer Fuzzy Find (`<leader>/`)
 
 **Your Configuration**:
+
 ```lua
 require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -315,12 +332,14 @@ require('telescope.themes').get_dropdown {
 ```
 
 **Features**:
+
 - Searches text in current file only
 - Dropdown UI (centered, no preview)
 - Fuzzy matching
 - Jump to line
 
 **Use Case**: Find function in large file
+
 ```
 # In 2000-line component file
 <leader>/
@@ -329,6 +348,7 @@ Type: handleSubmit
 ```
 
 **Better than Ctrl+F in VSCode**:
+
 - Fuzzy matching (don't need exact text)
 - Shows all matches at once
 - Quick navigation with j/k
@@ -338,6 +358,7 @@ Type: handleSubmit
 **Purpose**: Search Neovim's help documentation
 
 **Example Searches**:
+
 ```
 telescope          " Telescope help
 lsp                " LSP documentation
@@ -352,11 +373,13 @@ commands           " All commands
 **Purpose**: Search all keybindings (yours + plugins)
 
 **Incredible for**:
-- Finding what `<leader>x` does
+
+- Finding what `<leader>bx` does
 - Discovering available keybindings
 - Checking key conflicts
 
 **Live Demo**:
+
 ```vim
 :lua vim.keymap.set('n', '<leader>test', ':echo "test"<CR>')
 <leader>sk
@@ -371,6 +394,7 @@ Search: test
 **Your Integration**: Works with your LSP setup
 
 **Workflow**:
+
 ```vim
 <leader>sd        " Open diagnostics
 Filter: error     " Show only errors
@@ -378,12 +402,14 @@ Filter: error     " Show only errors
 ```
 
 **Columns Shown**:
+
 1. Filename
 2. Line number
 3. Severity (error/warn/info/hint)
 4. Message
 
 **Better than VSCode Problems Panel**:
+
 - Fuzzy searchable
 - Instant navigation
 - Shows in context
@@ -394,6 +420,7 @@ Filter: error     " Show only errors
 **Purpose**: Resume last Telescope search with same query
 
 **Use Case**:
+
 ```vim
 # First search
 <leader>sg
@@ -412,6 +439,7 @@ Look at results, close
 **Purpose**: Telescope picker for Telescope pickers (meta!)
 
 **Shows all available pickers**:
+
 - find_files
 - live_grep
 - buffers
@@ -439,10 +467,12 @@ Look at results, close
 ### 2. Quickfix Integration
 
 **Send Results to Quickfix**:
+
 - `<C-q>` - Send all results
 - `<M-q>` - Send selected results
 
 **Navigate Quickfix**:
+
 ```vim
 :copen            " Open list
 :cnext / :cprev   " Navigate
@@ -452,6 +482,7 @@ Look at results, close
 ### 3. Search History
 
 Telescope remembers your searches:
+
 ```vim
 <leader>sg        " Live grep
 <C-n> / <C-p>     " Cycle through previous searches
@@ -460,6 +491,7 @@ Telescope remembers your searches:
 ### 4. File Preview
 
 When searching files:
+
 - Preview updates as you navigate
 - Syntax highlighting included
 - Shows line numbers
@@ -468,6 +500,7 @@ When searching files:
 ### 5. Layout Themes
 
 Your config uses `get_dropdown` for current buffer search:
+
 ```lua
 require('telescope.themes').get_dropdown({
     winblend = 10,         -- Transparency
@@ -476,6 +509,7 @@ require('telescope.themes').get_dropdown({
 ```
 
 **Available Themes**:
+
 - `get_dropdown()` - Centered, compact
 - `get_cursor()` - At cursor position
 - `get_ivy()` - Bottom of screen
@@ -494,6 +528,7 @@ Though not explicitly shown in your config, Telescope includes Git pickers:
 ```
 
 **Recommendation**: Add keybindings:
+
 ```lua
 vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [C]ommits' })
 vim.keymap.set('n', '<leader>gf', builtin.git_files, { desc = '[G]it [F]iles' })
@@ -512,11 +547,13 @@ gt              " LSP Type Definitions (via Telescope)
 ```
 
 **Your LSP Config Shows**:
+
 ```lua
 keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 ```
 
 **Additional LSP Pickers**:
+
 - `:Telescope lsp_definitions`
 - `:Telescope lsp_document_symbols`
 - `:Telescope lsp_workspace_symbols`
@@ -533,6 +570,7 @@ keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 ### System Dependencies
 
 **For Best Performance, Install**:
+
 1. **ripgrep** (rg) - For live_grep
 2. **fd** - For find_files (faster than find)
 3. **make** - To build fzf-native
@@ -549,6 +587,7 @@ sudo pacman -S ripgrep fd make gcc
 ```
 
 **Check Status**:
+
 ```vim
 :checkhealth telescope
 ```
@@ -655,11 +694,13 @@ Type: TODO:       " Find all TODOs
 ### Slow Searches
 
 1. **Check ripgrep installation**:
+
    ```bash
    rg --version
    ```
 
 2. **Add more ignore patterns**:
+
    ```lua
    file_ignore_patterns = {
        'node_modules', '.git', 'dist', 'build', 'target'
@@ -687,17 +728,17 @@ Then restart Neovim.
 
 ## Comparison Table: Telescope vs VSCode
 
-| Feature | Telescope | VSCode Quick Open |
-|---------|-----------|-------------------|
-| **Speed** | Instant | 100-500ms |
-| **Fuzzy Matching** | Advanced | Basic |
-| **Preview** | Yes | No |
-| **Multi-select** | Yes | No |
-| **Quickfix Integration** | Yes | No |
-| **Custom Pickers** | Unlimited | Limited |
-| **Memory Usage** | 5-10 MB | 50-100 MB |
-| **Extensibility** | Full Lua API | Extension API |
-| **Search Types** | 50+ built-in | ~5 built-in |
+| Feature                  | Telescope    | VSCode Quick Open |
+| ------------------------ | ------------ | ----------------- |
+| **Speed**                | Instant      | 100-500ms         |
+| **Fuzzy Matching**       | Advanced     | Basic             |
+| **Preview**              | Yes          | No                |
+| **Multi-select**         | Yes          | No                |
+| **Quickfix Integration** | Yes          | No                |
+| **Custom Pickers**       | Unlimited    | Limited           |
+| **Memory Usage**         | 5-10 MB      | 50-100 MB         |
+| **Extensibility**        | Full Lua API | Extension API     |
+| **Search Types**         | 50+ built-in | ~5 built-in       |
 
 ## Pro Tips
 
@@ -713,45 +754,59 @@ Then restart Neovim.
 ## Hidden Gems
 
 ### 1. Command History
+
 ```vim
 :Telescope command_history
 ```
+
 See all Ex commands you've run
 
 ### 2. Search History
+
 ```vim
 :Telescope search_history
 ```
+
 See all `/` searches
 
 ### 3. Vim Options
+
 ```vim
 :Telescope vim_options
 ```
+
 Search and modify options interactively
 
 ### 4. Registers
+
 ```vim
 :Telescope registers
 ```
+
 See clipboard/register contents
 
 ### 5. Marks
+
 ```vim
 :Telescope marks
 ```
+
 Navigate to marks
 
 ### 6. Jumplist
+
 ```vim
 :Telescope jumplist
 ```
+
 Better than `<C-o>`/`<C-i>`
 
 ### 7. Spell Suggest
+
 ```vim
 :Telescope spell_suggest
 ```
+
 Better than `z=`
 
 ## Resources

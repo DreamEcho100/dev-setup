@@ -5,9 +5,11 @@
 ## The Absolute Essentials
 
 ### Leader Key
+
 ```vim
 <Space>  = <leader>
 ```
+
 Everything starts with Space.
 
 ---
@@ -15,12 +17,14 @@ Everything starts with Space.
 ## File Navigation (5 minutes)
 
 ### Open/Close File Explorer
+
 ```vim
 <leader>e        Toggle Neo-tree
 \                Reveal current file in tree
 ```
 
 ### Inside Neo-tree
+
 ```vim
 j/k              Navigate up/down
 <Enter>          Open file
@@ -37,11 +41,13 @@ q                Close Neo-tree
 ## Finding Files (5 minutes)
 
 ### Search Files by Name
+
 ```vim
 <leader>sf       [S]earch [F]iles (like Ctrl+P in VSCode)
 ```
 
 ### Inside Telescope
+
 ```vim
 <C-j>            Next item
 <C-k>            Previous item
@@ -50,6 +56,7 @@ q                Close Neo-tree
 ```
 
 ### Search Text in Files
+
 ```vim
 <leader>sg       [S]earch by [G]rep (like Ctrl+Shift+F in VSCode)
 ```
@@ -61,6 +68,7 @@ q                Close Neo-tree
 ## Code Navigation (5 minutes)
 
 ### Jump to Definition/References
+
 ```vim
 gd               Go to Definition (F12 in VSCode)
 gR               Find References (Shift+F12)
@@ -70,6 +78,7 @@ K                Show documentation (hover)
 ```
 
 ### Navigate Errors
+
 ```vim
 ]d               Next error
 [d               Previous error
@@ -83,6 +92,7 @@ K                Show documentation (hover)
 ## Code Intelligence (5 minutes)
 
 ### Autocompletion (appears automatically)
+
 ```vim
 <C-j>            Next suggestion
 <C-k>            Previous suggestion
@@ -91,6 +101,7 @@ K                Show documentation (hover)
 ```
 
 ### Code Actions
+
 ```vim
 <leader>ca       Code Actions (Ctrl+. in VSCode)
 <leader>rn       Rename symbol (F2 in VSCode)
@@ -103,6 +114,7 @@ K                Show documentation (hover)
 ## Editing (5 minutes)
 
 ### Basic Operations
+
 ```vim
 <C-s>            Save file
 <C-q>            Quit file
@@ -110,27 +122,30 @@ K                Show documentation (hover)
 ```
 
 ### Window Management
+
 ```vim
 <leader>v        Split vertically
 <leader>h        Split horizontally
 <C-h/j/k/l>      Navigate between splits
-<leader>xs       Close current split
+<leader>bxs       Close current split
 ```
 
 ### Buffer (Tab) Management
+
 ```vim
 <Tab>            Next buffer (like Ctrl+Tab)
 <S-Tab>          Previous buffer
-<leader>x        Close current buffer
+<leader>bx        Close current buffer
 ```
 
-**Practice**: Open 2 files, switch between them with `<Tab>`, close one with `<leader>x`.
+**Practice**: Open 2 files, switch between them with `<Tab>`, close one with `<leader>bx`.
 
 ---
 
 ## Git (5 minutes)
 
 ### Git Operations
+
 ```vim
 <leader>lg       Open LazyGit (full Git TUI)
 ]h               Next git change (hunk)
@@ -140,6 +155,7 @@ K                Show documentation (hover)
 ```
 
 ### In LazyGit
+
 ```vim
 <Space>          Stage/unstage file
 c                Commit
@@ -240,22 +256,29 @@ After mastering these basics:
 ## Common Questions
 
 ### Q: How do I exit insert mode?
+
 **A**: Press `<Esc>` or `jj` (if configured)
 
 ### Q: How do I undo?
+
 **A**: `u` in normal mode
 
 ### Q: How do I redo?
+
 **A**: `<C-r>` in normal mode
 
 ### Q: How do I search in current file?
+
 **A**: `<leader>/` for fuzzy search, or `/` for normal search
 
 ### Q: How do I comment code?
+
 **A**: Not configured by default, but see [Additional Plugins](#additional-plugins)
 
 ### Q: I'm stuck, how do I get help?
-**A**: 
+
+**A**:
+
 - Press `<leader>sk` to search keymaps
 - Press `<leader>sh` to search help
 - Type `:checkhealth` to diagnose issues
@@ -279,18 +302,21 @@ See [main guide](../NEOVIM_VSCODE_REPLACEMENT_GUIDE.md) for installation instruc
 ## Troubleshooting
 
 ### Completions not showing
+
 ```vim
 :LspInfo        " Check if LSP is running
 <C-Space>       " Manually trigger completion
 ```
 
 ### File tree not opening
+
 ```vim
 :Neotree        " Try manual command
 :checkhealth    " Check for issues
 ```
 
 ### Keybinding not working
+
 ```vim
 <leader>sk      " Search for the keybinding
 :map <key>      " Check what <key> is mapped to

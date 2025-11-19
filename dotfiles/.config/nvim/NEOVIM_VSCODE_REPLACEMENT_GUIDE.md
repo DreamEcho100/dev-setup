@@ -61,15 +61,18 @@ This Neovim configuration provides a modern, VSCode-like development environment
 ### 1. **File Management & Navigation**
 
 #### Neo-tree (`nvim-neo-tree`)
+
 **VSCode Equivalent**: File Explorer sidebar
 
 **Features**:
+
 - File tree with icons
 - Git status integration
 - File operations (create, delete, rename, move)
 - Split support
 
 **Keybindings**:
+
 ```vim
 <leader>e     - Toggle Neo-tree (left side)
 \             - Reveal current file in tree
@@ -77,6 +80,7 @@ This Neovim configuration provides a modern, VSCode-like development environment
 ```
 
 **Usage**:
+
 - `a` - Create new file/folder
 - `d` - Delete file
 - `r` - Rename file
@@ -91,9 +95,11 @@ This Neovim configuration provides a modern, VSCode-like development environment
 ### 2. **Fuzzy Finding & Search**
 
 #### Telescope (`nvim-telescope/telescope.nvim`)
+
 **VSCode Equivalent**: Command Palette + File Search + Global Search
 
 **Keybindings**:
+
 ```vim
 <leader>sf    - [S]earch [F]iles (Ctrl+P in VSCode)
 <leader>sg    - [S]earch by [G]rep (global text search)
@@ -108,6 +114,7 @@ This Neovim configuration provides a modern, VSCode-like development environment
 ```
 
 **Inside Telescope**:
+
 ```vim
 <C-k>         - Move up
 <C-j>         - Move down
@@ -121,9 +128,11 @@ This Neovim configuration provides a modern, VSCode-like development environment
 ### 3. **Language Server Protocol (LSP)**
 
 #### Mason + LSP Config
+
 **VSCode Equivalent**: Built-in IntelliSense
 
 **Installed Language Servers**:
+
 - **JavaScript/TypeScript**: ts_ls, eslint
 - **Web**: html, cssls, tailwindcss, emmet_ls
 - **Python**: pyright, pylsp, ruff
@@ -134,6 +143,7 @@ This Neovim configuration provides a modern, VSCode-like development environment
 - **Others**: graphql, prismals, svelte, jsonls
 
 **LSP Keybindings** (when LSP is attached):
+
 ```vim
 gd            - [G]o to [D]efinition
 gD            - [G]o to [D]eclaration
@@ -155,9 +165,11 @@ K             - Show documentation (hover)
 ### 4. **Code Completion**
 
 #### nvim-cmp + LuaSnip
+
 **VSCode Equivalent**: IntelliSense completion
 
 **Features**:
+
 - LSP-based completions
 - Snippet support (VS Code-style snippets)
 - Buffer text completion
@@ -165,6 +177,7 @@ K             - Show documentation (hover)
 - Visual icons for completion types
 
 **Completion Keybindings** (in insert mode):
+
 ```vim
 <C-k>         - Previous suggestion
 <C-j>         - Next suggestion
@@ -180,9 +193,11 @@ K             - Show documentation (hover)
 ### 5. **Code Formatting**
 
 #### Conform.nvim
+
 **VSCode Equivalent**: Format Document (Shift+Alt+F)
 
 **Configured Formatters**:
+
 - **JS/TS/JSX/TSX**: biome → prettierd → prettier (first available)
 - **Python**: isort + black
 - **Lua**: stylua
@@ -190,10 +205,12 @@ K             - Show documentation (hover)
 - **Web**: prettier for CSS, HTML, JSON, YAML, Markdown
 
 **Features**:
+
 - **Auto-format on save** (enabled by default)
 - TypeScript organize imports on save
 
 **Keybindings**:
+
 ```vim
 <leader>f     - Format buffer
 <leader>mp    - Format file or range (visual mode)
@@ -205,12 +222,15 @@ K             - Show documentation (hover)
 ### 6. **Linting**
 
 #### nvim-lint
+
 **VSCode Equivalent**: ESLint/Pylint integration
 
 **Configured Linters**:
+
 - **Python**: pylint
 
 **Keybindings**:
+
 ```vim
 <leader>l     - Trigger linting manually
 ```
@@ -222,15 +242,18 @@ K             - Show documentation (hover)
 ### 7. **Git Integration**
 
 #### Gitsigns
+
 **VSCode Equivalent**: Git gutter + inline blame
 
 **Features**:
+
 - Git diff in sign column (gutter)
 - Inline blame
 - Hunk navigation and staging
 - Preview changes
 
 **Keybindings**:
+
 ```vim
 ]h            - Next git hunk
 [h            - Previous git hunk
@@ -247,14 +270,17 @@ K             - Show documentation (hover)
 ```
 
 #### LazyGit
+
 **VSCode Equivalent**: GitLens + Source Control panel
 
 **Keybindings**:
+
 ```vim
 <leader>lg    - Open [L]azy[G]it (TUI Git client)
 ```
 
 **LazyGit Features**:
+
 - Full Git workflow in terminal UI
 - Commit, push, pull, merge, rebase
 - Visual diff and staging
@@ -265,9 +291,11 @@ K             - Show documentation (hover)
 ### 8. **Syntax Highlighting**
 
 #### Treesitter
+
 **VSCode Equivalent**: TextMate grammars
 
 **Features**:
+
 - Accurate, AST-based syntax highlighting
 - Code folding
 - Incremental selection
@@ -277,6 +305,7 @@ K             - Show documentation (hover)
 JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdown, SQL, Terraform, Docker, Bash, and more
 
 **Keybindings**:
+
 ```vim
 <C-space>     - Start/expand incremental selection
 <BS>          - Shrink selection
@@ -287,9 +316,11 @@ JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdow
 ### 9. **Diagnostics & Problems**
 
 #### Trouble
+
 **VSCode Equivalent**: Problems Panel
 
 **Keybindings**:
+
 ```vim
 <leader>xw    - Open workspace diagnostics
 <leader>xd    - Open document diagnostics
@@ -299,9 +330,11 @@ JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdow
 ```
 
 #### TODO Comments
+
 **Features**: Highlight and navigate TODO, FIXME, NOTE, etc.
 
 **Keybindings**:
+
 ```vim
 ]t            - Next todo comment
 [t            - Previous todo comment
@@ -312,9 +345,11 @@ JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdow
 ### 10. **UI Enhancements**
 
 #### Lualine
+
 **VSCode Equivalent**: Status bar
 
 **Displays**:
+
 - Current mode
 - Git branch
 - File name and status
@@ -324,17 +359,21 @@ JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdow
 - Cursor position
 
 #### Bufferline
+
 **VSCode Equivalent**: Tab bar
 
 **Features**:
+
 - Visual tab/buffer list
 - Modified indicators
 - Close buttons
 
 #### Alpha (Dashboard)
+
 **VSCode Equivalent**: Welcome screen
 
 **Quick Actions**:
+
 - New file
 - Find files
 - Find text
@@ -345,6 +384,7 @@ JavaScript, TypeScript, HTML, CSS, Python, Lua, C, Go, Java, JSON, YAML, Markdow
 ### 11. **Theme**
 
 #### Tokyo Night
+
 **VSCode Equivalent**: Color theme
 
 The config uses Tokyo Night theme with automatic dark mode detection.
@@ -353,28 +393,28 @@ The config uses Tokyo Night theme with automatic dark mode detection.
 
 ## VSCode Feature Mapping
 
-| VSCode Feature | Neovim Equivalent | Keybinding |
-|----------------|-------------------|------------|
-| **File Explorer** | Neo-tree | `<leader>e` |
-| **Command Palette** | Telescope | `<leader>ss` |
-| **Quick Open (Ctrl+P)** | Telescope Find Files | `<leader>sf` |
-| **Find in Files** | Telescope Live Grep | `<leader>sg` |
-| **Go to Definition** | LSP | `gd` |
-| **Find References** | LSP + Telescope | `gR` |
-| **Rename Symbol** | LSP | `<leader>rn` |
-| **Code Actions** | LSP | `<leader>ca` |
-| **Format Document** | Conform | `<leader>f` |
-| **Problems Panel** | Trouble | `<leader>xw` |
-| **Integrated Terminal** | Built-in | `:term` or `<C-\>` |
-| **Git Integration** | Gitsigns + LazyGit | `<leader>lg` |
-| **Split Editor** | Native splits | `<leader>v` / `<leader>h` |
-| **Next/Prev Error** | Diagnostics | `]d` / `[d` |
-| **Hover Info** | LSP | `K` |
-| **Search in File** | Telescope | `<leader>/` |
-| **IntelliSense** | nvim-cmp | `<C-Space>` |
-| **Breadcrumbs** | Lualine | (status bar) |
-| **Zen Mode** | Not configured | *See recommendations* |
-| **Live Share** | Not available | *See recommendations* |
+| VSCode Feature          | Neovim Equivalent    | Keybinding                |
+| ----------------------- | -------------------- | ------------------------- |
+| **File Explorer**       | Neo-tree             | `<leader>e`               |
+| **Command Palette**     | Telescope            | `<leader>ss`              |
+| **Quick Open (Ctrl+P)** | Telescope Find Files | `<leader>sf`              |
+| **Find in Files**       | Telescope Live Grep  | `<leader>sg`              |
+| **Go to Definition**    | LSP                  | `gd`                      |
+| **Find References**     | LSP + Telescope      | `gR`                      |
+| **Rename Symbol**       | LSP                  | `<leader>rn`              |
+| **Code Actions**        | LSP                  | `<leader>ca`              |
+| **Format Document**     | Conform              | `<leader>f`               |
+| **Problems Panel**      | Trouble              | `<leader>xw`              |
+| **Integrated Terminal** | Built-in             | `:term` or `<C-\>`        |
+| **Git Integration**     | Gitsigns + LazyGit   | `<leader>lg`              |
+| **Split Editor**        | Native splits        | `<leader>v` / `<leader>h` |
+| **Next/Prev Error**     | Diagnostics          | `]d` / `[d`               |
+| **Hover Info**          | LSP                  | `K`                       |
+| **Search in File**      | Telescope            | `<leader>/`               |
+| **IntelliSense**        | nvim-cmp             | `<C-Space>`               |
+| **Breadcrumbs**         | Lualine              | (status bar)              |
+| **Zen Mode**            | Not configured       | _See recommendations_     |
+| **Live Share**          | Not available        | _See recommendations_     |
 
 ---
 
@@ -383,6 +423,7 @@ The config uses Tokyo Night theme with automatic dark mode detection.
 ### Leader Key: `<Space>`
 
 ### Core Navigation
+
 ```vim
 # Window/Split Navigation
 <C-h>         - Move to left split
@@ -406,11 +447,12 @@ The config uses Tokyo Night theme with automatic dark mode detection.
 # Buffer Navigation
 <Tab>         - Next buffer
 <S-Tab>       - Previous buffer
-<leader>x     - Close current buffer
-<leader>b     - New buffer
+<leader>bx     - Close current buffer
+<leader>bo     - New buffer
 ```
 
 ### Editing
+
 ```vim
 # Basic Operations
 <C-s>         - Save file
@@ -433,6 +475,7 @@ N             - Previous search result (centered)
 ```
 
 ### Window Resizing
+
 ```vim
 <Up>          - Decrease height
 <Down>        - Increase height
@@ -441,6 +484,7 @@ N             - Previous search result (centered)
 ```
 
 ### Utilities
+
 ```vim
 <leader>lw    - Toggle line wrapping
 <leader>nh    - Clear search highlights
@@ -453,6 +497,7 @@ N             - Previous search result (centered)
 ### ❌ Features Not Yet Configured
 
 #### 1. **Debugging (DAP - Debug Adapter Protocol)**
+
 **VSCode**: Built-in debugger with breakpoints
 
 **Recommendation**: Install `nvim-dap` + UI plugins
@@ -470,7 +515,7 @@ return {
     config = function()
       local dap = require("dap")
       local dapui = require("dapui")
-      
+
       -- JavaScript/TypeScript
       dap.adapters["pwa-node"] = {
         type = "server",
@@ -484,16 +529,16 @@ return {
           },
         }
       }
-      
+
       -- Python
       dap.adapters.python = {
         type = "executable",
         command = "python",
         args = { "-m", "debugpy.adapter" },
       }
-      
+
       dapui.setup()
-      
+
       -- Auto-open UI
       dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
@@ -504,13 +549,14 @@ return {
       { "<F10>", function() require("dap").step_over() end, desc = "Debug: Step Over" },
       { "<F11>", function() require("dap").step_into() end, desc = "Debug: Step Into" },
       { "<F12>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
-      { "<leader>b", function() require("dap").toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint" },
+      { "<leader>bo", function() require("dap").toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint" },
     },
   }
 }
 ```
 
 **Additional Tools** (install via Mason):
+
 - `js-debug-adapter` (JS/TS)
 - `debugpy` (Python)
 - `codelldb` (C/C++/Rust)
@@ -518,6 +564,7 @@ return {
 ---
 
 #### 2. **Testing Integration**
+
 **VSCode**: Test Explorer
 
 **Recommendation**: Install `nvim-neotest`
@@ -558,6 +605,7 @@ return {
 ---
 
 #### 3. **Database Client**
+
 **VSCode**: Database extensions (e.g., SQLTools)
 
 **Recommendation**: Install `vim-dadbod` + UI
@@ -586,6 +634,7 @@ return {
 ---
 
 #### 4. **REST Client**
+
 **VSCode**: REST Client / Thunder Client extensions
 
 **Recommendation**: Install `rest.nvim`
@@ -609,6 +658,7 @@ return {
 ---
 
 #### 5. **Markdown Preview**
+
 **VSCode**: Built-in Markdown preview
 
 **Recommendation**: Install `markdown-preview.nvim`
@@ -628,6 +678,7 @@ return {
 ---
 
 #### 6. **Project/Session Management**
+
 **VSCode**: Workspace concept
 
 **Recommendation**: Install `auto-session` or `persistence.nvim`
@@ -651,6 +702,7 @@ return {
 ---
 
 #### 7. **Zen Mode / Distraction-Free Writing**
+
 **VSCode**: Zen Mode (Ctrl+K Z)
 
 **Recommendation**: Install `zen-mode.nvim`
@@ -678,11 +730,13 @@ return {
 ---
 
 #### 8. **AI/Copilot Integration**
+
 **VSCode**: GitHub Copilot
 
 **Recommendations**:
 
 **Option A: GitHub Copilot** (official)
+
 ```lua
 return {
   "github/copilot.vim",
@@ -697,6 +751,7 @@ return {
 ```
 
 **Option B: CopilotChat** (with chat interface)
+
 ```lua
 return {
   "CopilotC-Nvim/CopilotChat.nvim",
@@ -712,6 +767,7 @@ return {
 ```
 
 **Option C: Local AI** (free, private)
+
 ```lua
 return {
   "Exafunction/codeium.vim",
@@ -725,6 +781,7 @@ return {
 ---
 
 #### 9. **Multi-cursor Editing**
+
 **VSCode**: Alt+Click or Ctrl+D
 
 **Recommendation**: Install `vim-visual-multi`
@@ -737,6 +794,7 @@ return {
 ```
 
 **Usage**:
+
 - `<C-n>` - Start multi-cursor on word
 - `<C-Down>/<C-Up>` - Add cursors vertically
 - `n/N` - Get next/previous occurrence
@@ -746,11 +804,13 @@ return {
 ---
 
 #### 10. **Live Share / Collaborative Editing**
+
 **VSCode**: Live Share extension
 
 **Status**: No direct equivalent for Neovim yet
 
 **Alternatives**:
+
 - Use **tmux** with shared session: `tmux -S /tmp/pair new -s pair`
 - Use **tmate**: Cloud-based tmux sharing
 - Use **gotty**: Share terminal over web
@@ -759,6 +819,7 @@ return {
 ---
 
 #### 11. **Advanced Git Blame & History**
+
 **VSCode**: GitLens extension
 
 **Recommendation**: Install `git-blame.nvim` and `diffview.nvim`
@@ -791,11 +852,13 @@ return {
 ---
 
 #### 12. **Snippet Management**
+
 **Current**: Basic snippet support via LuaSnip + friendly-snippets
 
 **Enhancement**: Custom snippets
 
 Create `~/.config/nvim/snippets/typescript.json`:
+
 ```json
 {
   "React Functional Component": {
@@ -825,6 +888,7 @@ Create `~/.config/nvim/snippets/typescript.json`:
 ---
 
 #### 13. **Better Terminal Integration**
+
 **VSCode**: Integrated terminal with tabs
 
 **Recommendation**: Install `toggleterm.nvim`
@@ -850,6 +914,7 @@ return {
 ---
 
 #### 14. **File Templates**
+
 **VSCode**: Snippet extensions for file templates
 
 **Recommendation**: Install `nvim-genghis` or create autocmds
@@ -885,6 +950,7 @@ vim.api.nvim_create_autocmd("BufNewFile", {
 ---
 
 #### 15. **Package Manager Integration**
+
 **VSCode**: npm scripts in sidebar
 
 **Recommendation**: Install `package-info.nvim`
@@ -908,12 +974,14 @@ return {
 ## Workflow Tips
 
 ### 1. **Learning Vim Motions**
+
 - **Start with basics**: `hjkl`, `w`, `b`, `e`, `0`, `$`
 - **Master text objects**: `ciw` (change inner word), `dip` (delete inner paragraph), `vi{` (select inner braces)
 - **Use counts**: `3dd` (delete 3 lines), `5j` (move down 5 lines)
 - **Practice daily**: Use `vimtutor` or plugins like `vim-be-good`
 
 ### 2. **Project Workflow**
+
 1. Open Neovim in project root: `nvim .`
 2. Use `<leader>e` to toggle file tree
 3. Use `<leader>sf` to fuzzy find files
@@ -922,12 +990,14 @@ return {
 6. Use `<leader>lg` for Git operations
 
 ### 3. **Multi-file Editing**
+
 - Use **buffers** instead of tabs (like VSCode's editor groups)
 - `<Tab>` / `<S-Tab>` to cycle through open files
 - `<leader><leader>` to see all buffers in Telescope
 - Split windows with `<leader>v` and `<leader>h`
 
 ### 4. **Code Navigation**
+
 - `gd` - Go to definition
 - `<C-o>` - Jump back (built-in)
 - `<C-i>` - Jump forward (built-in)
@@ -935,6 +1005,7 @@ return {
 - `%` - Jump between matching brackets/tags
 
 ### 5. **Refactoring**
+
 - `<leader>rn` - Rename symbol (LSP)
 - `<leader>ca` - Code actions (organize imports, quick fixes)
 - Visual select + `<leader>f` - Format selection
@@ -942,6 +1013,7 @@ return {
 - `:%s/old/new/g` - Replace in file
 
 ### 6. **Git Workflow**
+
 1. `<leader>lg` - Open LazyGit for commits/push/pull
 2. `<leader>hb` - Check Git blame
 3. `[h` / `]h` - Navigate hunks
@@ -950,6 +1022,7 @@ return {
 6. `<leader>hr` - Reset hunk
 
 ### 7. **Customization**
+
 - Edit `~/.config/nvim/lua/de100/core/keymaps.lua` for keybindings
 - Edit `~/.config/nvim/lua/de100/core/options.lua` for settings
 - Add plugins in `~/.config/nvim/lua/de100/plugins/`
@@ -960,23 +1033,27 @@ return {
 ## Learning Resources
 
 ### Vim/Neovim Basics
+
 - **vimtutor**: Built-in tutorial - run `vimtutor` in terminal
 - **Vim Adventures**: gamified learning - vim-adventures.com
 - **Neovim Kickstart**: josean.com/posts/neovim-setup
 - **The Primeagen**: YouTube channel for Neovim workflows
 
 ### Advanced Topics
+
 - **LSP Guide**: neovim.io/doc/user/lsp.html
 - **Lua Guide**: learnxinyminutes.com/docs/lua/
 - **Telescope**: github.com/nvim-telescope/telescope.nvim
 - **Lazy.nvim**: github.com/folke/lazy.nvim
 
 ### Cheat Sheets
+
 - **Vim**: vim.rtorr.com
 - **Neovim**: neovim.io/doc/user/quickref.html
 - **This Config**: Run `:Telescope keymaps` to see all keybindings
 
 ### Communities
+
 - **Reddit**: r/neovim
 - **Discord**: Neovim Discord server
 - **GitHub Discussions**: github.com/neovim/neovim/discussions
@@ -998,7 +1075,7 @@ return {
 │   <leader>sf    Search files (Ctrl+P)                       │
 │   <leader>sg    Search in files (global grep)               │
 │   <C-s>         Save file                                   │
-│   <leader>x     Close buffer                                │
+│   <leader>bx     Close buffer                                │
 ├─────────────────────────────────────────────────────────────┤
 │ CODE NAVIGATION                                             │
 │   gd            Go to definition                            │
@@ -1039,6 +1116,7 @@ return {
 This Neovim configuration provides **95% of VSCode's functionality** with superior performance, full keyboard control, and infinite customizability. The missing 5% (Live Share, some GUI features) can be filled with community plugins or alternative workflows.
 
 **Advantages over VSCode**:
+
 - ✅ Significantly faster startup and operation
 - ✅ Lower memory usage
 - ✅ Works over SSH seamlessly
@@ -1048,6 +1126,7 @@ This Neovim configuration provides **95% of VSCode's functionality** with superi
 - ✅ Open source and extensible
 
 **Transition Tips**:
+
 1. Start by using it for one hour a day
 2. Keep VSCode open initially for reference
 3. Focus on learning one new motion/command per day
