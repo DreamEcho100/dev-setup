@@ -391,6 +391,31 @@ The config uses Tokyo Night theme with automatic dark mode detection.
 
 ---
 
+## Recently added
+
+### 1. **Multi-cursor Editing**
+
+**VSCode**: Alt+Click or Ctrl+D
+
+**Recommendation**: Install `vim-visual-multi`
+
+```lua
+return {
+  "mg979/vim-visual-multi",
+  branch = "master",
+}
+```
+
+**Usage**:
+
+- `<C-n>` - Start multi-cursor on word
+- `<C-Down>/<C-Up>` - Add cursors vertically
+- `n/N` - Get next/previous occurrence
+- `q` - Skip current
+- `Q` - Remove current cursor
+
+---
+
 ## VSCode Feature Mapping
 
 | VSCode Feature          | Neovim Equivalent    | Keybinding                |
@@ -492,11 +517,7 @@ N             - Previous search result (centered)
 
 ---
 
-## Missing Features & Recommendations
-
-### ❌ Features Not Yet Configured
-
-#### 1. **Debugging (DAP - Debug Adapter Protocol)**
+#### **Debugging (DAP - Debug Adapter Protocol)**
 
 **VSCode**: Built-in debugger with breakpoints
 
@@ -561,7 +582,21 @@ return {
 - `debugpy` (Python)
 - `codelldb` (C/C++/Rust)
 
+**Debug controls:**
+
+- `<F5>` - Continue/Start
+- `<F1>` - Step Into
+- `<F2>` - Step Over
+- `<F3>` - Step Out
+- `<F7>` - Toggle Debug UI
+- `<leader>b` - Toggle Breakpoint
+- `<leader>B` - Conditional Breakpoint
+
 ---
+
+## Missing Features & Recommendations
+
+### ❌ Features Not Yet Configured
 
 #### 2. **Testing Integration**
 
@@ -777,29 +812,6 @@ return {
   end,
 }
 ```
-
----
-
-#### 9. **Multi-cursor Editing**
-
-**VSCode**: Alt+Click or Ctrl+D
-
-**Recommendation**: Install `vim-visual-multi`
-
-```lua
-return {
-  "mg979/vim-visual-multi",
-  branch = "master",
-}
-```
-
-**Usage**:
-
-- `<C-n>` - Start multi-cursor on word
-- `<C-Down>/<C-Up>` - Add cursors vertically
-- `n/N` - Get next/previous occurrence
-- `q` - Skip current
-- `Q` - Remove current cursor
 
 ---
 

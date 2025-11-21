@@ -78,7 +78,7 @@ sudo apt update
 # -y = answer "yes" to all prompts (non-interactive)
 sudo apt install -y \
   ninja-build gettext cmake unzip curl \
-  build-essential git lua5.1 liblua5.1-0-dev luarocks
+  build-essential lldb git lua5.1 liblua5.1-0-dev luarocks
 echo "✓ Dependencies installed"
 
 echo "🔨 Building Neovim..."

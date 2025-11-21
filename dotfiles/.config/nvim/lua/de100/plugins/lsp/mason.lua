@@ -63,7 +63,15 @@ return {
                 "cpplint", --
                 "prettierd", --
                 "shfmt", --
-                "stylua" -- lua formatter
+                "stylua", -- lua formatter
+                -- debuggers
+                "delve", -- Go debugger
+                "js-debug-adapter", -- JavaScript debugger
+                "debugpy", -- Python debugger
+                "codelldb", -- C/C++, Rust, Zig debugger
+                -- "cpptools" -- C/C++ debugger
+                "local-lua-debugger-vscode", -- Lua debugger
+                "chrome-debug-adapter" -- Chrome/Browser debugger for React, Next.js, etc.
             }
         },
         dependencies = {"williamboman/mason.nvim"}

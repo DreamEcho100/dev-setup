@@ -57,6 +57,7 @@
           - curl
           - build-essential
           - git
+          - lldb
         state: present
         update_cache: true
       # If this task succeeds but build fails, you're probably missing a NEW dependency
