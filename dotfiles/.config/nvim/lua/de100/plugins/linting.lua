@@ -5,7 +5,17 @@ return {
     config = function()
         local lint = require("lint")
 
-        lint.linters_by_ft = {python = {"pylint"}}
+        lint.linters_by_ft = {
+            python = {"black", "pylint"},
+            javascript = {"biomejs", "eslint_d"},
+            typescript = {"biomejs", "eslint_d"},
+            javascriptreact = {"biomejs", "eslint_d"},
+            typescriptreact = {"biomejs", "eslint_d"},
+            lua = {"luacheck"},
+            sh = {"shellcheck"},
+            c = {"clangtidy"},
+            cpp = {"clangtidy"}
+        }
 
         local lint_augroup = vim.api.nvim_create_augroup("lint", {clear = true})
 

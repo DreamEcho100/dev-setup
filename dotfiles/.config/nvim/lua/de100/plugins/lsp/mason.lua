@@ -58,12 +58,16 @@ return {
                 "black", -- python formatter
                 "pylint", -- python linter
                 "eslint_d", -- eslint linter
+                "prettierd", -- prettier formatter
+                "stylua", -- lua formatter
+                "shellcheck", -- shell script linter
+                "shfmt", -- shell script formatter
+                "biome", -- biome formatter
                 "checkmake", -- 
                 "clang-format", --
                 "cpplint", --
                 "prettierd", --
                 "shfmt", --
-                "stylua", -- lua formatter
                 -- debuggers
                 "delve", -- Go debugger
                 "js-debug-adapter", -- JavaScript debugger

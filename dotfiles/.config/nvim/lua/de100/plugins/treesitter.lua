@@ -19,10 +19,14 @@ return {
             },
             indent = {enable = true, disable = {'ruby'}},
             -- ensure these language parsers are installed
-            ensure_installed = {"json", "javascript", "typescript", "tsx", "yaml", "html", "css", "prisma", "markdown",
-                                "markdown_inline", "svelte", "graphql", "bash", "lua", "vim", "dockerfile", "gitignore",
-                                "query", "vimdoc", "c", 'python', 'regex', 'terraform', 'sql', 'toml', 'json', 'java',
-                                'groovy', 'go', 'make', 'cmake'},
+            ensure_installed = {
+                "jsdoc", "json", "jsonc", "javascript", "typescript", "tsx",
+                "yaml", "html", "css", "prisma", "markdown", "markdown_inline",
+                "svelte", "graphql", "bash", "lua", "vim", "dockerfile",
+                "gitignore", "query", "vimdoc", "c", "python", "regex",
+                "terraform", "sql", "toml", "java", "groovy", "go", "make",
+                "cmake"
+            },
             incremental_selection = {
                 enable = true,
                 keymaps = {
