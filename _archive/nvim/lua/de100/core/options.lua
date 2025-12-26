@@ -37,7 +37,6 @@ opt.cmdheight = 1 -- Command line height (default: 1)
 opt.pumheight = 10 -- Popup menu height (default: 0)
 opt.conceallevel = 0 -- Show `` in markdown (default: 1)
 opt.showmode = false -- Hide mode (shown in statusline) (default: true)
-opt.colorcolumn = "80" -- Highlight column at 80 characters
 
 -- 🪟 Window Splits
 opt.splitbelow = true -- Horizontal splits go below (default: false)
@@ -53,15 +52,13 @@ opt.backup = false -- Don't create backup file (default: false)
 opt.writebackup = false -- Don't backup before overwriting (default: true)
 opt.undofile = true -- Enable persistent undo (default: false)
 opt.fileencoding = 'utf-8' -- File encoding (default: 'utf-8')
-opt.isfname:append("@-@") -- Include '@' in file names
 
 -- 🎯 Completion
 opt.completeopt = 'menuone,noselect' -- Better completion experience (default: 'menu,preview')
 
 -- ⌨️ Behavior
 opt.whichwrap = 'bs<>[]hl' -- Allow cursor keys to wrap (default: 'b,s')
-opt.backspace = {"indent", "eol", "start"} -- Backspace behavior (default: 'indent,eol,start')
-vim.g.editorconfig = true -- Enable EditorConfig support, this ensures consistent coding styles across different editors and IDEs
+opt.backspace = 'indent,eol,start' -- Backspace behavior (default: 'indent,eol,start')
 
 -- 📝 Editing
 -- Don't show |ins-completion-menu| messages (default: does not include 'c')
@@ -70,6 +67,10 @@ opt.shortmess:append('c')
 opt.iskeyword:append('-')
 -- Don't auto-insert comment leader on new lines (default: 'croql')
 opt.formatoptions:remove({'c', 'r', 'o'})
+
+-- 🔧 Compatibility
+-- Separate Neovim plugins from Vim (default: includes this path if Vim exists)
+opt.runtimepath:remove('/usr/share/vim/vimfiles')
 
 -- 🎨 Colorscheme
 opt.background = 'dark' -- Dark background (default: 'dark')
