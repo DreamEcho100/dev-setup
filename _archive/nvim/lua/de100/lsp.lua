@@ -40,8 +40,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         opts.desc = "Go to previous diagnostic"
         keymap.set("n", "[d", function()
             vim.diagnostic.jump({
-                count = -1,
-                float = true
+            	count = -1,
+            	float = true
             })
         end, opts) -- jump to previous diagnostic in buffer
         --
