@@ -68,7 +68,27 @@ return {
             },
             sections = {
                 lualine_a = {mode},
-                lualine_b = {branch},
+                lualine_b = {
+                    -- displays git branch with an icon and a separator
+                    branch,
+                    -- displays diagnostics with an icon and a separator
+                    {
+                        'diagnostics',
+                        sources = {'nvim_diagnostic'},
+                        sections = {'error', 'warn'},
+                        symbols = {error = ' ', warn = ' '}
+                    }, -- displays remote host if connected remotely/
+                    {
+                        function()
+                            -- Shows "Remote: <hostname>" if connected remotely
+                            return vim.g.remote_neovim_host and
+                                       ("Remote: %s"):format(
+                                           vim.uv.os_gethostname()) or ""
+                        end,
+                        padding = {right = 1, left = 1},
+                        separator = {left = "", right = ""}
+                    }
+                },
                 lualine_c = {diff, filename},
                 lualine_x = {
                     {
