@@ -1,131 +1,56 @@
 #!/usr/bin/env bash
-
-# ☝️ Shebang: Tells the system "use bash to run this file"
-# Like adding "type": "module" in package.json
-
 echo "------------------- dev-env/neovim -------------------"
-
-# Exit on any error (like throwing an error in JS)
 set -e
-
-# Print each command before running it (helpful for debugging)
 set -x
 
-# - name: Get latest stable Neovim version
-#   ansible.builtin.uri:
-#     url: https://api.github.com/repos/neovim/neovim/releases/latest
-#     return_content: true
-#   register: neovim_release
+# Use nightly instead of latest stable
+NEOVIM_VERSION="nightly"
+echo "📡 Using Neovim version: $NEOVIM_VERSION"
 
-echo "📡 Fetching latest Neovim version..."
-
-# curl = fetch() in JavaScript
-# -s = silent (no progress bar)
-# -L = follow redirects
-# Store response in a variable
-RESPONSE=$(curl -sL https://api.github.com/repos/neovim/neovim/releases/latest)
-
-# Extract tag_name from JSON using jq (like JSON.parse() then .tag_name)
-# jq is a command-line JSON processor
-NEOVIM_VERSION=$(echo "$RESPONSE" | jq -r '.tag_name')
-
-echo "✓ Found version: $NEOVIM_VERSION"
-
-# - name: Git neovim
-#   ansible.builtin.git:
-#     repo: "https://github.com/neovim/neovim.git"
-#     dest: "~/personal/neovim"
-#     version: "{{ neovim_version }}"
-#     depth: 1
-#     force: true
+echo "🖼️ Adding ascii-image-converter apt repository..."
+echo 'deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /' | \
+sudo tee /etc/apt/sources.list.d/ascii-image-converter.list >/dev/null
 
 echo "🔽 Cloning Neovim repository..."
-# Set destination path
-# $HOME = environment variable (like process.env.HOME in Node.js)
 NEOVIM_DIR="$HOME/personal/neovim"
-
-# Remove existing directory if it exists (force: true)
-# -rf = recursive + force (no confirmation)
 rm -rf "$NEOVIM_DIR"
-
-# Clone the repository
-# --depth 1 = shallow clone (only latest commit)
-# --branch = checkout specific versio
 git clone \
-	--depth 1 \
-	--branch "$NEOVIM_VERSION" \
-	https://github.com/neovim/neovim.git \
-	"$NEOVIM_DIR"
-
+--depth 1 \
+--branch "$NEOVIM_VERSION" \
+https://github.com/neovim/neovim.git \
+"$NEOVIM_DIR"
 echo "✓ Repository cloned"
 
-# - name: Install Neovim build dependencies
-#   become: true
-#   ansible.builtin.apt:
-#     name:
-#       - ninja-build
-#       - gettext
-#       - cmake
-#     update_cache: true
-
-echo "📚 Installing build dependencies..."
-
-# sudo = become: true (run as root/admin)
-# apt update = update package list (like npm update)
+echo "📚 Installing build and image dependencies..."
 sudo apt update
-
-# apt install -y = install packages
-# -y = answer "yes" to all prompts (non-interactive)
 sudo apt install -y \
-  ninja-build gettext cmake unzip curl \
-  build-essential lldb git lua5.1 liblua5.1-0-dev luarocks
+ninja-build gettext cmake unzip curl \
+build-essential lldb git lua5.1 liblua5.1-0-dev luarocks \
+imagemagick ascii-image-converter
 echo "✓ Dependencies installed"
 
 echo "🔨 Building Neovim..."
-
-# - name: Build Neovim from source
-#   make:
-#     chdir: "~/personal/neovim"
-#     params:
-#       CMAKE_BUILD_TYPE: "RelWithDebInfo"
-#   register: build_result
-#   ignore_errors: true
-
-# cd = change directory (chdir in Ansible)
 cd "$NEOVIM_DIR"
-
-# Try to build, catch errors
-# `if ! command; then` = If command fails, do this (like `if (!result)` in JS)
-# || = "or" operator (if left fails, run right)
-# This is like: try { make } catch { show error }
-# `make CMAKE_BUILD_TYPE=RelWithDebInfo` = run make with that parameter
-# `exit 1` = exit with error code (like throw new Error())
 if ! make CMAKE_BUILD_TYPE=RelWithDebInfo; then
-  # Build failed! Show helpful message
-  echo "❌ Build failed! This usually means missing dependencies."
-  echo ""
-  echo "🔍 To find what's needed:"
-  echo "1. Check the error output above"
-  echo "2. Visit: https://github.com/neovim/neovim/blob/$NEOVIM_VERSION/BUILD.md"
-  echo "3. Or run: cat $NEOVIM_DIR/BUILD.md"
-  echo ""
-  echo "💡 Add missing packages to the script and re-run"
-  exit 1  # Exit with error code (like throw new Error())
+    echo "❌ Build failed! See https://github.com/neovim/neovim/blob/$NEOVIM_VERSION/BUILD.md"
+    exit 1
 fi
-
 echo "✓ Build complete"
 
-# - name: Install Neovim system-wide
-#   become: true
-#   make:
-#     target: install
-#     chdir: "~/personal/neovim"
 echo "⚙️ Installing Neovim system-wide..."
-
-# sudo = become: true
-# make install = install target
 sudo make install
-
 echo "✓ Neovim installed!"
-echo ""
+
+# 🌳 tree-sitter CLI (needed by nvim-treesitter main branch)
+if ! command -v tree-sitter >/dev/null 2>&1; then
+    echo "🌳 Installing tree-sitter CLI..."
+    if command -v cargo >/dev/null 2>&1; then
+        cargo install tree-sitter-cli
+        elif command -v npm >/dev/null 2>&1; then
+        sudo npm install -g tree-sitter-cli
+    else
+        echo "⚠️  Install cargo or npm to get tree-sitter-cli"
+    fi
+fi
+
 echo "🎉 Done! Run 'nvim --version' to verify"

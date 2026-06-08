@@ -1,55 +1,31 @@
-# 🎯 Playbook: Install Latest Neovim from Source
-# Think of this like a package.json script, but for system setup
-
+# 🎯 Playbook: Install Latest Stable Neovim from Source
 - name: Install Latest Neovim from Source
-  hosts: localhost # Run on your local machine (like npm run dev)
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    neovim_src_dir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
+    neovim_install_prefix: /usr/local
+
   tasks:
-    # 📡 API Call: Fetch latest release info from GitHub
-    # Similar to: fetch('https://api.github.com/repos/neovim/neovim/releases/latest')
     - name: Get latest stable Neovim version
       ansible.builtin.uri:
         url: https://api.github.com/repos/neovim/neovim/releases/latest
         return_content: true
-      register: neovim_release # Store response (like: const neovimRelease = await fetch(...))
+      register: neovim_release
 
-    # 📦 Extract version tag from response
-    # Like: const version = neovimRelease.json.tag_name
     - name: Set Neovim version
       ansible.builtin.set_fact:
         neovim_version: "{{ neovim_release.json.tag_name }}"
 
-    # 🖨️ Debug: Show which version we're installing
-    # Like: console.log(`Installing Neovim ${version}`)
     - name: Display version being installed
       ansible.builtin.debug:
         msg: "Installing Neovim {{ neovim_version }}"
 
-    # 🔽 Git clone the repo (shallow clone for speed)
-    # Like: git clone --depth 1 --branch v0.11.4 https://github.com/neovim/neovim.git
-    - name: Git neovim
-      ansible.builtin.git:
-        repo: "https://github.com/neovim/neovim.git"
-        dest: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim" # ~/personal/neovim
-        version: "{{ neovim_version }}" # Use the version we fetched
-        depth: 1 # Only latest commit (faster, like --depth 1)
-        single_branch: true # Only one branch (faster)
-        force: true # Overwrite if exists (like rm -rf && git clone)
-
-    # 📚 Install build dependencies
-    # ⚠️ IMPORTANT: If build fails, check https://github.com/neovim/neovim/blob/master/BUILD.md
-    # This is like when npm install fails - you check the package's docs for updated requirements
     - name: Install Neovim build dependencies
-      become: true # Use sudo
+      become: true
       ansible.builtin.apt:
         name:
-          # - luajit
-          # - libluajit-5.1-dev
-          # - lua-lpeg
-          # - libunibilium-dev
-          - lua5.1 # Lua runtime
-          - liblua5.1-0-dev # Lua development headers
-          - luarocks # Lua package manager
-          # Core build tools (verified for v0.11.x, Dec 2024)
           - ninja-build
           - gettext
           - cmake
@@ -57,51 +33,58 @@
           - curl
           - build-essential
           - git
-          - lldb
         state: present
         update_cache: true
-      # If this task succeeds but build fails, you're probably missing a NEW dependency
-      # Run: cat ~/personal/neovim/BUILD.md | grep "apt install" to see latest requirements
 
-    # 🔨 Build Neovim (this will FAIL if dependencies are missing)
-    # Like: cd ~/personal/neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
+    - name: Clone Neovim source
+      ansible.builtin.git:
+        repo: "https://github.com/neovim/neovim.git"
+        dest: "{{ neovim_src_dir }}"
+        version: "{{ neovim_version }}"
+        depth: 1
+        single_branch: true
+        force: true
+
+    - name: Remove stale Neovim build directories
+      ansible.builtin.file:
+        path: "{{ neovim_src_dir }}/{{ item }}"
+        state: absent
+      loop:
+        - build
+        - .deps
+
+    - name: Remove stale system-wide Neovim install
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ neovim_install_prefix }}/bin/nvim"
+        - "{{ neovim_install_prefix }}/share/nvim"
+        - "{{ neovim_install_prefix }}/lib/nvim"
+        - "{{ neovim_install_prefix }}/include/nvim"
+
     - name: Build Neovim from source
-      make:
-        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
+      ansible.builtin.make:
+        chdir: "{{ neovim_src_dir }}"
         params:
-          CMAKE_BUILD_TYPE: "RelWithDebInfo"
-      register: build_result # Capture build output (like try/catch)
-      ignore_errors: true # Don't stop playbook if build fails
+          CMAKE_BUILD_TYPE: RelWithDebInfo
+          CMAKE_INSTALL_PREFIX: "{{ neovim_install_prefix }}"
+      register: build_result
 
-    # 🚨 Show helpful error message if build failed
-    - name: Check build status and provide help
-      ansible.builtin.fail:
-        msg: |
-          ❌ Build failed! This usually means missing dependencies.
-
-          🔍 To find what's needed:
-          1. Check the build output above for missing libraries
-          2. Visit: https://github.com/neovim/neovim/blob/{{ neovim_version }}/BUILD.md
-          3. Or run: cat ~/personal/neovim/BUILD.md
-
-          💡 Common fixes:
-          - Add missing package to the 'Install Neovim build dependencies' task
-          - Re-run: ansible-playbook neovim.yml -K
-      when: build_result.failed
-
-    # ⚙️ Install Neovim system-wide (needs sudo)
-    # Like: cd ~/personal/neovim && sudo make install
     - name: Install Neovim system-wide
-      become: true # Use sudo
-      make:
-        target: install # Run 'make install'
-        chdir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
-# 🚀 Run with: ansible-playbook neovim.yml -vvvvK
-# The -vvvv flag gives detailed output for debugging
-# The -K flag prompts for your sudo password (like sudo in terminal)
+      become: true
+      ansible.builtin.make:
+        target: install
+        chdir: "{{ neovim_src_dir }}"
+        params:
+          CMAKE_INSTALL_PREFIX: "{{ neovim_install_prefix }}"
 
-# 🔄 Maintenance Strategy (like keeping package.json updated):
-# 1. Build fails? Check error message for missing library names
-# 2. Visit BUILD.md URL shown in error (goes to exact version you're installing)
-# 3. Add missing packages to the dependencies list
-# 4. Commit your updated neovim.yml
+    - name: Verify installed Neovim
+      ansible.builtin.command: "{{ neovim_install_prefix }}/bin/nvim --version"
+      register: nvim_version_check
+      changed_when: false
+
+    - name: Display installed Neovim version
+      ansible.builtin.debug:
+        var: nvim_version_check.stdout_lines

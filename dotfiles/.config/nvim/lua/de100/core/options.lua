@@ -75,3 +75,4 @@ opt.formatoptions:remove({'c', 'r', 'o'})
 opt.background = 'dark' -- Dark background (default: 'dark')
 vim.cmd('colorscheme default') -- Set colorscheme (default: 'default')
 
+vim.g.loaded_matchparen = 1 -- Disable matchparen plugin (default: 0), matchparen is when you hover over a word and it highlights the word's definition

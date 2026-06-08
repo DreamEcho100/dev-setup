@@ -11,31 +11,68 @@ return {
                 FIX = {
                     icon = " ", -- icon used for the sign, and in search results
                     color = "error", -- can be a hex color, or a named color (see below)
-                    alt = {"FIXME", "BUG", "FIXIT", "ISSUE"} -- a set of other keywords that all map to this FIX keywords
+                    alt = {
+                        "FIXME", "BUG", "FIXIT", "ISSUE", -- 
+                        "@fix", "@fixme", "@bug", "@fixit", "@issue" --
+                    } -- a set of other keywords that all map to this FIX keywords
                     -- signs = false, -- configure signs for some keywords individually
                 },
-                TODO = {icon = " ", color = "info", alt = {"Personal"}},
-                HACK = {icon = " ", color = "warning", alt = {"DON SKIP"}},
+                TODO = {
+                    icon = " ",
+                    color = "info",
+                    alt = {
+                        "PERSONAL", --
+                        "@todo", "@personal"
+                    }
+                },
+                HACK = {
+                    icon = " ",
+                    color = "warning",
+                    alt = {
+                        "DON_SKIP", --
+                        "@hack", "@donotskip", "@do_not_skip"
+                    }
+                },
                 WARN = {
                     icon = " ",
                     color = "warning",
-                    alt = {"WARNING", "XXX"}
+                    alt = {
+                        "WARNING", "IMPORTANT", --
+                        "@warn", "@warning", "@important"
+                    }
                 },
                 PERF = {
                     icon = " ",
-                    alt = {"OPTIM", "PERFORMANCE", "OPTIMIZE"}
+                    alt = {
+                        "OPTIM", "PERFORMANCE", "OPTIMIZE", --
+                        "@perf", "@optim", "@performance", "@optimize"
+                    }
                 },
                 NOTE = {
                     icon = " ",
                     color = "hint",
-                    alt = {"INFO", "READ", "COLORS", "Custom"}
+                    alt = {
+                        "INFO", "READ", "COLORS", "Custom", --
+                        "@note", "@info", "@read", "@colors", "@custom"
+                    }
                 },
                 TEST = {
                     icon = "⏲ ",
                     color = "test",
-                    alt = {"TESTING", "PASSED", "FAILED"}
+                    alt = {
+                        "TESTING", "PASSED", "FAILED", --
+                        "@test", "@testing", "@passed", "@failed"
+                    }
                 },
-                FORGETNOT = {icon = " ", color = "hint"}
+                FORGETNOT = {
+                    icon = " ",
+                    color = "hint",
+                    alt = {
+                        "FORGET_NOT", "REMEMBER", "REMIND", "REMINDER", --
+                        "@forgetnot", "@forget_not", "@remember", "@remind",
+                        "@reminder"
+                    }
+                }
             },
             -- Patterns for hl markdown support
             highlight = {

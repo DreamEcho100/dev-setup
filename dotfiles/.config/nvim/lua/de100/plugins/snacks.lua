@@ -6,6 +6,8 @@ return {
         lazy = false,
         -- NOTE: Options
         opts = {
+            notify = {enabled = false},
+            notifier = {enabled = false},
             styles = {
                 input = {
                     keys = {
@@ -171,9 +173,7 @@ return {
                 "<leader>gl",
                 function() require("snacks").lazygit.log() end,
                 desc = "Lazygit Logs"
-            },
-            -- { "<leader>es", function() require("snacks").lazygit.explorer() end, desc = "Open Snacks File Explorer" },
-            {
+            }, {
                 "<leader>rN",
                 function() require("snacks").rename.rename_file() end,
                 desc = "Fast Rename Current File"
@@ -183,22 +183,6 @@ return {
                 desc = "Delete or Close Buffer  (Confirm)"
             }, -- Snacks Picker
             {
-                "<leader>pf",
-                function() require("snacks").picker.files() end,
-                desc = "Find Files (Snacks Picker)"
-            }, {
-                "<leader>pc",
-                function()
-                    require("snacks").picker.files({
-                        cwd = "~/dotfiles/nvim/.config/nvim/lua"
-                    })
-                end,
-                desc = "Find Config File"
-            }, {
-                "<leader>ps",
-                function() require("snacks").picker.grep() end,
-                desc = "Grep word"
-            }, {
                 "<leader>pws",
                 function() require("snacks").picker.grep_word() end,
                 desc = "Search Visual selection or Word",

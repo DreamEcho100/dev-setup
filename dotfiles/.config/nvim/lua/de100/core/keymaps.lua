@@ -7,15 +7,46 @@ local keymap = vim.keymap -- for conciseness
 -- For conciseness
 local opts = {noremap = true, silent = true}
 
-function tbl_merge(table1, table2)
+local function tbl_merge(table1, table2)
     return vim.tbl_extend('force', table1, table2)
 end
+
+local save_opts = tbl_merge(opts, {desc = 'Save file'})
+local save_after_cmdline = false
+
+local function save_current_buffer()
+    if vim.bo.buftype ~= '' or not vim.bo.modifiable or vim.bo.readonly then
+        return
+    end
+
+    pcall(vim.cmd.write)
+end
+
+local function save_from_cmdline()
+    save_after_cmdline = true
+    return vim.api.nvim_replace_termcodes('<C-c>', true, false, true)
+end
+
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+    desc = "Save buffer after leaving command-line mode",
+    callback = function()
+        if not save_after_cmdline then
+            return
+        end
+
+        save_after_cmdline = false
+        save_current_buffer()
+    end
+})
 
 -- Disable the spacebar key's default behavior in Normal and Visual modes
 keymap.set({'n', 'v'}, '<Space>', '<Nop>', {silent = true})
 
 -- Save file
-keymap.set('n', '<C-s>', '<cmd> w <CR>', tbl_merge(opts, {desc = 'Save file'}))
+keymap.set('n', '<C-s>', save_current_buffer, save_opts)
+keymap.set('i', '<C-s>', save_current_buffer, save_opts)
+keymap.set('c', '<C-s>', save_from_cmdline,
+           tbl_merge(opts, {expr = true, desc = 'Save file'}))
 keymap.set('n', '<leader>sn', '<cmd>noautocmd w <CR>', tbl_merge(opts, {
 	desc = 'Save file without auto-formatting'
 }))
@@ -166,4 +197,3 @@ end, { desc = "Toggle LSP diagnostics" })
 -- -- Executes shell command from in here making file executable
 -- vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>",
 --                {silent = true, desc = "makes file executable"})
-
