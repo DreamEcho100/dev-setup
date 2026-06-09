@@ -13,8 +13,7 @@ return {
         'jay-babu/mason-nvim-dap.nvim', --
         --
         -- Add your own debuggers here
-        "leoluz/nvim-dap-go", -- Go debugger
-        "rcarriga/nvim-dap-ui" -- Debugger UI
+        "leoluz/nvim-dap-go" -- Go debugger
     },
     keys = {
         -- Basic debugging keymaps, feel free to change to your liking!
@@ -403,6 +402,27 @@ return {
         --]]
         -- Go debugging is already configured via dap-go plugin above
 
+        -- C#/.NET debugging through netcoredbg.
+        local netcoredbg_path = vim.fn.stdpath("data") ..
+                                    "/mason/bin/netcoredbg"
+        dap.adapters.coreclr = {
+            type = "executable",
+            command = netcoredbg_path,
+            args = {"--interpreter=vscode"}
+        }
+
+        dap.configurations.cs = {
+            {
+                type = "coreclr",
+                name = "Launch .NET assembly",
+                request = "launch",
+                program = function()
+                    return vim.fn.input("Path to DLL: ",
+                                        vim.fn.getcwd() .. "/bin/Debug/", "file")
+                end
+            }
+        }
+
         --[[ PROJECT-SPECIFIC DEBUG CONFIGURATIONS
         
         You have 3 options for project-specific debug configs:
@@ -475,5 +495,14 @@ return {
                 end
             end
         end
+
+        -- debreceted
+        -- pcall(require("dap.ext.vscode").load_launchjs, nil, {
+        --     ["pwa-node"] = {"javascript", "typescript", "javascriptreact", "typescriptreact"},
+        --     chrome = {"javascript", "typescript", "javascriptreact", "typescriptreact"},
+        --     python = {"python"},
+        --     coreclr = {"cs"},
+        --     codelldb = {"c", "cpp", "rust"}
+        -- })
     end
 }

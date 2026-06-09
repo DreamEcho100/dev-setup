@@ -1,7 +1,11 @@
 return {
     -- Mini Nvim
-    {"echasnovski/mini.nvim", version = false},
-    -- File explorer (this works properly with oil unlike nvim-tree)
+    {"echasnovski/mini.nvim", version = false}, -- Text objects
+    {
+        "echasnovski/mini.ai",
+        event = {"BufReadPre", "BufNewFile"},
+        config = function() require("mini.ai").setup({n_lines = 500}) end
+    }, -- File explorer (this works properly with oil unlike nvim-tree)
     {
         'echasnovski/mini.files',
         config = function()

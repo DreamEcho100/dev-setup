@@ -1,5 +1,8 @@
 return {
     "amitds1997/remote-nvim.nvim",
+    enabled = function()
+        return vim.fn.executable("ssh") == 1 and vim.fn.executable("scp") == 1
+    end,
     -- Remove version pinning to get the latest fix
     -- version = "*", 
     dependencies = {
@@ -9,6 +12,12 @@ return {
     config = function()
         -- Do NOT manually require plenary or assign utils
         -- The plugin should handle its own dependencies
+        local install_script = vim.fn.stdpath("config") ..
+                                   "/scripts/neovim_install.sh"
+        if vim.fn.filereadable(install_script) == 0 then
+            install_script = nil
+        end
+
         require("remote-nvim").setup({
             devpod = {
                 binary = "devpod",
@@ -41,10 +50,7 @@ return {
                 }
             },
             -- Replace utils.path_join for neovim_install_script_path
-            neovim_install_script_path = vim.fn.fnamemodify(debug.getinfo(1)
-                                                                .source:sub(2),
-                                                            ":h:h:h") ..
-                "/scripts/neovim_install.sh",
+            neovim_install_script_path = install_script,
             progress_view = {type = "popup"},
             offline_mode = {
                 enabled = false,

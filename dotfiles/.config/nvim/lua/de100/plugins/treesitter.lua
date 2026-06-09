@@ -9,10 +9,15 @@ return {
             local treesitter = require("nvim-treesitter")
 
             local ensure_installed = {
-                "lua", "json", "javascript", "typescript", "tsx", "go", "yaml",
-                "html", "css", "python", "http", "prisma", "svelte", "graphql",
-                "bash", "vim", "dockerfile", "gitignore", "query", "vimdoc",
-                "c", "java", "rust", "ron"
+                "astro", "bash", "bibtex", "c", "cmake", "comment", "cpp",
+                "c_sharp", "css", "dockerfile", "gdscript", "git_config",
+                "git_rebase", "gitattributes", "gitcommit", "gitignore", "go",
+                "gomod", "gosum", "graphql", "html", "http", "java",
+                "javascript", "jsdoc", "json", "latex", "lua", "luadoc", "make",
+                "markdown", "markdown_inline", "prisma", "python", "query",
+                "regex", "ron", "rust", "scss", "sql", "svelte", "terraform",
+                "toml", "tsx", "twig", "typescript", "typst", "vim", "vimdoc",
+                "vue", "yaml", "zig"
             }
 
             vim.schedule(function()

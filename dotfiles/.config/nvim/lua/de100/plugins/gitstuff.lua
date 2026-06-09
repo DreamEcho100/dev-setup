@@ -18,19 +18,21 @@ return {
                     local bufnr = vim.api.nvim_get_current_buf()
                     local opts = {buffer = bufnr, remap = false}
 
-                    vim.keymap.set("n", "<leader>P",
+                    vim.keymap.set("n", "<leader>gP",
                                    function()
                         vim.cmd.Git('push')
-                    end, opts)
+                    end, vim.tbl_extend("force", opts, {desc = "Git push"}))
 
                     -- NOTE: rebase always
-                    vim.keymap.set("n", "<leader>p", function()
+                    vim.keymap.set("n", "<leader>gpr", function()
                         vim.cmd.Git({'pull', '--rebase'})
-                    end, opts)
+                    end, vim.tbl_extend("force", opts,
+                                        {desc = "Git pull rebase"}))
 
                     -- NOTE: easy set up branch that wasn't setup properly
-                    vim.keymap.set("n", "<leader>t", ":Git push -u origin ",
-                                   opts);
+                    vim.keymap.set("n", "<leader>gup", ":Git push -u origin ",
+                                   vim.tbl_extend("force", opts,
+                                                  {desc = "Git push upstream"}));
                 end
             })
         end
@@ -91,35 +93,5 @@ return {
         dependencies = {"nvim-lua/plenary.nvim"},
         -- setting up with keys={} allows plugin to load when command runs at the start
         keys = {{"<leader>lg", "<cmd>LazyGit<cr>", desc = "Open lazy git"}}
-    }, -- git worktree
-    {
-        "ThePrimeagen/git-worktree.nvim",
-        dependencies = {
-            "nvim-lua/plenary.nvim", "nvim-telescope/telescope.nvim"
-        },
-
-        config = function()
-            local gitworktree = require("git-worktree")
-
-            gitworktree.setup()
-
-            require("telescope").load_extension("git_worktree")
-
-            -- HACK: by default
-            -- <Enter> - switches to that worktree
-            -- <c-d> - deletes that worktree
-            -- <c-f> - toggles forcing of the next deletion
-
-            -- Create new worktree
-            vim.keymap.set("n", "<leader>wl", function()
-                require("telescope").extensions.git_worktree.git_worktrees()
-            end, {desc = "list Git Worktree"})
-
-            -- Switch/list worktrees
-            vim.keymap.set("n", "<leader>wc", function()
-                require("telescope").extensions.git_worktree
-                    .create_git_worktree()
-            end, {desc = "Create Git Worktree Branches"})
-        end
     }
 }

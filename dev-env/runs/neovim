@@ -1,56 +1,200 @@
 #!/usr/bin/env bash
-echo "------------------- dev-env/neovim -------------------"
-set -e
-set -x
+set -euo pipefail
 
-# Use nightly instead of latest stable
-NEOVIM_VERSION="nightly"
-echo "📡 Using Neovim version: $NEOVIM_VERSION"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+dry="0"
+channel="${NEOVIM_CHANNEL:-stable}"
+version="${NEOVIM_VERSION:-}"
+prefix="/usr/local"
+neovim_dir="$HOME/personal/neovim"
+install_java="${DE100_INSTALL_JAVA:-0}"
+install_dotnet="${DE100_INSTALL_DOTNET:-0}"
 
-echo "🖼️ Adding ascii-image-converter apt repository..."
-echo 'deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /' | \
-sudo tee /etc/apt/sources.list.d/ascii-image-converter.list >/dev/null
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry|--dry-run)
+            dry="1"
+            ;;
+        --nightly)
+            channel="nightly"
+            version=""
+            ;;
+        --stable)
+            channel="stable"
+            version=""
+            ;;
+        --version)
+            shift
+            version="${1:-}"
+            if [[ -z "$version" ]]; then
+                echo "--version requires a value such as v0.12.2"
+                exit 1
+            fi
+            ;;
+        --prefix)
+            shift
+            prefix="${1:-}"
+            if [[ -z "$prefix" ]]; then
+                echo "--prefix requires a path"
+                exit 1
+            fi
+            ;;
+        --with-java)
+            install_java="1"
+            ;;
+        --with-dotnet)
+            install_dotnet="1"
+            ;;
+        *)
+            echo "Unknown arg: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
 
-echo "🔽 Cloning Neovim repository..."
-NEOVIM_DIR="$HOME/personal/neovim"
-rm -rf "$NEOVIM_DIR"
-git clone \
---depth 1 \
---branch "$NEOVIM_VERSION" \
-https://github.com/neovim/neovim.git \
-"$NEOVIM_DIR"
-echo "✓ Repository cloned"
+log() {
+    if [[ "$dry" == "1" ]]; then
+        echo "[DRY_RUN] $*"
+    else
+        echo "$*"
+    fi
+}
 
-echo "📚 Installing build and image dependencies..."
-sudo apt update
-sudo apt install -y \
-ninja-build gettext cmake unzip curl \
-build-essential lldb git lua5.1 liblua5.1-0-dev luarocks \
-imagemagick ascii-image-converter
-echo "✓ Dependencies installed"
+execute() {
+    log "exec: $*"
+    if [[ "$dry" == "1" ]]; then
+        return 0
+    fi
+    "$@"
+}
 
-echo "🔨 Building Neovim..."
-cd "$NEOVIM_DIR"
-if ! make CMAKE_BUILD_TYPE=RelWithDebInfo; then
-    echo "❌ Build failed! See https://github.com/neovim/neovim/blob/$NEOVIM_VERSION/BUILD.md"
+resolve_ref() {
+    if [[ -n "$version" ]]; then
+        printf '%s\n' "$version"
+        return
+    fi
+
+    if [[ "$channel" == "nightly" ]]; then
+        printf '%s\n' "nightly"
+        return
+    fi
+
+    if [[ "$dry" == "1" ]]; then
+        printf '%s\n' "stable-latest-dry-run"
+        return
+    fi
+
+    curl -fsSL https://api.github.com/repos/neovim/neovim/releases/latest \
+        | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' \
+        | head -n 1
+}
+
+install_apt_package() {
+    local package="$1"
+    if dpkg -s "$package" >/dev/null 2>&1; then
+        log "already installed: $package"
+        return
+    fi
+
+    if ! execute sudo apt install -y "$package"; then
+        log "optional package failed or unavailable: $package"
+    fi
+}
+
+is_truthy() {
+    case "${1,,}" in
+        1|true|yes|on)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+log "------------------- dev-env/neovim -------------------"
+log "Script dir: $script_dir"
+log "Channel: $channel"
+log "Requested version: ${version:-<auto>}"
+log "Install prefix: $prefix"
+log "Source dir: $neovim_dir"
+log "Install Java: $install_java"
+log "Install .NET: $install_dotnet"
+
+if [[ -f /etc/debian_version ]]; then
+    log "Adding ascii-image-converter apt repository if supported"
+    if [[ "$dry" == "1" ]]; then
+        log "exec: sudo tee /etc/apt/sources.list.d/ascii-image-converter.list"
+    else
+        echo 'deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /' \
+            | sudo tee /etc/apt/sources.list.d/ascii-image-converter.list >/dev/null || true
+    fi
+
+    execute sudo apt update
+
+    core_packages=(
+        ninja-build gettext cmake unzip curl wget tar gzip build-essential git
+        jq ripgrep fd-find lldb gdb lua5.1 liblua5.1-0-dev luarocks
+        python3 python3-pip python3-venv python3-pynvim nodejs npm
+        golang-go cargo rustc clang clangd clang-format clang-tidy
+        shellcheck shfmt codespell imagemagick graphviz xclip wl-clipboard
+        tmux openssh-client docker.io
+    )
+
+    optional_packages=(
+        lazygit tree-sitter-cli ascii-image-converter
+        texlive-latex-base texlive-latex-extra texlive-fonts-recommended latexmk
+    )
+
+    execute sudo apt install -y "${core_packages[@]}"
+    for package in "${optional_packages[@]}"; do
+        install_apt_package "$package"
+    done
+
+    if is_truthy "$install_java"; then
+        install_apt_package default-jdk
+    fi
+
+    if is_truthy "$install_dotnet"; then
+        install_apt_package dotnet-sdk-8.0
+    fi
+else
+    log "This Bash runner is Ubuntu/Linux focused. Use neovim.yml for other OSes."
+fi
+
+neovim_ref="$(resolve_ref)"
+if [[ -z "$neovim_ref" ]]; then
+    echo "Could not resolve Neovim version"
     exit 1
 fi
-echo "✓ Build complete"
 
-echo "⚙️ Installing Neovim system-wide..."
-sudo make install
-echo "✓ Neovim installed!"
+log "Using Neovim ref: $neovim_ref"
 
-# 🌳 tree-sitter CLI (needed by nvim-treesitter main branch)
-if ! command -v tree-sitter >/dev/null 2>&1; then
-    echo "🌳 Installing tree-sitter CLI..."
-    if command -v cargo >/dev/null 2>&1; then
-        cargo install tree-sitter-cli
-        elif command -v npm >/dev/null 2>&1; then
-        sudo npm install -g tree-sitter-cli
-    else
-        echo "⚠️  Install cargo or npm to get tree-sitter-cli"
-    fi
+execute mkdir -p "$(dirname "$neovim_dir")"
+execute rm -rf "$neovim_dir"
+execute git clone --depth 1 --branch "$neovim_ref" https://github.com/neovim/neovim.git "$neovim_dir"
+
+execute make -C "$neovim_dir" CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_INSTALL_PREFIX="$prefix"
+execute sudo make -C "$neovim_dir" install CMAKE_INSTALL_PREFIX="$prefix"
+
+if command -v npm >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
+    execute sudo npm install -g \
+        tree-sitter-cli \
+        @mermaid-js/mermaid-cli \
+        prettier \
+        typescript \
+        typescript-language-server \
+        vscode-langservers-extracted
 fi
 
-echo "🎉 Done! Run 'nvim --version' to verify"
+if command -v go >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
+    execute go install golang.org/x/tools/cmd/goimports@latest
+fi
+
+if command -v python3 >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
+    execute python3 -m pip install --user --upgrade pynvim debugpy ruff black isort pylint
+fi
+
+execute "$prefix/bin/nvim" --version
+log "Neovim setup complete"

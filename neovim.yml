@@ -1,46 +1,164 @@
-# 🎯 Playbook: Install Latest Stable Neovim from Source
-- name: Install Latest Neovim from Source
+# Playbook: install Neovim and broad editor tooling.
+#
+# Defaults to latest stable Neovim. Override with:
+#   ansible-playbook neovim.yml -K -e neovim_channel=nightly
+#   ansible-playbook neovim.yml -K -e neovim_version=v0.12.2
+# Optional heavyweight runtimes:
+#   ansible-playbook neovim.yml -K -e install_java=true
+#   ansible-playbook neovim.yml -K -e install_dotnet=true
+
+- name: Install Neovim and editor tooling
   hosts: localhost
   gather_facts: true
-
   vars:
-    neovim_src_dir: "{{ lookup('ansible.builtin.env', 'HOME') }}/personal/neovim"
+    neovim_src_dir: "{{ lookup('env', 'HOME') }}/personal/neovim"
     neovim_install_prefix: /usr/local
+    neovim_channel: "{{ lookup('env', 'NEOVIM_CHANNEL') | default('stable', true) }}"
+    neovim_version: "{{ lookup('env', 'NEOVIM_VERSION') | default('', true) }}"
+    install_java: "{{ (lookup('env', 'DE100_INSTALL_JAVA') | default('false', true)) | bool }}"
+    install_dotnet: "{{ (lookup('env', 'DE100_INSTALL_DOTNET') | default('false', true)) | bool }}"
+
+    debian_core_packages:
+      - ninja-build
+      - gettext
+      - cmake
+      - unzip
+      - curl
+      - wget
+      - tar
+      - gzip
+      - build-essential
+      - git
+      - jq
+      - ripgrep
+      - fd-find
+      - lldb
+      - gdb
+      - lua5.1
+      - liblua5.1-0-dev
+      - luarocks
+      - python3
+      - python3-pip
+      - python3-venv
+      - python3-pynvim
+      - nodejs
+      - npm
+      - golang-go
+      - cargo
+      - rustc
+      - clang
+      - clangd
+      - clang-format
+      - clang-tidy
+      - shellcheck
+      - shfmt
+      - codespell
+      - imagemagick
+      - graphviz
+      - xclip
+      - wl-clipboard
+      - tmux
+      - openssh-client
+      - docker.io
+
+    debian_optional_packages:
+      - lazygit
+      - tree-sitter-cli
+      - ascii-image-converter
+      - texlive-latex-base
+      - texlive-latex-extra
+      - texlive-fonts-recommended
+      - latexmk
+
+    debian_java_packages:
+      - default-jdk
+
+    debian_dotnet_packages:
+      - dotnet-sdk-8.0
 
   tasks:
+    - name: Add ascii-image-converter apt repository on Debian systems
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /"
+        filename: ascii-image-converter
+        state: present
+      when: ansible_os_family == "Debian"
+      failed_when: false
+
+    - name: Install core Ubuntu/Debian packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ debian_core_packages }}"
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install optional Ubuntu/Debian packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ debian_optional_packages }}"
+      when: ansible_os_family == "Debian"
+      register: optional_package_results
+      failed_when: false
+
+    - name: Display optional package failures
+      ansible.builtin.debug:
+        msg: "Optional package was not installed: {{ item.item }}"
+      loop: "{{ optional_package_results.results | default([]) }}"
+      when:
+        - optional_package_results is defined
+        - item.failed | default(false)
+
+    - name: Install Java tooling when explicitly requested
+      become: true
+      ansible.builtin.apt:
+        name: "{{ debian_java_packages }}"
+        state: present
+      when:
+        - ansible_os_family == "Debian"
+        - install_java | bool
+
+    - name: Install .NET tooling when explicitly requested
+      become: true
+      ansible.builtin.apt:
+        name: "{{ debian_dotnet_packages }}"
+        state: present
+      when:
+        - ansible_os_family == "Debian"
+        - install_dotnet | bool
+
     - name: Get latest stable Neovim version
       ansible.builtin.uri:
         url: https://api.github.com/repos/neovim/neovim/releases/latest
         return_content: true
       register: neovim_release
+      when:
+        - neovim_version | length == 0
+        - neovim_channel != "nightly"
 
-    - name: Set Neovim version
+    - name: Resolve Neovim git ref
       ansible.builtin.set_fact:
-        neovim_version: "{{ neovim_release.json.tag_name }}"
+        neovim_ref: >-
+          {{
+            neovim_version
+            if neovim_version | length > 0
+            else 'nightly'
+            if neovim_channel == 'nightly'
+            else neovim_release.json.tag_name
+          }}
 
     - name: Display version being installed
       ansible.builtin.debug:
-        msg: "Installing Neovim {{ neovim_version }}"
-
-    - name: Install Neovim build dependencies
-      become: true
-      ansible.builtin.apt:
-        name:
-          - ninja-build
-          - gettext
-          - cmake
-          - unzip
-          - curl
-          - build-essential
-          - git
-        state: present
-        update_cache: true
+        msg: "Installing Neovim ref {{ neovim_ref }} into {{ neovim_install_prefix }}"
 
     - name: Clone Neovim source
       ansible.builtin.git:
         repo: "https://github.com/neovim/neovim.git"
         dest: "{{ neovim_src_dir }}"
-        version: "{{ neovim_version }}"
+        version: "{{ neovim_ref }}"
         depth: 1
         single_branch: true
         force: true
@@ -70,7 +188,6 @@
         params:
           CMAKE_BUILD_TYPE: RelWithDebInfo
           CMAKE_INSTALL_PREFIX: "{{ neovim_install_prefix }}"
-      register: build_result
 
     - name: Install Neovim system-wide
       become: true
@@ -79,6 +196,27 @@
         chdir: "{{ neovim_src_dir }}"
         params:
           CMAKE_INSTALL_PREFIX: "{{ neovim_install_prefix }}"
+
+    - name: Install npm-based editor tools
+      become: true
+      ansible.builtin.command:
+        cmd: npm install -g tree-sitter-cli @mermaid-js/mermaid-cli prettier typescript typescript-language-server vscode-langservers-extracted
+      changed_when: true
+      failed_when: false
+
+    - name: Install Go editor tools
+      ansible.builtin.command:
+        cmd: go install golang.org/x/tools/cmd/goimports@latest
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ lookup('env', 'HOME') }}/go/bin"
+      changed_when: true
+      failed_when: false
+
+    - name: Install Python editor tools
+      ansible.builtin.command:
+        cmd: python3 -m pip install --user --upgrade pynvim debugpy ruff black isort pylint
+      changed_when: true
+      failed_when: false
 
     - name: Verify installed Neovim
       ansible.builtin.command: "{{ neovim_install_prefix }}/bin/nvim --version"

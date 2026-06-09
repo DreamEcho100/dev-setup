@@ -6,7 +6,7 @@ return {
         config = function()
             require("blink.cmp").setup({
                 fuzzy = {implementation = "prefer_rust"},
-                keymap = {preset = "default"},
+                keymap = {preset = "super-tab"},
                 completion = {
                     menu = {auto_show = true},
                     documentation = {auto_show = true},

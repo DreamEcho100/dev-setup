@@ -42,9 +42,9 @@ return {
                     }
                 },
                 layout = {
-                    -- presets options : "default" , "ivy" , "ivy-split" , "telescope" , "vscode", "select" , "sidebar"
+                    -- Built-ins include default, ivy, ivy-split, vscode, select, and sidebar.
                     -- override picker layout in keymaps function as a param below
-                    preset = "telescope", -- defaults to this layout unless overidden
+                    preset = "split_preview",
                     cycle = false
                 },
                 layouts = {
@@ -71,7 +71,7 @@ return {
                             }
                         }
                     },
-                    telescope = {
+                    split_preview = {
                         reverse = true, -- set to false for search bar to be on top 
                         layout = {
                             box = "horizontal",
@@ -183,6 +183,34 @@ return {
                 desc = "Delete or Close Buffer  (Confirm)"
             }, -- Snacks Picker
             {
+                "<leader>pf",
+                function() require("snacks").picker.files() end,
+                desc = "Find files"
+            }, {
+                "<leader>pF",
+                function() require("snacks").picker.smart() end,
+                desc = "Smart picker"
+            }, {
+                "<leader>pb",
+                function() require("snacks").picker.buffers() end,
+                desc = "Pick buffers"
+            }, {
+                "<leader>pr",
+                function() require("snacks").picker.recent() end,
+                desc = "Recent files"
+            }, {
+                "<leader>pg",
+                function() require("snacks").picker.grep() end,
+                desc = "Grep project"
+            }, {
+                "<leader>pc",
+                function() require("snacks").picker.commands() end,
+                desc = "Commands"
+            }, {
+                "<leader>pe",
+                function() require("snacks").picker.explorer() end,
+                desc = "Explorer picker"
+            }, {
                 "<leader>pws",
                 function() require("snacks").picker.grep_word() end,
                 desc = "Search Visual selection or Word",
@@ -211,28 +239,6 @@ return {
                 "<leader>vh",
                 function() require("snacks").picker.help() end,
                 desc = "Help Pages"
-            }
-        }
-    }, -- NOTE: todo comments w/ snacks
-    {
-        "folke/todo-comments.nvim",
-        event = {"BufReadPre", "BufNewFile"},
-        optional = true,
-        keys = {
-            {
-                "<leader>pt",
-                function()
-                    require("snacks").picker.todo_comments()
-                end,
-                desc = "All"
-            }, {
-                "<leader>pT",
-                function()
-                    require("snacks").picker.todo_comments({
-                        keywords = {"TODO", "FORGETNOT", "FIXME"}
-                    })
-                end,
-                desc = "mains"
             }
         }
     }

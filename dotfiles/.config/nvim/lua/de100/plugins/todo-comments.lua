@@ -105,5 +105,16 @@ return {
 
         vim.keymap.set("n", "[t", function() todo_comments.jump_prev() end,
                        {desc = "Previous todo comment"})
+
+        vim.keymap.set("n", "<leader>pt",
+                       function()
+            require("snacks").picker.todo_comments()
+        end, {desc = "Pick todo comments"})
+
+        vim.keymap.set("n", "<leader>pT", function()
+            require("snacks").picker.todo_comments({
+                keywords = {"TODO", "FORGETNOT", "FIXME"}
+            })
+        end, {desc = "Pick priority todos"})
     end
 }

@@ -1,16 +1,26 @@
-# 🎯 Playbook: Setup Dotfiles (symlink mode)
-# Symlinks your repo files into ~/.config and ~ so edits in the repo
-# are reflected live in your system.
+# Playbook: setup dotfiles in symlink mode.
+#
+# Mirrors dev-env/runs/dotfiles:
+# - dotfiles/.config/<dir> -> $XDG_CONFIG_HOME/<dir>
+# - dotfiles/.local/<dir>  -> ~/.local/<dir>
+# - dotfiles/.* files      -> ~/.*
 
-- name: Setup dotfiles (symlinks)
+- name: Setup dotfiles
   hosts: localhost
   connection: local
+  gather_facts: true
   vars:
-    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
-    real_home: "{{ lookup('env', 'HOME') if lookup('env', 'SUDO_USER') == '' else lookup('pipe', 'getent passwd ' + lookup('env', 'SUDO_USER') + ' | cut -d: -f6') }}"
+    sudo_user: "{{ lookup('env', 'SUDO_USER') | default('', true) }}"
+    env_user: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+    real_user: "{{ sudo_user if sudo_user | length > 0 else env_user }}"
+    real_home: >-
+      {{
+        lookup('pipe', 'getent passwd ' + sudo_user + ' | cut -d: -f6')
+        if sudo_user | length > 0
+        else lookup('env', 'HOME') | default(ansible_env.HOME, true)
+      }}
     xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(real_home + '/.config', true) }}"
     dotfiles_dir: "{{ playbook_dir }}/dotfiles"
-    # Set to true to wipe existing files/dirs at the target before linking
     force_relink: true
 
   tasks:
@@ -18,23 +28,30 @@
       ansible.builtin.debug:
         msg:
           - "Real user: {{ real_user }}"
-          - "Real user home: {{ real_home }}"
+          - "Real home: {{ real_home }}"
           - "XDG_CONFIG_HOME: {{ xdg_config_home }}"
           - "Dotfiles directory: {{ dotfiles_dir }}"
           - "Force relink: {{ force_relink }}"
 
-    - name: Ensure XDG_CONFIG_HOME exists
+    - name: Ensure target directories exist
       ansible.builtin.file:
-        path: "{{ xdg_config_home }}"
+        path: "{{ item }}"
         state: directory
         mode: "0755"
         owner: "{{ real_user }}"
+      loop:
+        - "{{ xdg_config_home }}"
+        - "{{ real_home }}/.local"
 
-    # 🔍 Find config subdirectories (e.g. dotfiles/.config/nvim)
-    - name: Check if dotfiles/.config exists
+    - name: Check source directories
       ansible.builtin.stat:
-        path: "{{ dotfiles_dir }}/.config"
-      register: config_dir_stat
+        path: "{{ item.path }}"
+      loop:
+        - { key: config, path: "{{ dotfiles_dir }}/.config" }
+        - { key: local, path: "{{ dotfiles_dir }}/.local" }
+      register: source_dirs
+      loop_control:
+        label: "{{ item.path }}"
 
     - name: Find config directories to symlink
       ansible.builtin.find:
@@ -42,22 +59,35 @@
         file_type: directory
         recurse: false
       register: config_dirs
-      when: config_dir_stat.stat.exists and config_dir_stat.stat.isdir
+      when: source_dirs.results[0].stat.isdir | default(false)
 
-    # 🧹 Remove existing target if it's NOT already the correct symlink
-    - name: Remove stale targets in ~/.config (only if not already a correct symlink)
+    - name: Find local directories to symlink
+      ansible.builtin.find:
+        paths: "{{ dotfiles_dir }}/.local"
+        file_type: directory
+        recurse: false
+      register: local_dirs
+      when: source_dirs.results[1].stat.isdir | default(false)
+
+    - name: Find root dotfiles to symlink
+      ansible.builtin.find:
+        paths: "{{ dotfiles_dir }}"
+        patterns: ".*"
+        hidden: true
+        file_type: file
+        recurse: false
+      register: root_dotfiles
+
+    - name: Remove config targets before relinking
       ansible.builtin.file:
         path: "{{ xdg_config_home }}/{{ item.path | basename }}"
         state: absent
       loop: "{{ config_dirs.files | default([]) }}"
-      when:
-        - force_relink
-        - config_dirs is defined
+      when: force_relink
       loop_control:
         label: "{{ item.path | basename }}"
 
-    # 🔗 Create symlinks for each config directory
-    - name: Symlink config directories into ~/.config
+    - name: Symlink config directories
       ansible.builtin.file:
         src: "{{ item.path }}"
         dest: "{{ xdg_config_home }}/{{ item.path | basename }}"
@@ -65,41 +95,52 @@
         force: true
         owner: "{{ real_user }}"
       loop: "{{ config_dirs.files | default([]) }}"
-      when: config_dirs is defined
+      when: not ansible_check_mode
       loop_control:
         label: "{{ item.path | basename }}"
 
-    # 📄 Find dotfiles in repo root (e.g. .bashrc, .zshrc)
-    - name: Find individual dotfiles
-      ansible.builtin.find:
-        paths: "{{ dotfiles_dir }}"
-        patterns: ".*"
-        hidden: true
-        file_type: file
-        recurse: false
-      register: dotfiles
+    - name: Remove local targets before relinking
+      ansible.builtin.file:
+        path: "{{ real_home }}/.local/{{ item.path | basename }}"
+        state: absent
+      loop: "{{ local_dirs.files | default([]) }}"
+      when: force_relink
+      loop_control:
+        label: "{{ item.path | basename }}"
 
-    - name: Remove stale dotfile targets in home (force_relink)
+    - name: Symlink local directories
+      ansible.builtin.file:
+        src: "{{ item.path }}"
+        dest: "{{ real_home }}/.local/{{ item.path | basename }}"
+        state: link
+        force: true
+        owner: "{{ real_user }}"
+      loop: "{{ local_dirs.files | default([]) }}"
+      when: not ansible_check_mode
+      loop_control:
+        label: "{{ item.path | basename }}"
+
+    - name: Remove root dotfile targets before relinking
       ansible.builtin.file:
         path: "{{ real_home }}/{{ item.path | basename }}"
         state: absent
-      loop: "{{ dotfiles.files }}"
-      when: force_relink and dotfiles.files | length > 0
+      loop: "{{ root_dotfiles.files | default([]) }}"
+      when: force_relink
       loop_control:
         label: "{{ item.path | basename }}"
 
-    - name: Symlink individual dotfiles into home
+    - name: Symlink root dotfiles
       ansible.builtin.file:
         src: "{{ item.path }}"
         dest: "{{ real_home }}/{{ item.path | basename }}"
         state: link
         force: true
         owner: "{{ real_user }}"
-      loop: "{{ dotfiles.files }}"
-      when: dotfiles.files | length > 0
+      loop: "{{ root_dotfiles.files | default([]) }}"
+      when: not ansible_check_mode
       loop_control:
         label: "{{ item.path | basename }}"
 
     - name: Dotfiles symlink setup complete
       ansible.builtin.debug:
-        msg: "✓ Dotfiles symlinked from {{ dotfiles_dir }}"
+        msg: "Dotfiles symlinked from {{ dotfiles_dir }}"

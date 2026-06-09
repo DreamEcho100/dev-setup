@@ -1,5 +1,6 @@
 local function on_node_open(node, fallback, opts)
-    local empty = require('utils').empty
+    local function empty(value) return value == nil or value == '' end
+
     if not opts or empty(opts.open_with) then
         fallback()
         return
@@ -25,12 +26,22 @@ local function on_node_open(node, fallback, opts)
     end
     table.insert(args, node.config.computer_name)
     local prefix
-    if opts.open_with == 'kitty' then
-        prefix = {'open', '-n', '-a', 'kitty', '--args', '--title', title}
+    if vim.fn.has('macunix') == 1 then
+        if opts.open_with == 'kitty' then
+            prefix = {'open', '-n', '-a', 'kitty', '--args', '--title', title}
+        else
+            prefix = {
+                'open', '-n', '-a', 'alacritty', '--args', '--title', title,
+                '-e'
+            }
+        end
+    elseif opts.open_with == 'kitty' and vim.fn.executable('kitty') == 1 then
+        prefix = {'kitty', '--title', title}
+    elseif vim.fn.executable('alacritty') == 1 then
+        prefix = {'alacritty', '--title', title, '-e'}
     else
-        prefix = {
-            'open', '-n', '-a', 'alacritty', '--args', '--title', title, '-e'
-        }
+        fallback()
+        return
     end
     args = vim.list_extend(prefix, args)
     vim.system(args, {stdout = false, stderr = false, detach = true})
@@ -55,20 +66,21 @@ local function window_picker(node)
     if wintab.state.winid and vim.api.nvim_win_is_valid(wintab.state.winid) then
         winid = wintab.state.winid
     end
-    if vim.api.nvim_win_is_valid(winid) then
+
+    if not vim.api.nvim_win_is_valid(winid) then
+        winid = require('conn-manager.window').pick_window_for_node_open(false)
+        if winid == -1 then
+            vim.cmd.tabnew()
+            vim.api.nvim_set_option_value('winfixbuf', true, {win = 0})
+            vim.t.title = node.config.display_name
+            winid = vim.api.nvim_get_current_win()
+        end
+    else
         if not require('conn-manager.window').is_window_usable(winid) then
             vim.api.nvim_win_set_buf(winid, vim.api.nvim_create_buf(true, true))
         end
-        goto out
     end
-    winid = require('conn-manager.window').pick_window_for_node_open(false)
-    if winid == -1 then
-        vim.cmd.tabnew()
-        vim.api.nvim_set_option_value('winfixbuf', true, {win = 0})
-        vim.t.title = node.config.display_name
-        winid = vim.api.nvim_get_current_win()
-    end
-    ::out::
+
     if vim.api.nvim_get_option_value('winbar', {win = winid}) == '' then
         wintab = require('wintab').init(winid, get_buffer_components)
     end
@@ -77,6 +89,7 @@ end
 
 return {
     'epheien/conn-manager.nvim',
+    enabled = function() return vim.fn.executable('ssh') == 1 end,
     cmd = 'ConnManager',
     dependencies = {'epheien/wintab.nvim', 'nvchad/menu'},
     config = function()

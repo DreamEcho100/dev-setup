@@ -30,9 +30,7 @@ end
 vim.api.nvim_create_autocmd("CmdlineLeave", {
     desc = "Save buffer after leaving command-line mode",
     callback = function()
-        if not save_after_cmdline then
-            return
-        end
+        if not save_after_cmdline then return end
 
         save_after_cmdline = false
         save_current_buffer()
@@ -47,9 +45,8 @@ keymap.set('n', '<C-s>', save_current_buffer, save_opts)
 keymap.set('i', '<C-s>', save_current_buffer, save_opts)
 keymap.set('c', '<C-s>', save_from_cmdline,
            tbl_merge(opts, {expr = true, desc = 'Save file'}))
-keymap.set('n', '<leader>sn', '<cmd>noautocmd w <CR>', tbl_merge(opts, {
-	desc = 'Save file without auto-formatting'
-}))
+keymap.set('n', '<leader>sn', '<cmd>noautocmd w <CR>',
+           tbl_merge(opts, {desc = 'Save file without auto-formatting'}))
 
 keymap.set('n', '<C-q>', '<cmd> q <CR>', tbl_merge(opts, {desc = 'Quit file'}))
 
@@ -87,14 +84,16 @@ keymap.set('n', '<leader>bx', ':bdelete!<CR>',
 keymap.set('n', '<leader>bo', '<cmd> enew <CR>',
            tbl_merge(opts, {desc = 'Open new buffer'}))
 
---split management
-vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
+-- split management
+vim.keymap.set("n", "<leader>sv", "<C-w>v", {desc = "Split window vertically"})
 -- split window vertically
-vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+vim.keymap
+    .set("n", "<leader>sh", "<C-w>s", {desc = "Split window horizontally"})
 -- split window horizontally
-vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windows equal width & height
+vim.keymap.set("n", "<leader>se", "<C-w>=", {desc = "Make splits equal size"}) -- make split windows equal width & height
 -- close current split window
-vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
+vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>",
+               {desc = "Close current split"})
 
 -- Navigate between splits
 keymap.set('n', '<C-k>', ':wincmd k<CR>',
@@ -146,8 +145,10 @@ keymap.set('n', '<leader>q', vim.diagnostic.setloclist,
 -- Clear search highlights
 keymap.set("n", "<leader>nh", ":nohl<CR>", {desc = "Clear search highlights"})
 
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "moves lines down in visual selection" })
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "moves lines up in visual selection" })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv",
+               {desc = "moves lines down in visual selection"})
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv",
+               {desc = "moves lines up in visual selection"})
 
 -- ctrl c as escape cuz Im lazy _(XD)_ to reach up to the esc key
 vim.keymap.set("i", "<C-c>", "<Esc>")
@@ -157,18 +158,17 @@ vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 -- Hightlight yanking
 vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "Highlight when yanking (copying) text",
-    group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-    callback = function()
-        vim.hl.on_yank()
-    end,
+    group = vim.api.nvim_create_augroup("kickstart-highlight-yank",
+                                        {clear = true}),
+    callback = function() vim.hl.on_yank() end
 })
 
 -- Copy filepath to the clipboard
 vim.keymap.set("n", "<leader>fp", function()
-  local filePath = vim.fn.expand("%:~") -- Gets the file path relative to the home directory
-  vim.fn.setreg("+", filePath) -- Copy the file path to the clipboard register
-  print("File path copied to clipboard: " .. filePath)
-end, { desc = "Copy file path to clipboard" })
+    local filePath = vim.fn.expand("%:~") -- Gets the file path relative to the home directory
+    vim.fn.setreg("+", filePath) -- Copy the file path to the clipboard register
+    print("File path copied to clipboard: " .. filePath)
+end, {desc = "Copy file path to clipboard"})
 
 -- Toggle LSP diagnostics visibility
 local isLspDiagnosticsVisible = true
@@ -178,7 +178,20 @@ vim.keymap.set("n", "<leader>lx", function()
         virtual_text = isLspDiagnosticsVisible,
         underline = isLspDiagnosticsVisible
     })
-end, { desc = "Toggle LSP diagnostics" })
+end, {desc = "Toggle LSP diagnostics"})
+
+-- Lightweight split zoom replacement for vim-maximizer.
+vim.keymap.set("n", "<leader>sm", function()
+    if vim.t.de100_zoomed_winrestcmd then
+        vim.cmd(vim.t.de100_zoomed_winrestcmd)
+        vim.t.de100_zoomed_winrestcmd = nil
+        return
+    end
+
+    vim.t.de100_zoomed_winrestcmd = vim.fn.winrestcmd()
+    vim.cmd("resize")
+    vim.cmd("vertical resize")
+end, {desc = "Toggle split zoom"})
 
 -- -- Misc
 -- -- desc = 'Source the init.lua file, reloading the config'
