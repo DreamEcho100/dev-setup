@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/07-lsp-and-completions.md
 return {
     -- Quickly Jump through the todo tags
     "folke/todo-comments.nvim",

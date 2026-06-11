@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/04-editing-mastery.md
 return {
     {
         "JoosepAlviste/nvim-ts-context-commentstring",

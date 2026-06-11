@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/08-git-workflow.md
 return {
     -- for all git plugins 
     {

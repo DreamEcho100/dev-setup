@@ -1,4 +1,5 @@
 -- I use 3 plugins for this to work properly, but I only add a single file,
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/12-sessions-workspace.md
 -- which is the current one, and the other 2 plugins are listed under dependencies
 -- These dependencies will be automatically installed
 --[=====[

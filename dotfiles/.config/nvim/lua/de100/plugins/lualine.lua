@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/13-customising-your-config.md
 return {
     "nvim-lualine/lualine.nvim",
     dependencies = {"nvim-tree/nvim-web-devicons"},

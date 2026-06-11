@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/14-contributing-and-help.md
 return {
     "m4xshen/hardtime.nvim",
     enabled = false,

@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/12-sessions-workspace.md
 return {
     "mistweaverco/kulala.nvim",
     ft = {"http", "rest"},

@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/11-ai-coding-assistant.md
 return {
     {
         "zbirenbaum/copilot.lua",

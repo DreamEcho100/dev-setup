@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/07-lsp-and-completions.md
 local ls = require("luasnip")
 local s = ls.snippet
 local t = ls.text_node

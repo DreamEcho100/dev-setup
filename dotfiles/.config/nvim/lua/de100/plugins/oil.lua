@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/06-files-buffers-windows-tabs.md
 return {
     "stevearc/oil.nvim",
     -- enabled = false,

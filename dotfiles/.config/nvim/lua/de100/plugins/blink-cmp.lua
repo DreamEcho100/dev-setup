@@ -1,4 +1,5 @@
 -- dotfiles/.config/nvim/lua/de100/plugins/blink-cmp.lua
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/07-lsp-and-completions.md
 -- HACK: blink.cmp updates | Remove LuaSnip | Emoji and Dictionary Sources | Fix Jump Autosave Issue
 -- https://youtu.be/JrgfpWap_Pg
 -- completion plugin with support for LSPs and external sources that updates

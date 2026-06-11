@@ -1,4 +1,5 @@
 -- dotfiles/.config/nvim/lua/de100/plugins/grug-far.lua
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/05-search-and-replace.md
 -- https://github.com/MagicDuck/grug-far.nvim
 -- I needed to replace colors["linkarzu_color10"] with "linkarzu_color10"
 -- and not only for color10, but from color01 to color20 in multiple files,

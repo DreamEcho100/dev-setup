@@ -1,4 +1,5 @@
 -- Custom LuaSnip snippets and configuration
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/07-lsp-and-completions.md
 return {
     "L3MON4D3/LuaSnip",
     enabled = true,

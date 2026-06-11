@@ -1,4 +1,5 @@
 -- https://github.com/NeogitOrg/neogit
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/08-git-workflow.md
 return {
     "NeogitOrg/neogit",
     lazy = true,

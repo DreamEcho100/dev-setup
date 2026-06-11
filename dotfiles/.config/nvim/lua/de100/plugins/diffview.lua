@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/08-git-workflow.md
 return {
     "sindrets/diffview.nvim",
     cmd = {"DiffviewOpen", "DiffviewFileHistory", "DiffviewClose"},

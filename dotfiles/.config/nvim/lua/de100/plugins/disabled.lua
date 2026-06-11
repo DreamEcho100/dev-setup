@@ -1,4 +1,5 @@
 -- dotfiles/.config/nvim/lua/de100/plugins/disabled.lua
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/13-customising-your-config.md
 -- is_neovide is set to "true" if running inside neovide because vim.g.neovide is set to true
 -- Otherwise, default to "false"
 local is_neovide = vim.g.neovide or false

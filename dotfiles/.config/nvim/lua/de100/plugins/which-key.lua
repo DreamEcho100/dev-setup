@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/02-the-vscode-translator.md
 return {
     "folke/which-key.nvim",
     event = "VeryLazy",

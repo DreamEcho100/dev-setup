@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/05-search-and-replace.md
 return {
     {
         "MagicDuck/grug-far.nvim",

@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/06-files-buffers-windows-tabs.md
 return {
     -- HACK: docs @ https://github.com/folke/snacks.nvim/blob/main/docs
     {
@@ -33,7 +34,14 @@ return {
             picker = {
                 enabled = true,
                 matchers = {frecency = true, cwd_bonus = false},
-                exclude = {".git", "node_modules", "dist", "build"},
+                -- exclude = {".git", "node_modules", "dist", "build"},
+
+                hidden = true, -- Shows hidden files (dotfiles) by default
+
+                -- Optional: If you want to specifically control the file filter
+                -- (Some versions of the underlying picker use 'show_hidden')
+                show_hidden = true,
+
                 formatters = {
                     file = {
                         filename_first = true,
@@ -207,9 +215,13 @@ return {
                 function() require("snacks").picker.commands() end,
                 desc = "Commands"
             }, {
-                "<leader>pe",
+                "<leader>pr",
                 function() require("snacks").picker.explorer() end,
                 desc = "Explorer picker"
+            }, {
+                "<leader>pe",
+                function() require("snacks").explorer.reveal() end,
+                desc = "Reveal Current File in Explorer"
             }, {
                 "<leader>pws",
                 function() require("snacks").picker.grep_word() end,

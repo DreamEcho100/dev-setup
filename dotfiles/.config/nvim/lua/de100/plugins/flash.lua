@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/03-moving-like-a-ninja.md
 return {
     "folke/flash.nvim",
     event = "VeryLazy",

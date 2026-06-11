@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/07-lsp-and-completions.md
 return {
     "folke/trouble.nvim",
     dependencies = {"nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim"},

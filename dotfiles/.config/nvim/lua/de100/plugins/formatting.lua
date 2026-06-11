@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/10-formatting-linting.md
 return {
     "stevearc/conform.nvim",
     event = {"BufReadPre", "BufNewFile"},

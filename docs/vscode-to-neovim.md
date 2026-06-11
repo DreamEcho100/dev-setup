@@ -4,25 +4,25 @@ The goal is not to clone VS Code. The goal is to keep the productive parts while
 
 ## Translation Table
 
-| VS Code Concept | Neovim/Tmux Equivalent |
-| --- | --- |
-| Command Palette | Snacks picker, `which-key`, `:` commands |
-| Explorer | Oil as default, `mini.files` as lightweight secondary |
-| Quick Open | Snacks files/recent/buffers |
-| Search in files | Snacks grep, `grug-far.nvim`, ripgrep |
-| Source Control | Gitsigns, Fugitive, LazyGit, Diffview |
-| Debug panel | `nvim-dap`, `nvim-dap-ui`, Mason DAP adapters |
-| Tasks | `overseer.nvim`, tmux panes, project scripts |
-| Problems panel | Trouble, diagnostics pickers, quickfix/location lists |
-| Extensions | Lazy plugin specs, Mason tools |
-| Settings JSON | Lua modules under `dotfiles/.config/nvim/lua/de100` |
-| Remote SSH | `remote-nvim`, `conn-manager`, SSH + tmux |
-| Integrated terminal | Neovim terminal buffers and tmux panes |
-| Multi-cursor | `multicursor.nvim`, macros, visual block mode, substitutions |
-| Snippets | LuaSnip + friendly-snippets through Blink |
-| IntelliSense | LSP + Blink completion |
-| Format on save | Conform |
-| Linting | nvim-lint + LSP diagnostics |
+| VS Code Concept     | Neovim/Tmux Equivalent                                       |
+| ------------------- | ------------------------------------------------------------ |
+| Command Palette     | Snacks picker, `which-key`, `:` commands                     |
+| Explorer            | Oil as default, `mini.files` as lightweight secondary        |
+| Quick Open          | Snacks files/recent/buffers                                  |
+| Search in files     | Snacks grep, `grug-far.nvim`, ripgrep                        |
+| Source Control      | Gitsigns, Fugitive, LazyGit, Diffview                        |
+| Debug panel         | `nvim-dap`, `nvim-dap-ui`, Mason DAP adapters                |
+| Tasks               | `overseer.nvim`, tmux panes, project scripts                 |
+| Problems panel      | Trouble, diagnostics pickers, quickfix/location lists        |
+| Extensions          | Lazy plugin specs, Mason tools                               |
+| Settings JSON       | Lua modules under `dotfiles/.config/nvim/lua/de100`          |
+| Remote SSH          | `remote-nvim`, `conn-manager`, SSH + tmux                    |
+| Integrated terminal | Neovim terminal buffers and tmux panes                       |
+| Multi-cursor        | `multicursor.nvim`, macros, visual block mode, substitutions |
+| Snippets            | LuaSnip + friendly-snippets through Blink                    |
+| IntelliSense        | LSP + Blink completion                                       |
+| Format on save      | Conform                                                      |
+| Linting             | nvim-lint + LSP diagnostics                                  |
 
 ## Daily Loop
 

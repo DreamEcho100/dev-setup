@@ -1,3 +1,4 @@
+-- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/09-debug-test-build.md
 return {
     "stevearc/overseer.nvim",
     cmd = {
