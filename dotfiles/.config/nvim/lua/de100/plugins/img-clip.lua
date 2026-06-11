@@ -1,6 +1,5 @@
+-- dotfiles/.config/nvim/lua/de100/plugins/img-clip.lua
 -- https://github.com/HakonHarnes/img-clip.nvim
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/img-clip.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/img-clip.lua
 return {
     "HakonHarnes/img-clip.nvim",
     event = "VeryLazy",
@@ -96,25 +95,8 @@ return {
             typst = {
                 url_encode_path = true, ---@type boolean
 
-                -- If your current Neovim working directory (:pwd) is inside ~/github/net-book,
-                -- return false so the plugin does NOT place images relative to the current file.
-                -- That makes it use the cwd as the base, so "assets/img/imgs" works from the repo root.
-                -- If you're outside that repo, return true so images are stored relative to the current file.
-                relative_to_current_file = function()
-                    local cwd = vim.loop.cwd() or vim.fn.getcwd()
-                    local net_book = vim.fn.expand("~/github/net-book")
-                    return not vim.startswith(cwd, net_book)
-                end, ---@type boolean
-
-                -- Choose the image output directory based on where you're working:
-                -- - Inside ~/github/net-book: always use the repo's assets/img/imgs folder.
-                -- - Anywhere else: create/use a folder next to the current file named "<filename>-img".
+                relative_to_current_file = true, ---@type boolean
                 dir_path = function()
-                    local cwd = vim.loop.cwd() or vim.fn.getcwd()
-                    local net_book = vim.fn.expand("~/github/net-book")
-                    if vim.startswith(cwd, net_book) then
-                        return "assets/img/imgs"
-                    end
                     return vim.fn.expand("%:t:r") .. "-img"
                 end,
 

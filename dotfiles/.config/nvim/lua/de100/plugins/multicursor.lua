@@ -6,9 +6,9 @@ return {
         local mc = require("multicursor-nvim")
         mc.setup()
 
-        vim.keymap.set({"n", "v"}, "<leader>mc", mc.matchAddCursor,
+        vim.keymap.set({"n", "v"}, "<leader>cm", mc.matchAddCursor,
                        {desc = "Add cursor at match"})
-        vim.keymap.set({"n", "v"}, "<leader>mC", mc.matchAllAddCursors,
+        vim.keymap.set({"n", "v"}, "<leader>cM", mc.matchAllAddCursors,
                        {desc = "Add cursors at all matches"})
         vim.keymap.set("n", "<esc>", function()
             if not mc.cursorsEnabled() then

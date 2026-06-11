@@ -1,5 +1,4 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/blink-cmp.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/blink-cmp.lua
+-- dotfiles/.config/nvim/lua/de100/plugins/blink-cmp.lua
 -- HACK: blink.cmp updates | Remove LuaSnip | Emoji and Dictionary Sources | Fix Jump Autosave Issue
 -- https://youtu.be/JrgfpWap_Pg
 -- completion plugin with support for LSPs and external sources that updates
@@ -98,7 +97,7 @@ return {
                     name = "snippets",
                     enabled = true,
                     max_items = 15,
-                    min_keyword_length = 2,
+                    min_keyword_length = 1,
                     module = "blink.cmp.sources.snippets",
                     score_offset = 85,
                     -- Only show snippets after typing the trigger_text char,
@@ -128,6 +127,20 @@ return {
                                 if not item.trigger_text_modified then
                                     ---@diagnostic disable-next-line: inject-field
                                     item.trigger_text_modified = true
+                                    -- Strip trigger_text prefix from label so
+                                    -- blink's fuzzy filter matches "fn" against
+                                    -- "fn" rather than "fn" against ";fn".
+                                    -- transform_items runs before fuzzy matching.
+                                    if item.label:sub(1, #trigger_text) ==
+                                        trigger_text then
+                                        item.label =
+                                            item.label:sub(#trigger_text + 1)
+                                        if item.filterText then
+                                            item.filterText =
+                                                item.filterText:sub(#trigger_text +
+                                                                        1)
+                                        end
+                                    end
                                     item.textEdit = {
                                         newText = item.insertText or item.label,
                                         range = {
@@ -157,7 +170,7 @@ return {
                 -- },
                 -- https://github.com/Kaiser-Yang/blink-cmp-dictionary
                 -- On macOS to bootstrap a dictionary:
-                --   cp /usr/share/dict/words ~/github/dotfiles-latest/dictionaries/words.txt
+                --   cp /usr/share/dict/words ~/.config/nvim/dictionaries/words.txt
                 -- For word definitions install wordnet:
                 --   brew install wordnet
                 dictionary = {
@@ -216,6 +229,9 @@ return {
         }
 
         opts.completion = {
+            -- Pre-warm sources when entering insert mode so Ctrl+Space
+            -- has results ready on the very first trigger.
+            trigger = {prefetch_on_insert = true},
             -- accept = {
             --   auto_brackets = {
             --     enabled = true,

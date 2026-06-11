@@ -178,7 +178,7 @@ return {
                 function() require("snacks").rename.rename_file() end,
                 desc = "Fast Rename Current File"
             }, {
-                "<leader>dB",
+                "<leader>bD",
                 function() require("snacks").bufdelete() end,
                 desc = "Delete or Close Buffer  (Confirm)"
             }, -- Snacks Picker

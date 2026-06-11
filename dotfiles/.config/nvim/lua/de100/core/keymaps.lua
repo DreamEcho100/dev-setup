@@ -127,11 +127,6 @@ keymap.set('v', '<', '<gv',
 keymap.set('v', '>', '>gv',
            tbl_merge(opts, {desc = 'Unindent line and stay in indent mode'}))
 
--- Keep last yanked when pasting
-keymap.set('v', 'p', '"_dP', tbl_merge(opts, {
-    desc = 'Paste over selection without overwriting register'
-}))
-
 -- Diagnostic keymaps
 keymap.set('n', '[d', vim.diagnostic.goto_prev,
            {desc = 'Go to previous diagnostic message'})

@@ -1,10 +1,4 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/luasnip.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/luasnip.lua
--- This allows me to create my custom snippets
--- All you need to do, if using the lazyvim.org distro, is to enable the
--- coding.luasnip LazyExtra and then add this file
--- If you're a dotfiles scavenger, definitely watch this video (you're welcome)
--- https://youtu.be/FmHhonPjvvA?si=8NrcRWu4GGdmTzee
+-- Custom LuaSnip snippets and configuration
 return {
     "L3MON4D3/LuaSnip",
     enabled = true,
@@ -142,9 +136,6 @@ return {
             ls.add_snippets("all", video_md_snippets)
             ls.add_snippets("all", video_md_snippets_ext)
             ls.add_snippets("all", video_snippets_embed)
-        else
-            vim.notify("YouTube snippets file not found, skipping loading.",
-                       vim.log.levels.INFO)
         end
         -- Custom snippets
         -- the "all" after ls.add_snippets("all" is the filetype, you can know a
@@ -456,6 +447,23 @@ return {
         ls.add_snippets("markdown", snippets)
 
         ls.add_snippets("typst", codeblocks_typst)
+
+        -- Load code snippets from the snippets/ directory
+        require("luasnip.loaders.from_lua").load({
+            paths = vim.fn.stdpath("config") .. "/snippets"
+        })
+
+        -- Share JS snippets with related filetypes
+        ls.filetype_extend("typescript", {"javascript"})
+        ls.filetype_extend("javascriptreact", {"javascript"})
+        ls.filetype_extend("typescriptreact", {"javascript", "typescript", "javascriptreact"})
+        ls.filetype_extend("svelte", {"javascript"})
+        ls.filetype_extend("astro", {"javascript", "typescript"})
+        ls.filetype_extend("vue", {"javascript"})
+        -- C++ also gets C snippets
+        ls.filetype_extend("cpp", {"c"})
+        -- bash gets sh snippets
+        ls.filetype_extend("bash", {"sh"})
 
         -- -- Make Typst inherit Markdown snippets
         -- ls.filetype_extend("typst", { "markdown" })

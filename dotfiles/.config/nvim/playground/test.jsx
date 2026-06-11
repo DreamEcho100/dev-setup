@@ -1,0 +1,16 @@
+import React from "react";
+
+export default function Test(pte) {
+	return (
+		<div>
+			<section>
+				<h1>
+					<h1>H1</h1>
+					<p className="bg-neutral-500/10">
+						"{"`walkjdflkdajlkjarlkdja🎯lskjdelkjaslkdjaslkjdlkajslwkd`"}"
+					</p>
+				</h1>
+			</section>
+		</div>
+	);
+}

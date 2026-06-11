@@ -54,13 +54,16 @@ return {
                 end, opts)
 
                 opts.desc = "Show line diagnostics"
-                vim.keymap.set("n", "df", vim.diagnostic.open_float, opts)
+                vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float, opts)
 
                 opts.desc = "Hover documentation"
                 vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
                 opts.desc = "Signature help"
                 vim.keymap.set({"n", "i"}, "<leader>ls", vim.lsp.buf.signature_help, opts)
+                -- Inlay hints are off by default due to a Neovim 0.12.2 bug where
+                -- LSP servers returning end-of-line hint positions crash the extmark
+                -- renderer. Toggle on/off with <leader>li when needed.
             end
         })
 
@@ -89,6 +92,13 @@ return {
             local current = vim.diagnostic.config().virtual_text
             vim.diagnostic.config({virtual_text = not current})
         end, {desc = "Toggle LSP virtual text"})
+
+        vim.keymap.set("n", "<leader>li", function()
+            vim.lsp.inlay_hint.enable(
+                not vim.lsp.inlay_hint.is_enabled({bufnr = 0}),
+                {bufnr = 0}
+            )
+        end, {desc = "Toggle inlay hints"})
 
         local capabilities = vim.lsp.protocol.make_client_capabilities()
         capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
@@ -209,13 +219,14 @@ return {
         })
 
         local servers = {
-            "angularls", "astro", "bashls", "biome", "clangd", "cmake",
-            "cssls", "cssmodules_ls", "docker_compose_language_service",
-            "dockerls", "emmet_language_server", "eslint", "gdscript", "gopls",
-            "graphql", "html", "jsonls", "lua_ls", "marksman", "ols",
-            "omnisharp", "prismals", "pyright", "ruff", "sqlls", "svelte",
-            "tailwindcss", "taplo", "terraformls", "texlab", "vtsls", "vue_ls",
-            "yamlls", "zls"
+            "angularls", "ansiblels", "astro", "bashls", "biome", "clangd",
+            "cmake", "cssls", "cssmodules_ls",
+            "docker_compose_language_service", "dockerls",
+            "emmet_language_server", "eslint", "gdscript", "gopls", "graphql",
+            "html", "jsonls", "lua_ls", "marksman", "ols", "omnisharp",
+            "prismals", "pyright", "ruff", "sqlls", "svelte", "tailwindcss",
+            "taplo", "terraformls", "texlab", "vtsls", "vue_ls", "yamlls",
+            "zls"
         }
 
         for _, server in ipairs(servers) do

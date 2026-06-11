@@ -1,5 +1,4 @@
 -- https://github.com/NeogitOrg/neogit
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/neogit.lua
 return {
     "NeogitOrg/neogit",
     lazy = true,

@@ -1,5 +1,4 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/noice.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/noice.lua
+-- dotfiles/.config/nvim/lua/de100/plugins/noice.lua
 -- I want to change the default notifications to be less obtrussive (if that's even a word)
 -- https://github.com/folke/noice.nvim
 return {

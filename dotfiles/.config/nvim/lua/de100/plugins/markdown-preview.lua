@@ -1,5 +1,4 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/markdown-preview.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/markdown-preview.lua
+-- dotfiles/.config/nvim/lua/de100/plugins/markdown-preview.lua
 --
 -- Link to github repo
 -- https://github.com/iamcco/markdown-preview.nvim

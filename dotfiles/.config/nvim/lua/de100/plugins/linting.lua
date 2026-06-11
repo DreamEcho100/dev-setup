@@ -6,6 +6,7 @@ return {
 
         lint.linters_by_ft = {
             bash = {"shellcheck"},
+            go = {"golangci-lint"},
             c = {"clangtidy", "cpplint"},
             cpp = {"clangtidy", "cpplint"},
             javascript = {"biomejs", "eslint_d"},

@@ -39,7 +39,7 @@ return {
                 cpp = {"clang_format"},
                 cs = {lsp_format = "fallback"},
                 gdscript = {lsp_format = "fallback"},
-                go = {"goimports", "gofmt"},
+                go = {"goimports", "gofumpt"},
                 java = {"google-java-format"},
                 rust = {"rustfmt", lsp_format = "fallback"},
                 tex = {"latexindent"},
@@ -64,14 +64,14 @@ return {
             formatters = {
                 prettier = {
                     args = {
-                        "--stdin-filepath", "$FILENAME", "--tab-width", "4",
-                        "--use-tabs", "false"
+                        "--stdin-filepath", "$FILENAME", "--tab-width", "2",
+                        "--use-tabs", "true", "--trailing-comma", "all"
                     }
                 },
                 prettierd = {
                     args = {
-                        "--stdin-filepath", "$FILENAME", "--tab-width", "4",
-                        "--use-tabs", "false"
+                        "--stdin-filepath", "$FILENAME", "--tab-width", "2",
+                        "--use-tabs", "true", "--trailing-comma", "all"
                     }
                 },
                 shfmt = {prepend_args = {"-i", "4"}}

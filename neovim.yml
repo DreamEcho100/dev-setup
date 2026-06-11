@@ -128,6 +128,15 @@
         - optional_package_results is defined
         - item.failed | default(false)
 
+    - name: Install Zig via snap
+      become: true
+      community.general.snap:
+        name: zig
+        classic: true
+        channel: edge
+      when: ansible_os_family == "Debian"
+      failed_when: false
+
     - name: Install Java tooling when explicitly requested
       become: true
       ansible.builtin.apt:

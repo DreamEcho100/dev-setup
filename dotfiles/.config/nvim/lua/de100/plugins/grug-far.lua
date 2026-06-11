@@ -1,5 +1,4 @@
--- Filename: ~/github/dotfiles-latest/neovim/neobean/lua/plugins/grug-far.lua
--- ~/github/dotfiles-latest/neovim/neobean/lua/plugins/grug-far.lua
+-- dotfiles/.config/nvim/lua/de100/plugins/grug-far.lua
 -- https://github.com/MagicDuck/grug-far.nvim
 -- I needed to replace colors["linkarzu_color10"] with "linkarzu_color10"
 -- and not only for color10, but from color01 to color20 in multiple files,
@@ -27,7 +26,6 @@
 -- [$1]($2){:target="_blank"}
 --
 -- \- \[Here's the link\]\(https:\/\/x.com\/link_arzu\)\{:target="\\_blank"\}
--- See ~/github/dotfiles-latest/neovim/neobean/README.md for more multiline
 -- examples
 return {
     "MagicDuck/grug-far.nvim",

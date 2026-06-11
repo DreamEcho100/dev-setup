@@ -21,7 +21,7 @@ return {
                         -- tailwind completions setup in nvim cmp
                         tailwind = {
                             enable = true,
-                            lsp = true,
+                            lsp = false,
                             update_names = true
                         }
                     }

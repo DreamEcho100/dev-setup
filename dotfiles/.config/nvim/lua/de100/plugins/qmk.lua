@@ -6,7 +6,7 @@ return {
     event = "VeryLazy"
     -- Commentikng the default layout, moving this config to the autocmds file to
     -- have multiple keyboards configured
-    -- ~/github/dotfiles-latest/neovim/neobean/lua/config/autocmds.lua
+    -- dotfiles/.config/nvim/lua/de100/core/keymaps.lua
     -- opts = {
     --   name = "LAYOUT_glove80",
     --   variant = "zmk",
