@@ -37,7 +37,7 @@ return {
             function() require('dap').step_out() end,
             desc = 'Debug: Step Out'
         }, {
-            '<leader>b',
+            '<leader>dbt',
             function() require('dap').toggle_breakpoint() end,
             desc = 'Debug: Toggle Breakpoint'
         }, {
@@ -129,7 +129,7 @@ return {
            gcc -g myfile.c -o myfile
            g++ -g myfile.cpp -o myfile
            rustc -g myfile.rs
-        2. Set breakpoints in your code (leader+b)
+        2. Set breakpoints in your code (leader+dbt)
         3. Press <F5>
         4. Enter the executable path: ./myfile
         
@@ -174,7 +174,7 @@ return {
         
         SINGLE FILE:
         1. Open your JS/TS file
-        2. Set breakpoints (leader+b)
+        2. Set breakpoints (leader+dbt)
         3. Press <F5> → Select "Launch file"
         4. File will run with Node.js debugger attached
         
@@ -335,7 +335,7 @@ return {
         
         SINGLE FILE:
         1. Open your Python file
-        2. Set breakpoints (leader+b)
+        2. Set breakpoints (leader+dbt)
         3. Press <F5>
         4. Current file will be debugged automatically
         
@@ -378,7 +378,7 @@ return {
         
         SINGLE FILE:
         1. Create a simple Go file with package main
-        2. Set breakpoints (leader+b)
+        2. Set breakpoints (leader+dbt)
         3. Press <F5>
         4. The file will be compiled and debugged
         

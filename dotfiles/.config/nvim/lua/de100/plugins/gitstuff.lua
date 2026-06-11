@@ -3,7 +3,7 @@ return {
     {
         "tpope/vim-fugitive",
         config = function()
-            vim.keymap.set("n", "<leader>gg", "<cmd>tabnew | Git | only<cr>",
+            vim.keymap.set("n", "<leader>gf", "<cmd>tabnew | Git | only<cr>",
                            {desc = "Fugitive fullscreen tab"})
 
             local myFugitive = vim.api.nvim_create_augroup("myFugitive", {})
@@ -40,6 +40,21 @@ return {
         "lewis6991/gitsigns.nvim",
         event = {"BufReadPre", "BufNewFile"},
         opts = {
+            signs = {
+                add = {text = "▎"},
+                change = {text = "▎"},
+                delete = {text = ""},
+                topdelete = {text = ""},
+                changedelete = {text = "▎"},
+                untracked = {text = "▎"}
+            },
+            signs_staged = {
+                add = {text = "▎"},
+                change = {text = "▎"},
+                delete = {text = ""},
+                topdelete = {text = ""},
+                changedelete = {text = "▎"}
+            },
             on_attach = function(bufnr)
                 local gs = package.loaded.gitsigns
 
@@ -70,7 +85,7 @@ return {
                     function() gs.blame_line({full = true}) end, "Blame line")
                 map("n", "<leader>gB", gs.toggle_current_line_blame,
                     "Toggle line blame")
-                map("n", "<leader>gd", gs.diffthis, "Diff this")
+                map("n", "<leader>gdi", gs.diffthis, "Diff this (inline)")
                 map("n", "<leader>gD", function()
                     gs.diffthis("~")
                 end, "Diff this ~")

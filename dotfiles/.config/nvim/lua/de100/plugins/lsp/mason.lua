@@ -35,7 +35,6 @@ return {
                     "dockerls",
                     "emmet_language_server",
                     "eslint",
-                    "gdscript",
                     "gopls",
                     "graphql",
                     "html",

@@ -59,7 +59,6 @@
       - wl-clipboard
       - tmux
       - openssh-client
-      - docker.io
 
     debian_optional_packages:
       - lazygit
@@ -69,6 +68,8 @@
       - texlive-latex-extra
       - texlive-fonts-recommended
       - latexmk
+      - fzf
+      - wordnet
 
     debian_java_packages:
       - default-jdk
@@ -90,15 +91,30 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_core_packages }}"
-        state: present
+        state: latest
         update_cache: true
       when: ansible_os_family == "Debian"
+
+    - name: Check if Docker is already installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install docker.io if Docker is not present
+      become: true
+      ansible.builtin.apt:
+        name: docker.io
+        state: latest
+      when:
+        - ansible_os_family == "Debian"
+        - docker_check.rc != 0
 
     - name: Install optional Ubuntu/Debian packages
       become: true
       ansible.builtin.apt:
         name: "{{ item }}"
-        state: present
+        state: latest
       loop: "{{ debian_optional_packages }}"
       when: ansible_os_family == "Debian"
       register: optional_package_results
@@ -116,7 +132,7 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_java_packages }}"
-        state: present
+        state: latest
       when:
         - ansible_os_family == "Debian"
         - install_java | bool
@@ -125,7 +141,7 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_dotnet_packages }}"
-        state: present
+        state: latest
       when:
         - ansible_os_family == "Debian"
         - install_dotnet | bool
@@ -200,7 +216,7 @@
     - name: Install npm-based editor tools
       become: true
       ansible.builtin.command:
-        cmd: npm install -g tree-sitter-cli @mermaid-js/mermaid-cli prettier typescript typescript-language-server vscode-langservers-extracted
+        cmd: npm install -g tree-sitter-cli @mermaid-js/mermaid-cli prettier typescript typescript-language-server vscode-langservers-extracted neovim
       changed_when: true
       failed_when: false
 

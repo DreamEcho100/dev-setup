@@ -16,8 +16,10 @@ return {
             {"<leader>r", group = "rename/refactor"},
             {"<leader>s", group = "splits/session"},
             {"<leader>t", group = "tabs/tests/tasks"},
+            {"<leader>u", group = "ui/toggles"},
             {"<leader>w", group = "workspace/session"},
-            {"<leader>x", group = "trouble/lists"}
+            {"<leader>x", group = "trouble/lists"},
+            {"<leader>y", group = "yank"}
         }
     }
 }
