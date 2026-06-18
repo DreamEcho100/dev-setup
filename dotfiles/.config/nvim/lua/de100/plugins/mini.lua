@@ -128,5 +128,27 @@ return {
                 }
             })
         end
-    }
+    },
+		{
+			"nvim-mini/mini.animate",
+			enabled = false, -- Causes weird stuters
+			version = "*", -- Use stable version
+			event = "VeryLazy",
+			opts = function(_, opts)
+			local animate = require("mini.animate")
+			return vim.tbl_deep_extend("force", opts, {
+				resize = {
+					timing = animate.gen_timing.linear({ duration = 50, unit = "total" }),
+				},
+				scroll = {
+					timing = animate.gen_timing.linear({ duration = 150, unit = "total" }),
+					subscroll = animate.gen_subscroll.equal({
+						predicate = function(total_scroll)
+							return total_scroll > 1
+						end,
+					}),
+				},
+			})
+		end,
+		}
 }

@@ -865,7 +865,7 @@ nvim-dap-go adds a special test debugging command that nvim-dap alone cannot pro
 -- Debug the test function under the cursor
 vim.keymap.set("n", "<leader>dgt", require("dap-go").debug_test, { desc = "DAP Go: Debug test" })
 -- Debug the last test
-vim.keymap.set("n", "<leader>dgl", require("dap-go").debug_last_test, { desc = "DAP Go: Debug last test" })
+vim.keymap.set("n", "<leader>dgT", require("dap-go").debug_last_test, { desc = "DAP Go: Debug last test" })
 ```
 
 Position your cursor inside a `func TestFoo(t *testing.T)` function and press `<leader>dgt`. nvim-dap-go determines the package and test name, constructs the correct `dlv test` invocation, and starts a debug session scoped to that single test. This is equivalent to right-clicking a test in VSCode's Test Explorer and choosing "Debug Test".
@@ -1478,11 +1478,8 @@ require("neotest").setup({
     }),
 
     -- Go
-    require("neotest-go")({
-      experimental = {
-        test_table = true,  -- support table-driven tests
-      },
-      args = { "-count=1", "-timeout=60s" },
+    require("neotest-golang")({
+      runner = "gotestsum",
     }),
 
     -- Rust with cargo-nextest
@@ -2155,8 +2152,8 @@ The race condition is confirmed: drain resolves before the concurrent adds finis
 | `<leader>tF` | Run file tests     | VSCode: Run File in Test Explorer |
 | `<leader>tO` | Open output        | VSCode: click failed test output  |
 | `<leader>tS` | Summary panel      | VSCode: open Test Explorer        |
-| `<leader>td` | Debug nearest test | VSCode: "Debug Test" lens         |
-| `<leader>tw` | Watch file         | VSCode: jest --watch extension    |
+| `<leader>dgt` | Debug nearest Go test | VSCode: "Debug Test" lens      |
+| `<leader>dgT` | Debug last Go test    | VSCode: rerun debug test       |
 
 ### Overseer Keybindings
 
@@ -2165,7 +2162,14 @@ The race condition is confirmed: drain resolves before the concurrent adds finis
 | `<leader>tr` | Run task (picker) | VSCode: Terminal > Run Task      |
 | `<leader>tt` | Toggle task list  | VSCode: Terminal > Run Task view |
 | `<leader>ta` | Task action       | VSCode: right-click task         |
-| `<leader>tl` | Restart last task | VSCode: Tasks: Rerun Last Task   |
+
+Go tasks registered by this config:
+
+- `Go: test all packages`
+- `Go: test current package`
+- `Go: build current module`
+- `Go: mod tidy`
+- `Go: golangci-lint current module`
 
 ### Adapters and Their Scope
 
@@ -2459,7 +2463,7 @@ require("neotest").run.run({
 })
 ```
 
-### neotest-go with Test Tables
+### neotest-golang with Test Tables
 
 Go's table-driven tests are supported natively. Given:
 

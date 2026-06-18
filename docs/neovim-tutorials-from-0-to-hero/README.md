@@ -91,8 +91,11 @@ docs/neovim-tutorials-from-0-to-hero/
 ├── 13-customizing-the-config.md
 │   └── Adding plugins, editing keymaps, writing your own ftplugin
 │
-└── 14-workflow-and-muscle-memory.md
-    └── hardtime.nvim, hawtkeys.nvim, building speed, personal workflow tips
+├── 14-workflow-and-muscle-memory.md
+│   └── hardtime.nvim, hawtkeys.nvim, building speed, personal workflow tips
+│
+└── 15-go-development.md
+    └── Beginner-friendly Go setup: gopls, go.work, tests, linting, debugging
 ```
 
 Each file is self-contained — you can jump to any topic once you've got the

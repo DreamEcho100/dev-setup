@@ -49,16 +49,13 @@ return {
             },
             -- dadbod only activates for SQL files (matches when vim-dadbod-completion is loaded)
             per_filetype = {
-                sql = {"lsp", "path", "snippets", "buffer", "dadbod"},
-                mysql = {"lsp", "path", "snippets", "buffer", "dadbod"},
-                plsql = {"lsp", "path", "snippets", "buffer", "dadbod"}
+                sql = {"dadbod", inherit_defaults = true},
+                mysql = {"dadbod", inherit_defaults = true},
+                plsql = {"dadbod", inherit_defaults = true}
             },
             providers = {
                 lsp = {
-                    name = "lsp",
                     enabled = true,
-                    module = "blink.cmp.sources.lsp",
-                    kind = "LSP",
                     min_keyword_length = 0,
                     -- Previously used fallbacks = { "snippets", "buffer" } so
                     -- snippets/text only appeared when LSP returned nothing.
@@ -70,8 +67,6 @@ return {
                     }
                 },
                 path = {
-                    name = "Path",
-                    module = "blink.cmp.sources.path",
                     score_offset = 25,
                     -- When typing a path, prefer path entries; only fall back
                     -- to snippets/buffer if there are no path matches.
@@ -87,19 +82,15 @@ return {
                     }
                 },
                 buffer = {
-                    name = "Buffer",
                     enabled = true,
                     max_items = 3,
-                    module = "blink.cmp.sources.buffer",
                     min_keyword_length = 2,
                     score_offset = 15
                 },
                 snippets = {
-                    name = "snippets",
                     enabled = true,
                     max_items = 15,
                     min_keyword_length = 1,
-                    module = "blink.cmp.sources.snippets",
                     score_offset = 85,
                     -- Only show snippets after typing the trigger_text char,
                     -- e.g. with trigger_text=";", typing ";bash" shows the
@@ -134,12 +125,12 @@ return {
                                     -- transform_items runs before fuzzy matching.
                                     if item.label:sub(1, #trigger_text) ==
                                         trigger_text then
-                                        item.label =
-                                            item.label:sub(#trigger_text + 1)
+                                        item.label = item.label:sub(
+                                                         #trigger_text + 1)
                                         if item.filterText then
                                             item.filterText =
-                                                item.filterText:sub(#trigger_text +
-                                                                        1)
+                                                item.filterText:sub(
+                                                    #trigger_text + 1)
                                         end
                                     end
                                     item.textEdit = {

@@ -963,8 +963,8 @@ TypeScript inherits JavaScript, TypeScript React inherits TypeScript and JSX, et
 | `;mfn`     | Method with receiver                                  |
 | `;main`    | `func main() { }`                                     |
 | `;ife`     | `if err != nil { return err }`                        |
-| `;ifew`    | `if err != nil { log.Fatal(err) }`                    |
-| `;ifen`    | `if err != nil { return nil, err }`                   |
+| `;ifew`    | `if err != nil { return fmt.Errorf("op: %w", err) }`  |
+| `;ifen`    | `if err := call; err != nil { return err }`           |
 | `;errorf`  | `fmt.Errorf("msg: %w", err)`                          |
 | `;errors`  | `errors.New("message")`                               |
 | `;struct`  | Struct type declaration                               |

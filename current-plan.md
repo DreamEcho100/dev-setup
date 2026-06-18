@@ -91,6 +91,25 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Before committing, run `git reset` to clear the current staged index, then stage each group deliberately.
 - Do not commit the current staged index as-is; it contains an accidentally staged generated `.stylua.toml`. The working tree deletes that file, and `git reset` will clear the staged add.
 
+### Phase 8: Go Workspace and Lint Hotfix
+
+- Planned fix for `bootdotdev-learn-go`, where `hellogo` imports sibling local module `mystrings`.
+- Chosen pattern: add a root Go workspace for multi-module local development and make Neovim linting module-aware per buffer.
+- Updated `nvim-lint` Go behavior so `golangci-lint` runs from the nearest `go.mod`, then nearest `go.work`, then the file directory.
+- Applied `-buildvcs=false` only to Neovim's `golangci-lint` process to avoid VCS stamping failures without changing normal shell builds.
+- Kept `hellogo/go.mod` `replace github.com/DreamEcho100/mystrings => ../mystrings` intact.
+- Added `/home/viavi/Desktop/workspaces/github/DreamEcho100/bootdotdev-learn-go/go.work` with `./hellogo` and `./mystrings`.
+- Verified `go env GOWORK`, `gopls check`, `go test`, `go build -o /tmp/mfansible-hellogo .`, and direct `golangci-lint` for `hellogo`.
+
+### Phase 9: Balanced Go Neovim IDE
+
+- Re-scoped the Go workflow after user feedback that the custom linter path was too much for a Go and Neovim beginner.
+- Chosen pattern: keep `gopls` as the primary feedback loop and keep `golangci-lint` as a secondary on-save/manual check.
+- Simplified `nvim-lint` Go behavior to reuse its built-in `golangcilint` parser and version-specific output flags while only overriding the Go cwd/package target.
+- Reduced Go lint triggers to `BufWritePost` and manual `<leader>ll`; non-Go linting keeps the broader open/save/InsertLeave behavior.
+- Added `neotest-golang` with `gotestsum`, Go DAP test keymaps, and Overseer Go tasks for test/build/tidy/lint workflows.
+- Added `docs/neovim-tutorials-from-0-to-hero/15-go-development.md` and updated existing LSP, linting, debug/test/task docs to match the final Go workflow.
+
 ## Implementation Checklist
 
 - [x] Restore accidental artifacts.
@@ -109,6 +128,12 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - [x] Run syntax, dry-run, and health checks.
 - [x] Apply user decisions from follow-up review.
 - [x] Add detailed multi-step tutorial docs.
+- [x] Harden Neovim Go lint cwd and `golangci-lint` args for local multi-module repos.
+- [x] Add `bootdotdev-learn-go/go.work` after external workspace write approval.
+- [x] Verify Go workspace, `gopls`, build, and lint behavior for `bootdotdev-learn-go`.
+- [x] Rebalance Go linting toward `gopls` first and `golangci-lint` second.
+- [x] Add Go test/debug/task workflow integrations.
+- [x] Add beginner-focused Go development docs.
 - [ ] Split into logical commits after Git index access is available.
 
 ## Known Risks
@@ -120,6 +145,8 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Ansible check mode cannot fully validate symlink replacement semantics because removed paths still exist during simulation; the playbook skips symlink creation tasks in check mode after validating discovery and planned removals.
 - Java and .NET language plugins remain configured even when runtime installers are opt-in; those workflows need the runtime installed before use.
 - The current Git index may contain staged entries from the patching workflow. Clear the index with `git reset` before creating the final logical commits.
+- Go projects opened above their nearest `go.mod` need a `go.work` when sibling local modules should resolve together.
+- `neotest-golang` requires the Go tree-sitter parser and works best with `gotestsum`; Mason now installs `gotestsum`.
 
 ## Follow-Up Questions
 

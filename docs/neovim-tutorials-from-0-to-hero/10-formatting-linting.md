@@ -924,13 +924,26 @@ When would you use this manually rather than waiting for the auto-trigger?
 
 ### Auto-Trigger Events
 
-The linting is wired to three autocommand events:
+Most filetypes are wired to three autocommand events:
 
 ```lua
 local lint_augroup = vim.api.nvim_create_augroup("nvim-lint", {clear = true})
 vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost", "InsertLeave"}, {
     group = lint_augroup,
-    callback = function() lint.try_lint() end
+    callback = function(args)
+        if vim.bo[args.buf].filetype ~= "go" then
+            lint.try_lint()
+        end
+    end
+})
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+    group = lint_augroup,
+    pattern = "*.go",
+    callback = function()
+        -- Simplified: the real config computes the nearest go.mod/go.work root.
+        lint.try_lint("golangcilint", {cwd = computed_go_root})
+    end
 })
 ```
 
@@ -947,8 +960,12 @@ return to Normal mode). This gives near-real-time feedback: you type something,
 press Escape to review it, and diagnostics update immediately. It doesn't lint
 while you type (that would be extremely noisy), only when you pause.
 
-Combined: lint when you open a file, lint when you save, and lint each time you
-stop typing. Every meaningful editing transition is covered.
+Combined for most languages: lint when you open a file, lint when you save, and
+lint each time you stop typing. Every meaningful editing transition is covered.
+
+Go is intentionally quieter. `gopls` already provides fast diagnostics while you
+edit, so `golangci-lint` only runs after saving a `.go` file or when you press
+`<leader>ll`. This avoids slow or noisy lint feedback while learning Go.
 
 ### How Results Appear as Diagnostics
 
@@ -986,7 +1003,7 @@ Here's the complete linting setup, what each tool checks, and how to install it:
 |---|---|---|---|
 | Bash | shellcheck | POSIX compliance, quoting errors, command substitution pitfalls, unbound variables, deprecated syntax | `:MasonInstall shellcheck` |
 | Shell (sh) | shellcheck | Same as Bash; applies POSIX shell rules strictly | `:MasonInstall shellcheck` |
-| Go | golangci-lint | Meta-linter running 50+ Go linters: unused vars, shadowing, error handling, race conditions, complexity, security | `:MasonInstall golangci-lint` |
+| Go | golangci-lint | Secondary meta-linter for deeper checks beyond `gopls`; runs from the nearest `go.mod`/`go.work` root | `:MasonInstall golangci-lint` |
 | C | clangtidy | Clang-based: modernization, readability, performance, bugprone, portability | `:MasonInstall clang-tidy` |
 | C | cpplint | Google C++ style guide compliance | `:MasonInstall cpplint` |
 | C++ | clangtidy | Same as C + C++-specific smart pointer and STL checks | `:MasonInstall clang-tidy` |

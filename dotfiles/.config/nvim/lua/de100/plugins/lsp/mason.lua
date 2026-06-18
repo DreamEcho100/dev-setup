@@ -10,16 +10,16 @@ return {
                     icons = {
                         package_installed = "✓",
                         package_pending = "➜",
-                        package_uninstalled = "✗"
-                    }
-                }
+                        package_uninstalled = "✗",
+                    },
+                },
             })
-        end
+        end,
     },
     {
         "mason-org/mason-lspconfig.nvim",
         lazy = false,
-        dependencies = {"mason-org/mason.nvim", "neovim/nvim-lspconfig"},
+        dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
         config = function()
             require("mason-lspconfig").setup({
                 automatic_enable = false,
@@ -58,15 +58,15 @@ return {
                     "vtsls",
                     "vue_ls",
                     "yamlls",
-                    "zls"
-                }
+                    "zls",
+                },
             })
-        end
+        end,
     },
     {
         "WhoIsSethDaniel/mason-tool-installer.nvim",
         lazy = false,
-        dependencies = {"mason-org/mason.nvim"},
+        dependencies = { "mason-org/mason.nvim" },
         config = function()
             require("mason-tool-installer").setup({
                 ensure_installed = {
@@ -85,6 +85,7 @@ return {
                     "gofumpt",
                     "goimports",
                     "golangci-lint",
+                    "gotestsum",
                     "google-java-format",
                     "isort",
                     "java-debug-adapter",
@@ -103,12 +104,12 @@ return {
                     "stylua",
                     "taplo",
                     "yamllint",
-                    "yamlfmt"
+                    "yamlfmt",
                 },
                 auto_update = false,
                 run_on_start = true,
-                start_delay = 3000
+                start_delay = 3000,
             })
-        end
-    }
+        end,
+    },
 }
