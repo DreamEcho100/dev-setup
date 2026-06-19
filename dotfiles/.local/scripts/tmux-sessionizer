@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# tmux-sessionizer — fuzzy-pick a project directory and create/switch to its tmux session.
+#
+# Usage (standalone):  tmux-sessionizer
+# Usage (from Neovim): <C-f>  →  tmux neww tmux-sessionizer
+#
+# Directories to search (edit to taste):
+SEARCH_DIRS=(
+    "$HOME/Desktop/workspaces"
+    "$HOME/projects"
+    "$HOME"
+)
+
+# Build fzf candidate list: up to 3 levels deep, only real dirs, skip hidden
+selected=$(
+    find "${SEARCH_DIRS[@]}" \
+        -maxdepth 3 -mindepth 1 \
+        -type d \
+        \( -name ".git" -o -name "node_modules" -o -name "__pycache__" \
+           -o -name ".cache" -o -name "vendor" \) -prune \
+        -o -type d -print 2>/dev/null \
+    | fzf \
+        --prompt="  Project: " \
+        --height=40% \
+        --border=rounded \
+        --preview="ls -la {}" \
+        --preview-window=right:40%
+)
+
+# Bail if nothing was selected (user pressed Esc)
+[ -z "$selected" ] && exit 0
+
+# Derive a clean session name from the directory basename
+# Replace dots/spaces with underscores (tmux dislikes them in names)
+session_name=$(basename "$selected" | tr '. ' '__')
+
+# Create the session detached if it doesn't already exist
+if ! tmux has-session -t="$session_name" 2>/dev/null; then
+    tmux new-session -ds "$session_name" -c "$selected"
+fi
+
+# Switch to the session (works both inside and outside tmux)
+if [ -n "$TMUX" ]; then
+    tmux switch-client -t "$session_name"
+else
+    tmux attach-session -t "$session_name"
+fi

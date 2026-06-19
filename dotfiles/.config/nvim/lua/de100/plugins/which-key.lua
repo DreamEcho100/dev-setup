@@ -13,7 +13,7 @@ return {
             {"<leader>g", group = "git"}, {"<leader>h", group = "harpoon"},
             {"<leader>H", group = "http/rest"},
             {"<leader>l", group = "lsp/lint"},
-            {"<leader>m", group = "make/format"},
+            {"<leader>m", group = "make/cmake/format"},
             {"<leader>p", group = "pick/search"},
             {"<leader>r", group = "rename/refactor"},
             {"<leader>s", group = "splits/session"},

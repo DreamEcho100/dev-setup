@@ -11,6 +11,9 @@ return {
         "marilari88/neotest-vitest",
         "rouge8/neotest-rust",
         { "fredrikaverpil/neotest-golang", version = "*" },
+        -- C/C++ testing via CTest; supports GoogleTest, Catch2, doctest.
+        -- Requires cmake-tools.nvim to build before running tests.
+        "orjangj/neotest-ctest",
     },
     keys = {
         {
@@ -50,6 +53,7 @@ return {
                 require("neotest-vitest"),
                 require("neotest-rust"),
                 require("neotest-golang")({ runner = "gotestsum" }),
+                require("neotest-ctest").setup({}),
             },
         })
     end,

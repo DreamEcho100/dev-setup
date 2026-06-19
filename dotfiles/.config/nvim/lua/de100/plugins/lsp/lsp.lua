@@ -62,6 +62,14 @@ return {
 
                 opts.desc = "Signature help"
                 vim.keymap.set({"n", "i"}, "<leader>ls", vim.lsp.buf.signature_help, opts)
+
+                -- Header ↔ source switch for C/C++ (clangd only)
+                local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                if client and client.name == "clangd" then
+                    opts.desc = "Switch header/source (C/C++)"
+                    vim.keymap.set("n", "<leader>lh",
+                                   "<cmd>ClangdSwitchSourceHeader<CR>", opts)
+                end
                 -- Inlay hints are off by default due to a Neovim 0.12.2 bug where
                 -- LSP servers returning end-of-line hint positions crash the extmark
                 -- renderer. Toggle on/off with <leader>li when needed.
@@ -188,6 +196,23 @@ return {
                     }
                 }
             }
+        })
+
+        vim.lsp.config("clangd", {
+            cmd = {
+                "clangd",
+                "--background-index",
+                "--clang-tidy",
+                "--header-insertion=never",
+                "--completion-style=detailed",
+                "--function-arg-placeholders",
+                "--fallback-style=llvm",
+            },
+            init_options = {
+                usePlaceholders = true,
+                completeUnimported = true,
+                clangdFileStatus = true,
+            },
         })
 
         vim.lsp.config("cssls", {

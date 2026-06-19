@@ -70,6 +70,7 @@
       - latexmk
       - fzf
       - wordnet
+      - bear      # generates compile_commands.json for non-CMake C/C++ projects
 
     debian_java_packages:
       - default-jdk

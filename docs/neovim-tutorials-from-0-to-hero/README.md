@@ -94,8 +94,17 @@ docs/neovim-tutorials-from-0-to-hero/
 ├── 14-workflow-and-muscle-memory.md
 │   └── hardtime.nvim, hawtkeys.nvim, building speed, personal workflow tips
 │
-└── 15-go-development.md
-    └── Beginner-friendly Go setup: gopls, go.work, tests, linting, debugging
+├── 15-go-development.md
+│   └── Beginner-friendly Go setup: gopls, go.work, tests, linting, debugging
+│
+├── 16-tmux-from-scratch.md
+│   └── Complete tmux noob guide: sessions, windows, panes, copy mode, sessionizer
+│
+├── 17-tmux-neovim-workflow.md
+│   └── vim-tmux-navigator, clipboard bridge, <C-f> sessionizer, project patterns
+│
+└── 18-cpp-development.md
+    └── C/C++ setup: clangd, compile_commands.json, cmake-tools, codelldb, snippets
 ```
 
 Each file is self-contained — you can jump to any topic once you've got the
@@ -263,6 +272,10 @@ Each tutorial file follows the same structure:
 - Week 1: Files 04-06 (editing, files, splits)
 - Week 2: Files 07-09 (LSP, git, search)
 - Week 3+: Files 10-14 at your own speed
+- Language extras (pick what applies to you):
+  - File 15 — Go development
+  - Files 16-17 — tmux (noob-friendly) + tmux+Neovim integration
+  - File 18 — C/C++ development
 
 You'll feel slow for about a week. You'll feel _interesting_ by week two. You'll
 never want to go back by week four. This is normal.
