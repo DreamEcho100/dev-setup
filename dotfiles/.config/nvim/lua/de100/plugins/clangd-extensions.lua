@@ -4,8 +4,8 @@
 -- https://github.com/dchinmay2/clangd_extensions.nvim
 return {
     "dchinmay2/clangd_extensions.nvim",
-    ft = { "c", "cpp", "objc", "objcpp" },
-    dependencies = { "neovim/nvim-lspconfig" },
+    ft = {"c", "cpp", "objc", "objcpp"},
+    dependencies = {"neovim/nvim-lspconfig"},
     opts = {
         inlay_hints = {
             -- Disabled by default: Neovim 0.12.2 has a crash in the inlay hint
@@ -14,7 +14,7 @@ return {
             inline = false,
             show_parameter_hints = true,
             parameter_hints_prefix = "<- ",
-            other_hints_prefix = "=> ",
+            other_hints_prefix = "=> "
         },
         ast = {
             role_icons = {
@@ -23,7 +23,7 @@ return {
                 expression = "",
                 specifier = "",
                 statement = "",
-                ["template argument"] = "",
+                ["template argument"] = ""
             },
             kind_icons = {
                 Compound = "",
@@ -32,15 +32,32 @@ return {
                 PackExpansion = "",
                 TemplateTypeParm = "",
                 TemplateTemplateParm = "",
-                TemplateParamObject = "",
+                TemplateParamObject = ""
             },
-            highlights = { detail = "Comment" },
-        },
+            highlights = {detail = "Comment"}
+        }
     },
     keys = {
-        { "<leader>lA", "<cmd>ClangdAST<CR>",           ft = { "c", "cpp" }, desc = "Clangd AST view" },
-        { "<leader>lT", "<cmd>ClangdTypeHierarchy<CR>", ft = { "c", "cpp" }, desc = "Type hierarchy" },
-        { "<leader>lS", "<cmd>ClangdSymbolInfo<CR>",    ft = { "c", "cpp" }, desc = "Symbol info" },
-        { "<leader>lM", "<cmd>ClangdMemoryUsage<CR>",   ft = { "c", "cpp" }, desc = "Clangd memory usage" },
-    },
+        {
+            "<leader>lspcA",
+            "<cmd>ClangdAST<CR>",
+            ft = {"c", "cpp"},
+            desc = "Clangd AST view"
+        }, {
+            "<leader>lspcT",
+            "<cmd>ClangdTypeHierarchy<CR>",
+            ft = {"c", "cpp"},
+            desc = "Type hierarchy"
+        }, {
+            "<leader>lspcS",
+            "<cmd>ClangdSymbolInfo<CR>",
+            ft = {"c", "cpp"},
+            desc = "Symbol info"
+        }, {
+            "<leader>lspcM",
+            "<cmd>ClangdMemoryUsage<CR>",
+            ft = {"c", "cpp"},
+            desc = "Clangd memory usage"
+        }
+    }
 }

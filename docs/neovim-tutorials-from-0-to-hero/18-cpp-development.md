@@ -254,13 +254,13 @@ complete reference with C++-specific ones highlighted:
 
 | Key | Action | When to Use |
 |-----|--------|-------------|
-| `<leader>lh` | Switch header ↔ source | Flip between `.h` and `.cpp` |
-| `<leader>lA` | Clangd AST view | See the Abstract Syntax Tree for current node |
-| `<leader>lT` | Type hierarchy | See base/derived class relationships |
-| `<leader>lS` | Symbol info | Detailed type/location info for symbol under cursor |
-| `<leader>lM` | Clangd memory usage | Debug clangd if it's eating too much RAM |
+| `<leader>lsph` | Switch header ↔ source | Flip between `.h` and `.cpp` |
+| `<leader>lspA` | Clangd AST view | See the Abstract Syntax Tree for current node |
+| `<leader>lspT` | Type hierarchy | See base/derived class relationships |
+| `<leader>lspS` | Symbol info | Detailed type/location info for symbol under cursor |
+| `<leader>lspM` | Clangd memory usage | Debug clangd if it's eating too much RAM |
 
-### `<leader>lh` — Header/Source Switch
+### `<leader>lsph` — Header/Source Switch
 
 This is the most-used C++ specific key. In any C or C++ file:
 
@@ -326,11 +326,11 @@ A typical CMake project workflow:
 
 ```
 1. Open project in Neovim
-2. <leader>mg    → Configure (cmake -B build ...)
-3. <leader>mT    → Select build type (Debug / Release / RelWithDebInfo)
-4. <leader>ms    → Select build target (which binary to build)
-5. <leader>mb    → Build selected target
-6. <leader>mr    → Run selected target
+2. <leader>mcmg    → Configure (cmake -B build ...)
+3. <leader>mcmT    → Select build type (Debug / Release / RelWithDebInfo)
+4. <leader>mcms    → Select build target (which binary to build)
+5. <leader>mcmb    → Build selected target
+6. <leader>mcmr    → Run selected target
 ```
 
 ### cmake-tools.nvim Keymaps
@@ -339,14 +339,14 @@ All under `<leader>m` (the "make/cmake/format" group):
 
 | Key | Command | What It Does |
 |-----|---------|-------------|
-| `<leader>mg` | `:CMakeGenerate` | Configure the project (cmake -B build) |
-| `<leader>mb` | `:CMakeBuild` | Build the selected target |
-| `<leader>mr` | `:CMakeRun` | Run the selected target |
-| `<leader>mt` | `:CMakeTest` | Run CTest tests |
-| `<leader>mc` | `:CMakeClean` | Clean the build directory |
-| `<leader>ms` | `:CMakeSelectBuildTarget` | Pick which binary to build |
-| `<leader>mT` | `:CMakeSelectBuildType` | Debug / Release / RelWithDebInfo / MinSizeRel |
-| `<leader>mo` | `:CMakeOpen` | Open cmake-tools panel |
+| `<leader>mcmg` | `:CMakeGenerate` | Configure the project (cmake -B build) |
+| `<leader>mcmb` | `:CMakeBuild` | Build the selected target |
+| `<leader>mcmr` | `:CMakeRun` | Run the selected target |
+| `<leader>mcmt` | `:CMakeTest` | Run CTest tests |
+| `<leader>mcmc` | `:CMakeClean` | Clean the build directory |
+| `<leader>mcms` | `:CMakeSelectBuildTarget` | Pick which binary to build |
+| `<leader>mcmT` | `:CMakeSelectBuildType` | Debug / Release / RelWithDebInfo / MinSizeRel |
+| `<leader>mcmo` | `:CMakeOpen` | Open cmake-tools panel |
 | `<leader>mp` | (existing) | Format file (clang-format) |
 
 ### First CMake Project: Step by Step

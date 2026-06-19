@@ -67,7 +67,7 @@ return {
                 local client = vim.lsp.get_client_by_id(ev.data.client_id)
                 if client and client.name == "clangd" then
                     opts.desc = "Switch header/source (C/C++)"
-                    vim.keymap.set("n", "<leader>lh",
+                    vim.keymap.set("n", "<leader>lspch",
                                    "<cmd>ClangdSwitchSourceHeader<CR>", opts)
                 end
                 -- Inlay hints are off by default due to a Neovim 0.12.2 bug where
