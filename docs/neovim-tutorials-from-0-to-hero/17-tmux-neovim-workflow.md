@@ -468,13 +468,13 @@ opening Neovim, auto-session picks up the right session.
 
 | Key | Action |
 |-----|--------|
-| `<leader>qs` | Save current session manually |
-| `<leader>qr` | Restore session for current directory |
-| `<leader>qd` | Delete session for current directory |
-| `<leader>qf` | Find/switch sessions (Telescope picker) |
+| `<leader>ws` | Save current session manually |
+| `<leader>wr` | Restore session for current directory |
 
-Use `<leader>qf` as an alternative to `<C-f>` if you want to pick from
-previously saved Neovim sessions rather than arbitrary directories.
+> **Gotcha:** auto-session does NOT save sessions in certain directories:
+> `~/`, `~/Dev/`, `~/Downloads`, `~/Documents`, `~/Desktop/`. If `<leader>ws`
+> appears to do nothing from those paths, it's intentional — navigate into a
+> project subdirectory first, then save.
 
 ### tmux-resurrect / tmux-continuum (Optional)
 

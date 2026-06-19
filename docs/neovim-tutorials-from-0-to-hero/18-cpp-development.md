@@ -155,7 +155,7 @@ build system that actually invokes the compiler.
 
 ### Generating It: cmake-tools.nvim (the Neovim way)
 
-Once you're in Neovim on a CMake project, press `<leader>mg` (CMake generate).
+Once you're in Neovim on a CMake project, press `<leader>mcmg` (CMake generate).
 cmake-tools.nvim runs:
 ```bash
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -166,6 +166,14 @@ clangd detects the new file and re-indexes automatically.
 From then on, every time you save `CMakeLists.txt`, cmake-tools.nvim
 re-runs configure (`cmake_regenerate_on_save = true`) and the compile commands
 stay up to date.
+
+> **Limitation:** `cmake_regenerate_on_save` only watches the **root**
+> `CMakeLists.txt`. It does NOT fire for:
+> - `CMakeLists.txt` files in subdirectories
+> - Adding a new `.cpp` source file (add it to `CMakeLists.txt` AND re-run
+>   `<leader>mcmg`)
+> - Changes to `.h` header files (clangd handles headers directly — no cmake
+>   re-run needed)
 
 ### Verify clangd Is Reading It
 
@@ -277,7 +285,7 @@ is faster than any file picker for the header/source dance.
 You're editing `Foo.cpp`. Press `<leader>lh` to check the declaration, then
 `<leader>lh` again to come back.
 
-### `<leader>lA` — AST View
+### `<leader>lspcA` — AST View
 
 Opens a tree view of the Abstract Syntax Tree for the code near your cursor.
 This is mostly useful for:
@@ -393,21 +401,21 @@ int main() {
 nvim .
 ```
 
-Press `<leader>mg` → cmake-tools runs the configure step → `build/` directory
+Press `<leader>mcmg` → cmake-tools runs the configure step → `build/` directory
 is created with `compile_commands.json` → symlinked to project root →
 clangd re-indexes.
 
 **Step 5: Build and run**
 ```
-<leader>ms    → select "hello" target
-<leader>mb    → build it (overseer opens a terminal panel)
-<leader>mr    → run it (should print "Hello, C++ in Neovim!")
+<leader>mcms    → select "hello" target
+<leader>mcmb    → build it (overseer opens a terminal panel)
+<leader>mcmr    → run it (should print "Hello, C++ in Neovim!")
 ```
 
 **Step 6: Switch to Debug build**
 ```
-<leader>mT    → select "Debug"
-<leader>mb    → rebuild with -g symbols (needed for debugger)
+<leader>mcmT    → select "Debug"
+<leader>mcmb    → rebuild with -g symbols (needed for debugger)
 ```
 
 ### CMakeLists.txt Best Practices
@@ -780,7 +788,7 @@ Build type Debug includes `-g` (debug symbols) and `-O0` (no optimization,
 so stepping makes sense). **Never debug a Release build** — it's been optimized
 so heavily that stepping through code has nothing to do with what you wrote.
 
-Set the Debug build type in Neovim with `<leader>mT` → select "Debug".
+Set the Debug build type in Neovim with `<leader>mcmT` → select "Debug".
 
 ### DAP Keymaps (From Chapter 10)
 
@@ -836,8 +844,8 @@ dap.configurations.c = dap.configurations.cpp
 
 ### A Debugging Session Walkthrough
 
-1. Set the build type to Debug: `<leader>mT` → "Debug"
-2. Build: `<leader>mb`
+1. Set the build type to Debug: `<leader>mcmT` → "Debug"
+2. Build: `<leader>mcmb`
 3. Open the source file you want to debug
 4. Set a breakpoint: `<F9>` on the line where you want to stop
 5. Start debugging: `<F5>`
@@ -938,8 +946,8 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 
 **Build and configure CTest:**
 ```
-<leader>mg    → configure (cmake generates build/ with CTest support)
-<leader>mb    → build (compiles the test binary)
+<leader>mcmg    → configure (cmake generates build/ with CTest support)
+<leader>mcmb    → build (compiles the test binary)
 ```
 
 ### neotest Keymaps
@@ -957,7 +965,7 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 ### The Test Workflow
 
 1. Write tests using `;gtest` or `;gtest_f` snippets
-2. Build: `<leader>mb`
+2. Build: `<leader>mcmb`
 3. Position cursor inside a test function
 4. Run: `<leader>tr` (run nearest test)
 5. A green gutter marker appears for pass, red for fail
@@ -969,7 +977,7 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 Unlike Go's `go test` which compiles automatically, CTest requires the test
 binary to already be compiled. The workflow is:
 1. Code change
-2. `<leader>mb` (build)
+2. `<leader>mcmb` (build)
 3. `<leader>tl` (run last test)
 
 The build step is manual. Watch mode (`<leader>tw`) doesn't auto-compile —
@@ -1026,7 +1034,97 @@ uses 100 as a reasonable compromise. Adjust it in `cpp.lua` if your project's
 
 ---
 
-## Part 11 — Troubleshooting
+## Part 11 — Projects Without a Build System
+
+Not every C/C++ project uses CMake or Make. Sometimes you're doing a quick
+experiment, working with a custom shell script build, or maintaining a
+header-only library. Clangd still needs to know *how* a file is compiled to
+give accurate completions and type inference — without that, it falls back to
+guessing and gives you constant false-positive errors.
+
+There are three options, from simplest to most powerful:
+
+### Option 1 — `compile_flags.txt` (no tooling needed)
+
+Create this file in the project root, one compiler flag per line:
+
+```
+-std=c++20
+-I./include
+-Wall
+-Wextra
+```
+
+Clangd reads it automatically. No build step needed.
+
+**Limitation:** the same flags apply to every file in the entire project tree.
+Fine for single-directory projects, quick experiments, or learning exercises.
+
+### Option 2 — `.clangd` Config File (per-project control)
+
+More powerful than `compile_flags.txt` — can add, remove, or override flags,
+and works per-directory:
+
+```yaml
+# .clangd at project root
+CompileFlags:
+  Add: [-std=c++20, -I./include, -DDEBUG]
+  Remove: [-W*]          # strip unwanted flags the compiler injects
+  Compiler: clang++      # tell clangd which compiler's stdlib to use
+```
+
+Useful when different subdirectories use different standards (e.g. a C
+directory alongside a C++ directory), or when clangd is picking up wrong
+system-default flags.
+
+### Option 3 — Bear (works with ANY build command, including shell scripts)
+
+Bear intercepts compiler `exec()` calls via `LD_PRELOAD` and records them
+into `compile_commands.json`. It doesn't care how the build is invoked:
+
+```bash
+bear -- make                            # Makefile
+bear -- sh build.sh                     # your custom shell script
+bear -- ./build.sh                      # executable shell script
+bear -- bash -c "gcc src/*.c -o app"    # inline command
+bear -- gcc -std=c++20 src/main.cpp -o main   # single file
+```
+
+Install: `sudo apt install bear`
+
+After running Bear once, `compile_commands.json` is created. You only need to
+re-run it when you **add/remove source files or change compiler flags** —
+editing existing files doesn't require it.
+
+After Bear generates the file (or after writing `compile_flags.txt`), reload
+clangd to pick up the changes:
+```
+:LspRestart
+```
+
+### How Clangd Picks Which One to Use
+
+Priority order (first match wins):
+
+1. `compile_commands.json` in the project root or `build/` — cmake-tools or Bear generate this
+2. `compile_flags.txt` in the file's directory, walking up to root
+3. `.clangd` `CompileFlags` block
+4. Fallback: clangd guesses from file content — expect missing includes and wrong types
+
+### Quick Reference
+
+| Scenario | Best approach |
+|----------|--------------|
+| Learning, quick experiments | `compile_flags.txt` with `-std=c++20 -I.` |
+| Header-only library | `compile_flags.txt` |
+| Custom `sh` / `bash` build script | `bear -- sh build.sh` |
+| Makefile project | `bear -- make` |
+| CMake project | cmake-tools.nvim auto-generates via `<leader>mcmg` |
+| Mixed flags per subdirectory | `.clangd` config file |
+
+---
+
+## Part 12 — Troubleshooting
 
 ### clangd Isn't Attaching
 
@@ -1037,7 +1135,7 @@ shows clangd in the server list but no "attached" line.
 ```bash
 ls -la compile_commands.json
 ```
-If no: run `<leader>mg` (cmake configure) or `bear -- make`.
+If no: run `<leader>mcmg` (cmake configure) or `bear -- make`.
 
 **Check 2:** Is clangd installed?
 ```bash
@@ -1063,7 +1161,7 @@ Scroll to the bottom. Common errors:
 2. The wrong `--sysroot` or `-I` path is in compile_commands.json
 3. clang is not installed (clangd ships headers separately from gcc)
 
-**Fix 1:** Run `<leader>mg` to regenerate compile commands.
+**Fix 1:** Run `<leader>mcmg` to regenerate compile commands.
 
 **Fix 2:** Check if `clang` itself is installed:
 ```bash
@@ -1105,9 +1203,58 @@ rm -rf .cache/clangd/
 ```
 Then restart Neovim and wait for re-index.
 
+### Multi-subproject Repos (cmake-tools uses the wrong root)
+
+**Symptom:** You `nvim .` from a repo that has multiple independent subprojects
+(each with its own `CMakeLists.txt`), navigate into one, press `<leader>mcmb`,
+and cmake-tools errors: "Cannot find CMakeLists.txt at cwd (repo-root)".
+
+**Why it happens:** cmake-tools stores `config.cwd` once at startup
+(`vim.loop.cwd()` = the directory where you opened Neovim). It does not
+automatically update when you navigate to a subdirectory.
+
+**What the config does automatically:** The `core/project-root.lua` BufEnter
+autocmd changes the **global cwd** (`:cd`) to the nearest project root when
+you open any file. This fixes Telescope, grep, and other tools that read
+`vim.fn.getcwd()` dynamically. However, **cmake-tools caches its own path
+internally** and doesn't reliably react to `:cd`. You need to tell it manually.
+
+**The manual workflow:**
+
+```
+# Step 1: make sure cwd is correct (project-root.lua usually does this automatically)
+:pwd              → check it shows your subproject, e.g. .../projects/0-starter
+<leader>mcd       → if :pwd is wrong, press this to force-cd to the nearest root
+
+# Step 2: tell cmake-tools about the new root — pick one:
+<leader>mcmg          → re-run configure; cmake-tools re-reads cwd and picks up the right project
+:CMakeSelectCwd .     → explicitly set cmake-tools cwd to current directory, then configure
+```
+
+Verify it worked:
+```
+:CMakeInfo        → should show the correct project path and build directory
+```
+
+**Project structure example:**
+```
+build-your-own-game/        ← you ran nvim . here
+├── .git
+├── projects/
+│   ├── 0-starter/          ← has its own CMakeLists.txt
+│   │   └── src/main.cpp    ← open this → :pwd auto-updates, then run <leader>mcmg
+│   └── 1-chapter1/
+│       └── src/main.cpp    ← open this → :pwd auto-updates, then run <leader>mcmg
+└── (no CMakeLists.txt at root)
+```
+
+**Summary:** `:cd` + `<leader>mcmg` is the two-step reset. Everything else
+(Telescope, grep, overseer) follows `:cd` automatically; only cmake-tools
+needs the explicit re-configure.
+
 ### cmake-tools.nvim Doesn't Detect CMakeLists.txt
 
-**Symptom:** `<leader>mg` does nothing, or cmake-tools commands aren't available.
+**Symptom:** `<leader>mcmg` does nothing, or cmake-tools commands aren't available.
 
 **Check:** cmake-tools.nvim loads lazily when `ft = {"c", "cpp", "cmake"}`.
 Open a `.cpp` file first, or a `CMakeLists.txt` file. The plugin may not be
@@ -1117,10 +1264,10 @@ loaded if you opened Neovim directly on a Lua file.
 ```
 :pwd
 ```
-If you opened Neovim in a subdirectory of the project, cmake-tools may not
-find the root `CMakeLists.txt`. Change to the project root:
+If the auto-detection didn't fire, run `<leader>mcd` to manually set the root,
+or change it explicitly:
 ```
-:cd /path/to/project
+:cd /path/to/subproject
 ```
 
 ### Header/Source Switch (`<leader>lh`) Not Working
@@ -1134,7 +1281,7 @@ find the root `CMakeLists.txt`. Change to the project root:
 
 **Check:** The files must be in the project that clangd knows about
 (i.e., appear in `compile_commands.json`). If you just created a new file,
-re-run `<leader>mg` to regenerate compile commands.
+re-run `<leader>mcmg` to regenerate compile commands.
 
 ### Snippets Not Triggering
 
@@ -1154,7 +1301,7 @@ ls ~/.config/nvim/snippets/
 
 ---
 
-## Part 12 — The Full Workflow Example
+## Part 13 — The Full Workflow Example
 
 Let's put everything together. You're starting on a new feature for a C++
 project that already has tests.
@@ -1169,8 +1316,8 @@ nvim .
 
 In Neovim:
 ```
-<leader>mg    → configure cmake, generate compile_commands.json
-<leader>mT    → select "Debug" build type
+<leader>mcmg    → configure cmake, generate compile_commands.json
+<leader>mcmT    → select "Debug" build type
 ```
 
 ### The Development Loop
@@ -1180,7 +1327,7 @@ In Neovim:
    ↓
 2. Write test (;gtest snippet)    ← TDD: write test first
    ↓
-3. <leader>mb                     ← Build (overseer shows output)
+3. <leader>mcmb                     ← Build (overseer shows output)
    ↓
 4. <leader>tr                     ← Run nearest test
    ↓
@@ -1188,7 +1335,7 @@ In Neovim:
    ↓
 6. Implement the feature           ← LSP completions, inlay hints help
    ↓
-7. <leader>mb                     ← Build again
+7. <leader>mcmb                     ← Build again
    ↓
 8. <leader>tl                     ← Re-run last test
    ↓
@@ -1236,7 +1383,7 @@ auto-implementation options (clangd can generate the stub in `.cpp`).
 | VSCode Workflow | This Neovim Workflow |
 |----------------|---------------------|
 | cmake-tools extension → status bar buttons | `<leader>m*` keymaps |
-| "Build" button in status bar | `<leader>mb` |
+| "Build" button in status bar | `<leader>mcmb` |
 | "Debug" F5 | `<F5>` (same!) |
 | Breakpoints in gutter (click) | `<F9>` (toggle) |
 | "Go to Header/Source" (right-click) | `<leader>lh` |
@@ -1266,10 +1413,10 @@ Do these in order — each builds on the previous.
    - `add_executable(practice src/main.cpp)`
 3. Create `src/main.cpp` with a simple program that prints something
 4. Open Neovim: `nvim .`
-5. Press `<leader>mg` to configure
+5. Press `<leader>mcmg` to configure
 6. Verify `compile_commands.json` exists: `:!ls compile_commands.json`
-7. Press `<leader>mb` to build
-8. Press `<leader>mr` to run it
+7. Press `<leader>mcmb` to build
+8. Press `<leader>mcmr` to run it
 
 **Goal:** End with a working CMake project that clangd understands.
 
@@ -1307,8 +1454,8 @@ In the project from Exercise 1:
        std::cout << v[i] << '\n';           // out-of-bounds at i=3
    }
    ```
-2. Set build type to Debug: `<leader>mT` → "Debug"
-3. Build: `<leader>mb`
+2. Set build type to Debug: `<leader>mcmT` → "Debug"
+3. Build: `<leader>mcmb`
 4. Set a breakpoint on the `std::cout` line: `<F9>`
 5. Launch debugger: `<F5>`
 6. Open DAP UI: `<leader>du`
@@ -1337,7 +1484,7 @@ In the project from Exercise 1:
    ```
 2. Create `tests/calculator_test.cpp` using the `;gtest` snippet
 3. Write 2-3 test cases for your Calculator class
-4. Build: `<leader>mb`
+4. Build: `<leader>mcmb`
 5. Run nearest test: `<leader>tr` (cursor inside a test function)
 6. Run all tests: `<leader>ta`
 7. Intentionally break a test (change the expected value) — observe the red
