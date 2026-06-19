@@ -54,7 +54,7 @@ How to's
         {"kristijanhusak/vim-dadbod-completion", ft = {"sql", "mysql", "plsql"}}
     },
     keys = { -- Mapping to toggle DBUI
-        {"<leader>daplbu", "<cmd>DBUIToggle<CR>", desc = "Toggle DBUI"}
+        {"<leader>dadui", "<cmd>DBUIToggle<CR>", desc = "Toggle DBUI"}
     },
     cmd = {"DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer"},
     init = function()

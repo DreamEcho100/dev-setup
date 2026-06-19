@@ -770,9 +770,9 @@ DynamoDB      -- dynamodb://region
 
 If your database is on the list, dadbod can talk to it. For each adapter, the underlying tool (psql, mysql, mongo, redis-cli, etc.) needs to be installed. dadbod shells out to these tools rather than implementing database protocols itself.
 
-### `<leader>daplbu` — Toggle DBUI Panel
+### `<leader>dadui` — Toggle DBUI Panel
 
-Your config maps `<leader>daplbu` to toggle the dadbod-ui sidebar. Press it once: the DBUI panel opens on the left side. Press it again: it closes.
+Your config maps `<leader>dadui` to toggle the dadbod-ui sidebar. Press it once: the DBUI panel opens on the left side. Press it again: it closes.
 
 When DBUI opens for the first time, you'll see something like:
 
@@ -808,7 +808,7 @@ Navigate the tree with `j`/`k`. Press `Enter` or `o` on a table to open a query 
 
 **Method 1: Through the DBUI interface**
 
-Press `<leader>daplbu` to open DBUI, then navigate to `+ Add connection` and press Enter. DBUI will prompt you for:
+Press `<leader>dadui` to open DBUI, then navigate to `+ Add connection` and press Enter. DBUI will prompt you for:
 
 - A display name for the connection
 - The connection URL
@@ -1193,7 +1193,7 @@ A common pattern is to use conn-manager for SSH tunnels and then connect dadbod-
 1. Open conn-manager panel
 2. Navigate to `staging-db-tunnel`
 3. Press `t` to start the SSH tunnel (now listening on localhost:15432)
-4. Open dadbod-ui (`<leader>daplbu`)
+4. Open dadbod-ui (`<leader>dadui`)
 5. Connect to `postgresql://user:password@localhost:15432/staging_db`
 
 You're querying the staging database through a secure SSH tunnel, managed entirely within Neovim. No separate terminal windows, no manual tunnel commands to remember.
@@ -1251,7 +1251,7 @@ my-api-project/
   README.md
 ```
 
-With this structure, press `<leader>daplbu` to open your DB while editing `users.ts`, have your `users.http` open in a split, execute requests to test the API, and reference them as documentation. The entire API development workflow is within Neovim.
+With this structure, press `<leader>dadui` to open your DB while editing `users.ts`, have your `users.http` open in a split, execute requests to test the API, and reference them as documentation. The entire API development workflow is within Neovim.
 
 For environment variables in kulala (switching between local, staging, production):
 
@@ -1318,7 +1318,7 @@ In your Neovim session, you have:
 
 Your LSP shows a warning on line 89 of `auth.service.ts` — a potential null dereference. You navigate there with `<leader>e` (which opens the diagnostics list), see the issue, and fix it.
 
-You want to test this against a real database. You press `<leader>daplbu`. The dadbod-ui panel slides open on the left. You expand your `local-postgres` connection, navigate to the `sessions` table, and press Enter. A query buffer opens:
+You want to test this against a real database. You press `<leader>dadui`. The dadbod-ui panel slides open on the left. You expand your `local-postgres` connection, navigate to the `sessions` table, and press Enter. A query buffer opens:
 
 ```sql
 SELECT *
@@ -1338,7 +1338,7 @@ ORDER BY created_at DESC
 LIMIT 20
 ```
 
-Execute it. Two sessions come back — both should have been invalidated on logout. You've confirmed the bug. Close dadbod-ui (`<leader>daplbu` again).
+Execute it. Two sessions come back — both should have been invalidated on logout. You've confirmed the bug. Close dadbod-ui (`<leader>dadui` again).
 
 You have the `.http` file open in another window:
 
@@ -1726,7 +1726,7 @@ SQL
 
 1. Open Neovim in any directory.
 
-2. Press `<leader>daplbu` to open the DBUI panel.
+2. Press `<leader>dadui` to open the DBUI panel.
 
 3. Add a new connection. For SQLite, the URL is:
 
@@ -1923,7 +1923,7 @@ Adjust your layout and make it the permanent setup for this project.
 |  ~/.local/share/nvim/sessions/   Session files location          |
 +------------------------------------------------------------------+
 |  DATABASE (dadbod-ui)                                            |
-|  <leader>daplbu     Toggle DBUI panel                               |
+|  <leader>dadui     Toggle DBUI panel                               |
 |  <leader>S       Execute SQL query (in SQL buffer)               |
 |  <leader>W       Save current query                              |
 |  o/Enter         Open resource / expand tree node                |

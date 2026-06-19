@@ -256,12 +256,12 @@ In VSCode you right-click a breakpoint and choose "Edit Breakpoint" to add a con
 
 ```lua
 -- In your keybindings or dap config:
-vim.keymap.set("n", "<leader>daplbc", function()
+vim.keymap.set("n", "<leader>dapb", function()
   require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end, { desc = "DAP: Conditional breakpoint" })
 ```
 
-When you press `<leader>daplbc`, you get a prompt in the command line. Type any expression that evaluates to a boolean in your language:
+When you press `<leader>dapb`, you get a prompt in the command line. Type any expression that evaluates to a boolean in your language:
 
 ```
 Breakpoint condition: i > 10
@@ -271,23 +271,25 @@ Breakpoint condition: response.status != 200
 
 Conditional breakpoints appear in the gutter with a different sign (often `C` or a different color). When the debugger runs and reaches that line, it only pauses if the condition evaluates to true. This is incredibly useful for loops where you only want to stop when a specific iteration fails.
 
-### Log Points (Message Breakpoints)
-
-Instead of pausing execution, a log point prints a message. This is the equivalent of adding a `console.log` without modifying your source file:
-
-```lua
-vim.keymap.set("n", "<leader>daplbl", function()
-  require("dap").set_breakpoint(nil, nil, vim.fn.input("Log message: "))
-end, { desc = "DAP: Log breakpoint" })
-```
-
-Usage example:
-
-```
-Log message: Processing user {user.id} with status {response.status}
-```
-
-The curly-brace expressions are evaluated in the context of your program and the result is printed to the Debug Console (the Output/REPL panel) without stopping execution.
+> Debrycated
+>
+> ### Log Points (Message Breakpoints)
+>
+> Instead of pausing execution, a log point prints a message. This is the equivalent of adding a `console.log` without modifying your source file:
+>
+> ```lua
+> vim.keymap.set("n", "<leader>daplbl", function()
+>   require("dap").set_breakpoint(nil, nil, vim.fn.input("Log message: "))
+> end, { desc = "DAP: Log breakpoint" })
+> ```
+>
+> Usage example:
+>
+> ```
+> Log message: Processing user {user.id} with status {response.status}
+> ```
+>
+> The curly-brace expressions are evaluated in the context of your program and the result is printed to the Debug Console (the Output/REPL panel) without stopping execution.
 
 ### Listing and Managing Breakpoints
 
@@ -2135,7 +2137,7 @@ The race condition is confirmed: drain resolves before the concurrent adds finis
 | `<F3>`           | Step out                 | VSCode uses Shift+F11                       |
 | `<F7>`           | Toggle DAP UI            | No VSCode equivalent (UI is always visible) |
 | `<leader>daptb`  | Toggle breakpoint        | VSCode: click in gutter                     |
-| `<leader>daplbc` | Conditional breakpoint   | VSCode: right-click > Edit Breakpoint       |
+| `<leader>dapb`   | Conditional breakpoint   | VSCode: right-click > Edit Breakpoint       |
 | `<leader>daplbl` | Log point                | VSCode: right-click > Add Logpoint          |
 | `<leader>dh`     | Hover variable value     | VSCode: mouse hover                         |
 | `<leader>dp`     | Preview selection        | VSCode: mouse hover on selection            |
@@ -2625,7 +2627,7 @@ These exercises reinforce the concepts from this chapter. Each one is designed t
 Here is what you now know:
 
 - **Architecture:** DAP is a protocol. nvim-dap is a client. The adapters are the same binaries VSCode uses. Mason installs them.
-- **Breakpoints:** `<leader>daptb` to toggle, `<leader>daplbc` for conditional. They persist across sessions within the same Neovim instance.
+- **Breakpoints:** `<leader>daptb` to toggle, `<leader>dapb` for conditional. They persist across sessions within the same Neovim instance.
 - **Stepping:** `<F5>` start/continue, `<F1>` step-into, `<F2>` step-over, `<F3>` step-out. These mirror VSCode's F11/F10/Shift+F11 but in more logical positions.
 - **Inspection:** Scopes panel for passive inspection, `<leader>dh` for hover, `<leader>dlr` for the REPL. The REPL is a real Neovim buffer.
 - **Per-language:** Each language has an adapter (Mason) and configurations (Lua or `.vscode/launch.json`). The Go setup is the most automated (nvim-dap-go handles everything). Rust needs a build step before the adapter can find the binary.

@@ -478,7 +478,7 @@ dotfiles/.config/nvim/
 │           │                      REST Client extension. Run requests with <leader>Hr.
 │           │
 │           ├── dadbod-ui.lua   ← SQL client. Connect to Postgres, MySQL, SQLite,
-│           │                      run queries, browse tables. <leader>daplb.
+│           │                      run queries, browse tables. <leader>dadui.
 │           │
 │           ├── mini.lua        ← mini.nvim collection: mini.surround (add/change/
 │           │                      delete surrounding brackets/quotes), mini.ai
