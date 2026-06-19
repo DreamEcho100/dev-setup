@@ -40,14 +40,14 @@ dlv version
 
 VS Code comparison:
 
-| VS Code feature | Neovim equivalent |
-|---|---|
-| Go extension | `gopls` through `nvim-lspconfig` |
-| Problems panel | diagnostics, `<leader>D`, Trouble |
-| Format on save | Conform running `goimports` and `gofumpt` |
-| Test explorer | `neotest-golang` |
-| Debug panel | `nvim-dap` plus `nvim-dap-go` |
-| Tasks | `overseer.nvim` |
+| VS Code feature | Neovim equivalent                         |
+| --------------- | ----------------------------------------- |
+| Go extension    | `gopls` through `nvim-lspconfig`          |
+| Problems panel  | diagnostics, `<leader>D`, Trouble         |
+| Format on save  | Conform running `goimports` and `gofumpt` |
+| Test explorer   | `neotest-golang`                          |
+| Debug panel     | `nvim-dap` plus `nvim-dap-go`             |
+| Tasks           | `overseer.nvim`                           |
 
 ---
 
@@ -104,18 +104,18 @@ Code Go extension.
 
 Common keys:
 
-| Action | Key |
-|---|---|
-| Go to definition | `gd` |
-| Go to declaration | `gD` |
-| Go to implementation | `gi` |
-| Go to type definition | `gt` |
+| Action                  | Key          |
+| ----------------------- | ------------ |
+| Go to definition        | `gd`         |
+| Go to declaration       | `gD`         |
+| Go to implementation    | `gi`         |
+| Go to type definition   | `gt`         |
 | Code action / quick fix | `<leader>ca` |
-| Rename symbol | `<leader>rn` |
-| Hover docs | `K` |
-| Signature help | `<leader>ls` |
-| Toggle inlay hints | `<leader>li` |
-| Buffer diagnostics | `<leader>D` |
+| Rename symbol           | `<leader>rn` |
+| Hover docs              | `K`          |
+| Signature help          | `<leader>ls` |
+| Toggle inlay hints      | `<leader>li` |
+| Buffer diagnostics      | `<leader>D`  |
 | Current line diagnostic | `<leader>df` |
 
 Useful Go code actions:
@@ -219,11 +219,11 @@ go test -run TestName ./...
 
 Neovim test UI:
 
-| Action | Key |
-|---|---|
-| Run nearest test | `<leader>tN` |
-| Run file tests | `<leader>tF` |
-| Open test output | `<leader>tO` |
+| Action              | Key          |
+| ------------------- | ------------ |
+| Run nearest test    | `<leader>tN` |
+| Run file tests      | `<leader>tF` |
+| Open test output    | `<leader>tO` |
 | Toggle test summary | `<leader>tS` |
 
 The adapter is `neotest-golang`, using `gotestsum` when installed. It supports
@@ -243,22 +243,22 @@ Typical workflow:
 
 The debugger is Delve through `nvim-dap-go`.
 
-| Action | Key |
-|---|---|
-| Start/continue | `F5` |
-| Step into | `F1` |
-| Step over | `F2` |
-| Step out | `F3` |
-| Toggle breakpoint | `<leader>dbt` |
-| Debug nearest Go test | `<leader>dgt` |
-| Debug last Go test | `<leader>dgT` |
-| Toggle debug UI | `F7` |
+| Action                | Key             |
+| --------------------- | --------------- |
+| Start/continue        | `F5`            |
+| Step into             | `F1`            |
+| Step over             | `F2`            |
+| Step out              | `F3`            |
+| Toggle breakpoint     | `<leader>daptb` |
+| Debug nearest Go test | `<leader>dgt`   |
+| Debug last Go test    | `<leader>dgT`   |
+| Toggle debug UI       | `F7`            |
 
 Beginner debugging flow:
 
 1. Open a Go test file.
 2. Put cursor inside a test.
-3. Press `<leader>dbt` on a line you want to stop at.
+3. Press `<leader>daptb` on a line you want to stop at.
 4. Press `<leader>dgt`.
 5. Use `F2` to step over and `F5` to continue.
 

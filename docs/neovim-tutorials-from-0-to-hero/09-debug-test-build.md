@@ -123,7 +123,7 @@ Mason is a package manager for LSP servers, linters, formatters, and debug adapt
 
 ## nvim-dap-ui Layout
 
-When you toggle the debug UI with `<F7>` (or `<leader>dbt` for breakpoints separately), nvim-dap-ui opens several panels arranged around your code. Here is the default layout:
+When you toggle the debug UI with `<F7>` (or `<leader>daptb` for breakpoints separately), nvim-dap-ui opens several panels arranged around your code. Here is the default layout:
 
 ```
 ┌──────────────────────────────┬────────────────────────────────────────────┐
@@ -224,12 +224,12 @@ This prints the adapter table. If the adapter for your language is missing, the 
 
 ## Setting Breakpoints
 
-In VSCode you click the red circle in the gutter. In Neovim you press `<leader>dbt` while your cursor is on the line where you want to break. A red circle (or `B` sign depending on your terminal) appears in the sign column.
+In VSCode you click the red circle in the gutter. In Neovim you press `<leader>daptb` while your cursor is on the line where you want to break. A red circle (or `B` sign depending on your terminal) appears in the sign column.
 
 ### Basic Breakpoints
 
 ```
-<leader>dbt    Toggle breakpoint on current line
+<leader>daptb    Toggle breakpoint on current line
 ```
 
 This is a toggle — pressing it on a line that already has a breakpoint removes it. Pressing it on a line without one adds it. The sign column updates immediately, before any debug session has even started. You can set all your breakpoints before you launch.
@@ -256,12 +256,12 @@ In VSCode you right-click a breakpoint and choose "Edit Breakpoint" to add a con
 
 ```lua
 -- In your keybindings or dap config:
-vim.keymap.set("n", "<leader>dbc", function()
+vim.keymap.set("n", "<leader>daplbc", function()
   require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end, { desc = "DAP: Conditional breakpoint" })
 ```
 
-When you press `<leader>dbc`, you get a prompt in the command line. Type any expression that evaluates to a boolean in your language:
+When you press `<leader>daplbc`, you get a prompt in the command line. Type any expression that evaluates to a boolean in your language:
 
 ```
 Breakpoint condition: i > 10
@@ -276,7 +276,7 @@ Conditional breakpoints appear in the gutter with a different sign (often `C` or
 Instead of pausing execution, a log point prints a message. This is the equivalent of adding a `console.log` without modifying your source file:
 
 ```lua
-vim.keymap.set("n", "<leader>dbl", function()
+vim.keymap.set("n", "<leader>daplbl", function()
   require("dap").set_breakpoint(nil, nil, vim.fn.input("Log message: "))
 end, { desc = "DAP: Log breakpoint" })
 ```
@@ -405,7 +405,7 @@ In VSCode: F5. Resumes execution until the next breakpoint. If there are no more
 You will also want these occasionally:
 
 ```lua
-vim.keymap.set("n", "<leader>dr", require("dap").restart, { desc = "DAP: Restart" })
+vim.keymap.set("n", "<leader>dapr", require("dap").restart, { desc = "DAP: Restart" })
 vim.keymap.set("n", "<leader>dq", require("dap").terminate, { desc = "DAP: Terminate" })
 ```
 
@@ -672,7 +672,7 @@ node --inspect-brk index.js
 # Debugger listening on ws://127.0.0.1:9229/...
 ```
 
-In Neovim, set a breakpoint in a route handler with `<leader>dbt`, then press `<F5>` and choose "Attach (port 9229)". Make a request to your server (e.g., with curl or your browser), and Neovim pauses at your breakpoint.
+In Neovim, set a breakpoint in a route handler with `<leader>daptb`, then press `<F5>` and choose "Attach (port 9229)". Make a request to your server (e.g., with curl or your browser), and Neovim pauses at your breakpoint.
 
 ### Python
 
@@ -1895,7 +1895,7 @@ def get_user(user_id):
 
 **Step 4: Set a breakpoint**
 
-Move your cursor to the line inside the route handler and press `<leader>dbt`:
+Move your cursor to the line inside the route handler and press `<leader>daptb`:
 
 ```python
 @app.route("/users/<int:user_id>")
@@ -1986,7 +1986,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 **Step 2: Set a breakpoint**
 
-With cursor on the `user, err := ...` line, press `<leader>dbt`.
+With cursor on the `user, err := ...` line, press `<leader>daptb`.
 
 **Step 3: Launch**
 
@@ -2081,7 +2081,7 @@ describe("Queue", () => {
 
 **Step 2: Set a breakpoint inside the test**
 
-Move your cursor to `await queue.drain()` and press `<leader>dbt`.
+Move your cursor to `await queue.drain()` and press `<leader>daptb`.
 
 **Step 3: Debug just this test**
 
@@ -2127,33 +2127,33 @@ The race condition is confirmed: drain resolves before the concurrent adds finis
 
 ### DAP Keybindings
 
-| Keybinding    | Action                   | Notes                                       |
-| ------------- | ------------------------ | ------------------------------------------- |
-| `<F5>`        | Continue / Start session | Same as VSCode F5                           |
-| `<F1>`        | Step into                | VSCode uses F11                             |
-| `<F2>`        | Step over                | VSCode uses F10                             |
-| `<F3>`        | Step out                 | VSCode uses Shift+F11                       |
-| `<F7>`        | Toggle DAP UI            | No VSCode equivalent (UI is always visible) |
-| `<leader>dbt` | Toggle breakpoint        | VSCode: click in gutter                     |
-| `<leader>dbc` | Conditional breakpoint   | VSCode: right-click > Edit Breakpoint       |
-| `<leader>dbl` | Log point                | VSCode: right-click > Add Logpoint          |
-| `<leader>dh`  | Hover variable value     | VSCode: mouse hover                         |
-| `<leader>dp`  | Preview selection        | VSCode: mouse hover on selection            |
-| `<leader>dr`  | Restart session          | VSCode: Ctrl+Shift+F5                       |
-| `<leader>dq`  | Terminate session        | VSCode: Shift+F5                            |
-| `<leader>drc` | Run to cursor            | VSCode: right-click > Run to Cursor         |
-| `<leader>dlr` | Open REPL                | VSCode: Debug Console                       |
+| Keybinding       | Action                   | Notes                                       |
+| ---------------- | ------------------------ | ------------------------------------------- |
+| `<F5>`           | Continue / Start session | Same as VSCode F5                           |
+| `<F1>`           | Step into                | VSCode uses F11                             |
+| `<F2>`           | Step over                | VSCode uses F10                             |
+| `<F3>`           | Step out                 | VSCode uses Shift+F11                       |
+| `<F7>`           | Toggle DAP UI            | No VSCode equivalent (UI is always visible) |
+| `<leader>daptb`  | Toggle breakpoint        | VSCode: click in gutter                     |
+| `<leader>daplbc` | Conditional breakpoint   | VSCode: right-click > Edit Breakpoint       |
+| `<leader>daplbl` | Log point                | VSCode: right-click > Add Logpoint          |
+| `<leader>dh`     | Hover variable value     | VSCode: mouse hover                         |
+| `<leader>dp`     | Preview selection        | VSCode: mouse hover on selection            |
+| `<leader>dapr`   | Restart session          | VSCode: Ctrl+Shift+F5                       |
+| `<leader>dq`     | Terminate session        | VSCode: Shift+F5                            |
+| `<leader>drc`    | Run to cursor            | VSCode: right-click > Run to Cursor         |
+| `<leader>dlr`    | Open REPL                | VSCode: Debug Console                       |
 
 ### Neotest Keybindings
 
-| Keybinding   | Action             | Notes                             |
-| ------------ | ------------------ | --------------------------------- |
-| `<leader>tN` | Run nearest test   | VSCode: click "Run Test" lens     |
-| `<leader>tF` | Run file tests     | VSCode: Run File in Test Explorer |
-| `<leader>tO` | Open output        | VSCode: click failed test output  |
-| `<leader>tS` | Summary panel      | VSCode: open Test Explorer        |
-| `<leader>dgt` | Debug nearest Go test | VSCode: "Debug Test" lens      |
-| `<leader>dgT` | Debug last Go test    | VSCode: rerun debug test       |
+| Keybinding    | Action                | Notes                             |
+| ------------- | --------------------- | --------------------------------- |
+| `<leader>tN`  | Run nearest test      | VSCode: click "Run Test" lens     |
+| `<leader>tF`  | Run file tests        | VSCode: Run File in Test Explorer |
+| `<leader>tO`  | Open output           | VSCode: click failed test output  |
+| `<leader>tS`  | Summary panel         | VSCode: open Test Explorer        |
+| `<leader>dgt` | Debug nearest Go test | VSCode: "Debug Test" lens         |
+| `<leader>dgT` | Debug last Go test    | VSCode: rerun debug test          |
 
 ### Overseer Keybindings
 
@@ -2520,7 +2520,7 @@ Here is what a typical debugging workflow looks like when everything is set up a
 ### Neovim Workflow (with this config)
 
 1. Edit your Lua dap config or `.nvim/dap.lua` (one-time setup per project)
-2. Navigate to the line you want to break at, press `<leader>dbt`
+2. Navigate to the line you want to break at, press `<leader>daptb`
 3. Press `<F5>` to start, choose configuration if prompted
 4. When paused: `<F7>` to open UI if not already open, or just look at the scopes panel and virtual text
 5. Use `<F2>`/`<F1>`/`<F3>` to step
@@ -2547,7 +2547,7 @@ These exercises reinforce the concepts from this chapter. Each one is designed t
 2. Run `:Mason` and install the corresponding adapter if not already installed
 3. Create a minimal project with a short script (e.g., a function that adds two numbers)
 4. Write a Lua launch configuration for it (or verify the existing one with `:lua print(vim.inspect(require("dap").configurations.javascript))` or your language)
-5. Set a breakpoint with `<leader>dbt`
+5. Set a breakpoint with `<leader>daptb`
 6. Press `<F5>`, choose your configuration, and verify that execution pauses at your breakpoint
 7. Open the Scopes panel and verify the local variables are visible
 8. Press `<F2>` to step over and verify the current line indicator moves
@@ -2625,7 +2625,7 @@ These exercises reinforce the concepts from this chapter. Each one is designed t
 Here is what you now know:
 
 - **Architecture:** DAP is a protocol. nvim-dap is a client. The adapters are the same binaries VSCode uses. Mason installs them.
-- **Breakpoints:** `<leader>dbt` to toggle, `<leader>dbc` for conditional. They persist across sessions within the same Neovim instance.
+- **Breakpoints:** `<leader>daptb` to toggle, `<leader>daplbc` for conditional. They persist across sessions within the same Neovim instance.
 - **Stepping:** `<F5>` start/continue, `<F1>` step-into, `<F2>` step-over, `<F3>` step-out. These mirror VSCode's F11/F10/Shift+F11 but in more logical positions.
 - **Inspection:** Scopes panel for passive inspection, `<leader>dh` for hover, `<leader>dlr` for the REPL. The REPL is a real Neovim buffer.
 - **Per-language:** Each language has an adapter (Mason) and configurations (Lua or `.vscode/launch.json`). The Go setup is the most automated (nvim-dap-go handles everything). Rust needs a build step before the adapter can find the binary.

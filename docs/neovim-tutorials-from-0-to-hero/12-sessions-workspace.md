@@ -7,7 +7,7 @@
 
 ---
 
-Welcome to one of the most practical tutorials in the series. If tutorials 01–11 were about learning to *use* Neovim, this one is about learning to *live* in it. There is a real difference.
+Welcome to one of the most practical tutorials in the series. If tutorials 01–11 were about learning to _use_ Neovim, this one is about learning to _live_ in it. There is a real difference.
 
 Using Neovim means knowing your keymaps, understanding LSP, being able to navigate buffers. Living in Neovim means your editor is always exactly where you left it, your database connections are a keypress away, your Kubernetes cluster is browsable without leaving your editor, and spinning up a project takes under three seconds no matter how long ago you last touched it.
 
@@ -41,7 +41,7 @@ Neovim itself has no concept of "workspace." There is no built-in project file, 
 
 This is not a weakness — it's a design philosophy. Unix tools do one thing well. Neovim edits text well. Everything else is handled by other tools that are themselves very good at their respective jobs.
 
-The workspace *stack* for a serious Neovim user looks like this:
+The workspace _stack_ for a serious Neovim user looks like this:
 
 ```
 +----------------------------------------------------------+
@@ -73,7 +73,7 @@ The workspace *stack* for a serious Neovim user looks like this:
 +----------------------------------------------------------+
 ```
 
-Each layer has a clear job. tmux manages *which project you're in* and keeps that context alive even if your terminal dies. Neovim does the actual editing. auto-session ensures Neovim always resumes from exactly where you left off within a project.
+Each layer has a clear job. tmux manages _which project you're in_ and keeps that context alive even if your terminal dies. Neovim does the actual editing. auto-session ensures Neovim always resumes from exactly where you left off within a project.
 
 ### Why This Beats VSCode for Multi-Project Work
 
@@ -91,7 +91,7 @@ There's no equivalent of "detach from VSCode and reattach three hours later on a
 
 ### How the Layers Interact
 
-Understanding *how* these layers interact is essential to using them correctly. Let's trace through what happens when you start working on a project.
+Understanding _how_ these layers interact is essential to using them correctly. Let's trace through what happens when you start working on a project.
 
 **Starting fresh:**
 
@@ -111,7 +111,7 @@ Understanding *how* these layers interact is essential to using them correctly. 
 
 1. You open a terminal. tmux is running.
 2. You press `Ctrl+F` again.
-3. You pick "my-api-project" again. The sessionizer finds the existing tmux session and *switches* to it.
+3. You pick "my-api-project" again. The sessionizer finds the existing tmux session and _switches_ to it.
 4. You're back in your tmux session. If Neovim was open when you detached, it's still open (tmux preserved it). If you had exited Neovim, the shell is there.
 5. You type `nvim` (or if Neovim was already running, you're just back in it).
 6. auto-session detects the directory, finds the saved session file, and restores: all your buffers, all your splits, your cursor was at line 47 of `server.ts` — it's still at line 47 of `server.ts`.
@@ -121,11 +121,12 @@ This is seamless, repeatable, and completely invisible once you set it up. The t
 ### The VSCode Equivalent (And Where It Falls Short)
 
 The closest VSCode analogy:
+
 - tmux session = a VSCode workspace window that you can background and resume
 - auto-session = VSCode's built-in "restore windows on startup"
 - The sessionizer = VSCode's "Open Recent" workspace list
 
-The critical difference: VSCode workspace windows are *OS processes*. They die if you close them or if the OS kills them. tmux sessions are *virtual terminals* managed by a server process. They survive terminal closes, SSH disconnections, and casual `Ctrl+C`s. This is architecturally a completely different reliability guarantee.
+The critical difference: VSCode workspace windows are _OS processes_. They die if you close them or if the OS kills them. tmux sessions are _virtual terminals_ managed by a server process. They survive terminal closes, SSH disconnections, and casual `Ctrl+C`s. This is architecturally a completely different reliability guarantee.
 
 ---
 
@@ -145,7 +146,7 @@ When auto-session saves a session, it writes a Vim session file (using Neovim's 
 
 **Window Layout:** The exact arrangement of your splits. If you had a vertical split with `server.ts` on the left and `routes.ts` on the right, with a horizontal split below showing `package.json`, that exact layout is restored. Window sizes are preserved too.
 
-**Cursor Positions:** For each buffer, the exact line and column where your cursor was. This is subtle but extremely useful — you don't have to remember which line you were editing, you're just *there* when you restore.
+**Cursor Positions:** For each buffer, the exact line and column where your cursor was. This is subtle but extremely useful — you don't have to remember which line you were editing, you're just _there_ when you restore.
 
 **Folds:** If you had folds open or closed in a buffer, those fold states are saved. Useful if you regularly fold away certain sections of large files.
 
@@ -161,7 +162,7 @@ There are things auto-session cannot or does not save:
 
 **Plugin-specific state:** Some plugins maintain their own state that isn't part of the Vim session format. For example, if you had a DAP (debugging) session running, the debug state won't be restored. If you had trouble.nvim open, it will close on exit and not reopen on session restore.
 
-**Unsaved buffer content:** If you had a scratch buffer (`:enew`) with content you never saved to disk, that content is lost. Session files record buffer *paths*, not buffer *content*. If the path doesn't exist on disk, the buffer can't be restored.
+**Unsaved buffer content:** If you had a scratch buffer (`:enew`) with content you never saved to disk, that content is lost. Session files record buffer _paths_, not buffer _content_. If the path doesn't exist on disk, the buffer can't be restored.
 
 **LSP state:** The Language Server Protocol connections are not part of the session file. When you restore a session and open a buffer, the LSP starts fresh. In practice this is fine — the LSP attaches to buffers automatically as they open, so you'll have full LSP functionality within a few seconds of restoring a session.
 
@@ -176,6 +177,7 @@ Your config provides two explicit session keymaps:
 **`<leader>wr` — Restore session**
 
 This manually triggers a session restore for the current directory. Use this when:
+
 - You started Neovim with a specific file (`nvim README.md`) and want to then restore the full session
 - The automatic restore didn't trigger for some reason
 - You want to go back to a previously saved state (discarding changes to the session layout you've made since)
@@ -185,6 +187,7 @@ When you press `<leader>wr`, auto-session looks up the session file for the curr
 **`<leader>ws` — Save session manually**
 
 This manually saves the current session state. Use this when:
+
 - You've set up a particularly nice window layout that you want to make sure is preserved
 - You're about to do something destructive to your layout and want a checkpoint
 - Auto-save on exit is disabled in your config and you need to save explicitly
@@ -220,6 +223,7 @@ You'll see files with names that look like mangled paths:
 The naming convention is: take the absolute path of the directory, replace every `/` with `%`, and add `.vim` as the extension. So `/home/viavi/projects/my-api-project` becomes `%home%viavi%projects%my-api-project.vim`.
 
 This means:
+
 1. Each directory gets exactly one session file (no conflicts)
 2. You can tell at a glance which project a session file belongs to
 3. You can manually delete a session file if you want to start fresh: `rm ~/.local/share/nvim/sessions/%home%viavi%projects%my-api-project.vim`
@@ -294,6 +298,7 @@ Let's be concrete about this. Suppose you're a backend developer working on:
 In VSCode, you'd have four windows open. Switching between them requires using the OS window switcher or taskbar. Each window is an independent OS process. If your machine hibernates and wakes up, some of those windows might lose their remote connections. Your RAM usage is significant — each window runs a full Electron instance.
 
 In the tmux + Neovim stack:
+
 - Four named tmux sessions: `api`, `data-service`, `frontend`, `infra`
 - Switching between them: `Ctrl+F` → type a few letters of the project name → Enter. Under two seconds.
 - Each session has its own windows and panes configured exactly for that project's workflow
@@ -401,6 +406,7 @@ find ~/projects -mindepth 1 -maxdepth 1 -type d 2>/dev/null
 Within a tmux session, the window layout should match your project's workflow. Here are patterns that work well:
 
 **Standard backend service:**
+
 ```
 Session: my-api
 +-----------+
@@ -413,6 +419,7 @@ Session: my-api
 ```
 
 **Frontend project:**
+
 ```
 Session: my-frontend
 +------------------+
@@ -425,6 +432,7 @@ Session: my-frontend
 ```
 
 **Full-stack project with database:**
+
 ```
 Session: fullstack
 +------------------+
@@ -455,6 +463,7 @@ Windows can be split into panes. A common pattern for the editor window is a mai
 ```
 
 Create this layout:
+
 ```bash
 # In the nvim window, split horizontally with a small bottom pane
 tmux split-window -v -l 20%   # 20% of height for the bottom pane
@@ -591,6 +600,7 @@ From your perspective, you're just editing normally — but `:pwd` will show a p
 ### Supported Connection Types
 
 remote-nvim supports:
+
 - **ssh://user@host** — standard SSH connection
 - **ssh://user@host:port** — SSH on non-standard port
 - SSH config aliases — if your `~/.ssh/config` has a `Host` entry, you can use that alias: `ssh://my-dev-machine`
@@ -612,6 +622,7 @@ Host dev-machine
 ```
 
 With this config, you can use:
+
 ```vim
 :RemoteStart ssh://staging
 :RemoteStart ssh://dev-machine
@@ -647,12 +658,14 @@ ssh-add ~/.ssh/id_ed25519
 remote-nvim's performance profile is different from local editing:
 
 **Local operations (fast, no network latency):**
+
 - Cursor movement
 - Keymap processing
 - Local plugin computations
 - Anything that doesn't require reading/writing a file
 
 **Remote operations (subject to network latency):**
+
 - File reads and writes
 - LSP operations (the LSP server runs on the remote and communicates back)
 - File system searches (telescope find_files, grep)
@@ -665,27 +678,29 @@ A practical tip: if you're doing heavy editing on a slow connection, work in a t
 ### Comparison to VSCode Remote SSH
 
 The conceptual similarity is high. Both approaches:
+
 - Copy/run server-side components on the remote
 - Provide your full local editor experience while editing remote files
 - Use SSH as the transport
 
 Key differences:
 
-| Aspect | VSCode Remote SSH | remote-nvim |
-|---|---|---|
-| Transport | SSH + custom VS Code protocol | SSH + Neovim RPC |
-| First-run time | Several minutes (downloads VS Code Server) | Minutes (copies nvim config, installs plugins) |
-| Ongoing startup | Seconds (server already installed) | Seconds (server already configured) |
-| Config sync | VS Code settings sync | Copies your local nvim config |
-| Extension availability | Most extensions work | All Neovim plugins work |
-| Bandwidth | High (Electron-based protocol) | Low (terminal + RPC) |
-| Connectivity resilience | Poor (window breaks on disconnect) | Good (session can be inside tmux on remote) |
+| Aspect                  | VSCode Remote SSH                          | remote-nvim                                    |
+| ----------------------- | ------------------------------------------ | ---------------------------------------------- |
+| Transport               | SSH + custom VS Code protocol              | SSH + Neovim RPC                               |
+| First-run time          | Several minutes (downloads VS Code Server) | Minutes (copies nvim config, installs plugins) |
+| Ongoing startup         | Seconds (server already installed)         | Seconds (server already configured)            |
+| Config sync             | VS Code settings sync                      | Copies your local nvim config                  |
+| Extension availability  | Most extensions work                       | All Neovim plugins work                        |
+| Bandwidth               | High (Electron-based protocol)             | Low (terminal + RPC)                           |
+| Connectivity resilience | Poor (window breaks on disconnect)         | Good (session can be inside tmux on remote)    |
 
 The bandwidth and connectivity resilience differences are significant for working over unreliable connections or with limited data plans.
 
 ### Troubleshooting SSH Connections
 
 **"Connection refused" or timeout:**
+
 ```bash
 # Test basic SSH connectivity first
 ssh -v username@hostname
@@ -698,16 +713,19 @@ ssh -p 2222 username@hostname
 ```
 
 **"Remote Neovim not found" during first setup:**
+
 - Ensure the remote machine has internet access for downloading Neovim
 - Or manually install Neovim on the remote: `sudo apt install neovim` (for the version in apt) or download a release from GitHub
 - remote-nvim needs Neovim 0.9+ on the remote for full functionality
 
 **Plugin installation fails on remote:**
+
 - The remote machine needs `git` installed
 - Check that `~/.local/share/nvim/` is writable on the remote
 - Some plugins have external dependencies (e.g., `ripgrep` for telescope) that need to be on the remote too
 
 **Connection drops mid-session:**
+
 - If you're working inside a tmux session on the remote, the session survives the disconnect
 - Reconnect with `:RemoteStart` and reattach to the running session
 - For maximum resilience: `ssh remote-host`, `tmux attach`, then start Neovim inside that tmux session (bypassing remote-nvim entirely for unstable connections)
@@ -723,6 +741,7 @@ There's an important distinction to understand: **vim-dadbod** and **vim-dadbod-
 **vim-dadbod** (by tpope) is the core database interface. It's a low-level plugin that lets you execute SQL queries against databases directly from Neovim. You put a connection string in `g:db` or in a buffer variable, write SQL in a buffer, and run it. The results appear in a new buffer. It's powerful but requires knowing the right incantations.
 
 **vim-dadbod-ui** is a tree-view UI built on top of vim-dadbod. It gives you:
+
 - A sidebar showing your configured database connections
 - A tree browser for schemas, tables, and views
 - An easy way to open query buffers for each database
@@ -751,9 +770,9 @@ DynamoDB      -- dynamodb://region
 
 If your database is on the list, dadbod can talk to it. For each adapter, the underlying tool (psql, mysql, mongo, redis-cli, etc.) needs to be installed. dadbod shells out to these tools rather than implementing database protocols itself.
 
-### `<leader>dbu` — Toggle DBUI Panel
+### `<leader>daplbu` — Toggle DBUI Panel
 
-Your config maps `<leader>dbu` to toggle the dadbod-ui sidebar. Press it once: the DBUI panel opens on the left side. Press it again: it closes.
+Your config maps `<leader>daplbu` to toggle the dadbod-ui sidebar. Press it once: the DBUI panel opens on the left side. Press it again: it closes.
 
 When DBUI opens for the first time, you'll see something like:
 
@@ -789,7 +808,8 @@ Navigate the tree with `j`/`k`. Press `Enter` or `o` on a table to open a query 
 
 **Method 1: Through the DBUI interface**
 
-Press `<leader>dbu` to open DBUI, then navigate to `+ Add connection` and press Enter. DBUI will prompt you for:
+Press `<leader>daplbu` to open DBUI, then navigate to `+ Add connection` and press Enter. DBUI will prompt you for:
+
 - A display name for the connection
 - The connection URL
 
@@ -976,11 +996,13 @@ MSSQL:
 ### VSCode Comparison
 
 VSCode has several database clients as extensions:
+
 - **Database Client** (Weijan Chen) — similar tree-browser UI, multi-database support
 - **SQLTools** — popular, supports many databases, has a query runner
 - **Prisma** extension — for Prisma-specific database browsing
 
 dadbod-ui competes favorably:
+
 - Faster to navigate (Vim keymaps vs mouse/click)
 - Better integration with the rest of your workflow (run SQL from any buffer, visual selections work)
 - Lighter weight (no Electron overhead for each database query)
@@ -1061,6 +1083,7 @@ This opens a picker of your configured contexts (from `~/.kube/config`). Switch 
 A common and important workflow: set your context to production cluster, review a deployment's status, switch back to dev, make a code change, deploy to dev cluster. All without leaving Neovim.
 
 **Safety note:** Having a convenient Kubernetes context switcher is a double-edged sword. It's easy to accidentally run a destructive command against production when you thought you were on dev. Consider:
+
 - Using a read-only kubeconfig for production contexts
 - Configuring different visual themes per context (some Neovim configs colorize the status bar differently per k8s context)
 - Double-checking the current context before running any destructive kubectl operations
@@ -1092,11 +1115,13 @@ The pattern that works well: use kubectl.nvim for the quick checks you do while 
 ### Setup Requirements
 
 kubectl.nvim requires:
+
 1. `kubectl` command available in your PATH and configured
 2. A valid `~/.kube/config` file with cluster connections
 3. The user running Neovim having appropriate RBAC permissions on the cluster
 
 Test your setup:
+
 ```bash
 # These should work before kubectl.nvim will work
 kubectl cluster-info
@@ -1105,6 +1130,7 @@ kubectl config current-context
 ```
 
 If you're accessing multiple clusters, ensure all relevant cluster credentials are in your kubeconfig:
+
 ```bash
 # Merge multiple kubeconfig files
 export KUBECONFIG=~/.kube/config:~/.kube/dev-cluster.yaml:~/.kube/prod-cluster.yaml
@@ -1167,7 +1193,7 @@ A common pattern is to use conn-manager for SSH tunnels and then connect dadbod-
 1. Open conn-manager panel
 2. Navigate to `staging-db-tunnel`
 3. Press `t` to start the SSH tunnel (now listening on localhost:15432)
-4. Open dadbod-ui (`<leader>dbu`)
+4. Open dadbod-ui (`<leader>daplbu`)
 5. Connect to `postgresql://user:password@localhost:15432/staging_db`
 
 You're querying the staging database through a secure SSH tunnel, managed entirely within Neovim. No separate terminal windows, no manual tunnel commands to remember.
@@ -1201,6 +1227,7 @@ Content-Type: application/json
 The workspace-level insight about kulala: **keep your `.http` files in your project repository**. This is a change from the VSCode + REST Client pattern where you might have a global workspace for API testing.
 
 When your `.http` files live in the project:
+
 - They're version-controlled alongside the code
 - New team members get the API documentation as runnable examples
 - API changes (new endpoints, changed request formats) are updated in the same commit as the code change
@@ -1224,7 +1251,7 @@ my-api-project/
   README.md
 ```
 
-With this structure, press `<leader>dbu` to open your DB while editing `users.ts`, have your `users.http` open in a split, execute requests to test the API, and reference them as documentation. The entire API development workflow is within Neovim.
+With this structure, press `<leader>daplbu` to open your DB while editing `users.ts`, have your `users.http` open in a split, execute requests to test the API, and reference them as documentation. The entire API development workflow is within Neovim.
 
 For environment variables in kulala (switching between local, staging, production):
 
@@ -1284,13 +1311,14 @@ This is the payoff of the full stack. The startup cost of the day is zero.
 You're working on a user authentication bug. The issue: JWT tokens aren't being invalidated properly on logout. You've been working on this.
 
 In your Neovim session, you have:
+
 - Left split: `src/routes/auth.ts` — the route handler
 - Right split: `src/services/auth.service.ts` — the service logic
 - A horizontal split at the bottom showing `src/db/sessions.ts` — the database layer
 
 Your LSP shows a warning on line 89 of `auth.service.ts` — a potential null dereference. You navigate there with `<leader>e` (which opens the diagnostics list), see the issue, and fix it.
 
-You want to test this against a real database. You press `<leader>dbu`. The dadbod-ui panel slides open on the left. You expand your `local-postgres` connection, navigate to the `sessions` table, and press Enter. A query buffer opens:
+You want to test this against a real database. You press `<leader>daplbu`. The dadbod-ui panel slides open on the left. You expand your `local-postgres` connection, navigate to the `sessions` table, and press Enter. A query buffer opens:
 
 ```sql
 SELECT *
@@ -1310,7 +1338,7 @@ ORDER BY created_at DESC
 LIMIT 20
 ```
 
-Execute it. Two sessions come back — both should have been invalidated on logout. You've confirmed the bug. Close dadbod-ui (`<leader>dbu` again).
+Execute it. Two sessions come back — both should have been invalidated on logout. You've confirmed the bug. Close dadbod-ui (`<leader>daplbu` again).
 
 You have the `.http` file open in another window:
 
@@ -1356,6 +1384,7 @@ QA found a bug on staging that doesn't reproduce locally. The staging server is 
 remote-nvim connects. After the initial setup (a minute or so the first time), you're editing files on the staging server with your full local Neovim config. TypeScript LSP is running on the remote, giving you diagnostics on the staging version of the code.
 
 You open the log files:
+
 ```vim
 :e /var/log/myapp/app.log
 ```
@@ -1367,6 +1396,7 @@ Switch back to local (disconnect remote-nvim), find the deployment configuration
 ### Late Afternoon: Everything Converges
 
 You have the following windows/buffers open:
+
 - `auth.service.ts` — the file you fixed this morning
 - `sessions` query buffer in dadbod-ui context
 - `auth.http` — the HTTP test requests
@@ -1421,13 +1451,13 @@ Window 0: nvim
 
 Window 1: api-server
   Running: cd packages/api && npm run dev
-  
+
 Window 2: frontend
   Running: cd packages/frontend && npm run dev
-  
+
 Window 3: test-watcher
   Running: npm test --watch --filter=@myapp/api
-  
+
 Window 4: root-commands
   Shell: for npm workspace commands, git operations, etc.
 ```
@@ -1476,7 +1506,7 @@ Session: auth-service (windows)
   [0] nvim    -- editing src/
   [1] server  -- npm run dev
   [2] tests   -- npm test --watch
-  
+
 Session: api-gateway (windows)
   [0] nvim    -- editing config/ and src/
   [1] server  -- running gateway
@@ -1556,11 +1586,13 @@ This is the pattern for intensive feature development where you're working on a 
 ```
 
 This three-window layout puts every relevant tool one `prefix + number` away:
+
 - Window 0: the code you're writing
 - Window 1: the database showing you real data
 - Window 2: the test runner and HTTP client confirming your behavior
 
 **The tight feedback loop:**
+
 1. Edit the route handler in window 0
 2. Switch to window 2 — test runner shows failure
 3. Debug by switching to window 1 — check the actual DB state
@@ -1630,9 +1662,11 @@ This hybrid lets you compare local and remote code side by side (switch between 
 3. Open Neovim in that project. Open several files across multiple splits. Arrange a layout that would be useful for this project. Leave your cursor at a specific line in a specific file.
 
 4. Exit Neovim (`:qa`). A session should have been saved automatically. Confirm by checking:
+
    ```bash
    ls ~/.local/share/nvim/sessions/
    ```
+
    You should see a new `.vim` file corresponding to this project's path.
 
 5. Without closing the tmux session, type `nvim` again. Did auto-session restore your layout and cursor position?
@@ -1642,6 +1676,7 @@ This hybrid lets you compare local and remote code side by side (switch between 
 7. Repeat steps 3–6 for your second project.
 
 **Success criteria:**
+
 - Both projects have their own, independent session files
 - Switching between them via `Ctrl+F` takes under 3 seconds
 - Neovim restores your last layout perfectly on each re-entry
@@ -1691,12 +1726,14 @@ SQL
 
 1. Open Neovim in any directory.
 
-2. Press `<leader>dbu` to open the DBUI panel.
+2. Press `<leader>daplbu` to open the DBUI panel.
 
 3. Add a new connection. For SQLite, the URL is:
+
    ```
    sqlite:///home/YOUR_USERNAME/exercise_db.sqlite
    ```
+
    (replace `YOUR_USERNAME` with your actual username)
 
 4. Expand the connection tree. You should see the `users` and `orders` tables.
@@ -1704,6 +1741,7 @@ SQL
 5. Click on (navigate to) the `users` table and press Enter. A query buffer opens. Execute the default `SELECT * FROM users LIMIT 200` query. Verify that your 5 users appear.
 
 6. Edit the query to find users who have placed more than 2 orders:
+
    ```sql
    SELECT u.name, u.email, COUNT(o.id) as order_count
    FROM users u
@@ -1712,6 +1750,7 @@ SQL
    HAVING COUNT(o.id) > 2
    ORDER BY order_count DESC
    ```
+
    Execute it. Carol (3 orders) should appear.
 
 7. Save this query: press the save query keymap and name it `users_with_multiple_orders`.
@@ -1719,6 +1758,7 @@ SQL
 8. Close and reopen DBUI. Verify your saved query appears and can be opened and re-executed.
 
 **Success criteria:**
+
 - You connected to the database through Neovim
 - You can navigate the schema tree
 - You executed a non-trivial SQL query
@@ -1735,12 +1775,15 @@ SQL
 **Full exercise (with SSH access):**
 
 1. Ensure SSH key authentication works:
+
    ```bash
    ssh -o PasswordAuthentication=no user@your-remote-host "echo 'Key auth OK'"
    ```
+
    If this fails, set up SSH keys (see section 5 above).
 
 2. In Neovim, run:
+
    ```vim
    :RemoteStart ssh://user@your-remote-host
    ```
@@ -1752,6 +1795,7 @@ SQL
 5. Navigate to a text file on the remote machine and make a small edit. Save it.
 
 6. In a separate terminal, SSH to the remote manually and verify your edit is there:
+
    ```bash
    ssh user@your-remote-host "cat /path/to/the/file/you/edited"
    ```
@@ -1781,6 +1825,7 @@ ssh -p 2222 -o StrictHostKeyChecking=no linuxserver@localhost "echo 'Connected'"
 ```
 
 **Success criteria:**
+
 - You edited a file on a remote machine from your local Neovim instance
 - Your local keymaps, themes, and at minimum syntax highlighting were present
 - The file change persisted on the remote machine
@@ -1796,6 +1841,7 @@ This is a design exercise as much as a technical one. The goal is to think caref
 **Step 1: Audit your current workflow**
 
 Write down (on paper or in a scratch file) answers to:
+
 - How many projects are you actively working on at once?
 - For your most complex project: what external services does it depend on? (databases, APIs, queues, etc.)
 - How often do you run tests while coding?
@@ -1840,6 +1886,7 @@ Window 0 layout:
 **Step 4: Evaluate and iterate**
 
 Use this layout for a full day of work. At the end of the day, answer:
+
 - Was there a tool I reached for that wasn't in the layout? (Add a window for it)
 - Was there a window I never used? (Remove or repurpose it)
 - Did Neovim's split layout feel right, or should some files be in different positions?
@@ -1847,6 +1894,7 @@ Use this layout for a full day of work. At the end of the day, answer:
 Adjust your layout and make it the permanent setup for this project.
 
 **Success criteria:**
+
 - You have a tmux session named after your project
 - The session survives a detach/reattach cycle
 - Neovim within the session restores perfectly
@@ -1875,7 +1923,7 @@ Adjust your layout and make it the permanent setup for this project.
 |  ~/.local/share/nvim/sessions/   Session files location          |
 +------------------------------------------------------------------+
 |  DATABASE (dadbod-ui)                                            |
-|  <leader>dbu     Toggle DBUI panel                               |
+|  <leader>daplbu     Toggle DBUI panel                               |
 |  <leader>S       Execute SQL query (in SQL buffer)               |
 |  <leader>W       Save current query                              |
 |  o/Enter         Open resource / expand tree node                |
@@ -1910,6 +1958,7 @@ Adjust your layout and make it the permanent setup for this project.
 ## What's Next
 
 You've now built the full workspace stack. You have:
+
 - Per-project persistence via auto-session
 - Instant project switching via the tmux sessionizer
 - Remote development capability via remote-nvim
@@ -1926,4 +1975,4 @@ You have the workspace. You have the editing skills. The question now is how dee
 
 ---
 
-*Part of the Neovim 0 to Hero series. Previous: [11 · Testing and Debugging](./11-testing-debugging.md). Next: [13 · Terminal Integration](./13-terminal-integration.md).*
+_Part of the Neovim 0 to Hero series. Previous: [11 · Testing and Debugging](./11-testing-debugging.md). Next: [13 · Terminal Integration](./13-terminal-integration.md)._

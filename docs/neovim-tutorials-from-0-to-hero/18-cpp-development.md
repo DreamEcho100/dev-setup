@@ -49,7 +49,7 @@ Before diving in, here's a map of every tool in play and how they connect:
 │       │                                                                  │  │
 │       └─── neotest + neotest-ctest ──────────────────────────────────── │  │
 │             runs CTest (GoogleTest / Catch2 / doctest)                  │  │
-│             <leader>tr run nearest test, <leader>ts test suite          │  │
+│             <leader>tn run nearest test, <leader>ts toggle summary       │  │
 │                                                                          │  │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -104,12 +104,14 @@ understanding of your project.
 If your project uses CMake (a `CMakeLists.txt` file), this is automatic.
 
 **One-time flag to add to your CMakeLists.txt or configure command:**
+
 ```cmake
 # In CMakeLists.txt (add near the top, after project()):
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ```
 
 Or pass it at configure time:
+
 ```bash
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 ```
@@ -124,6 +126,7 @@ which automatically creates a symlink from `./compile_commands.json` →
 `./build/compile_commands.json`. No manual steps needed.
 
 **Option 2: Manual symlink (for command-line use)**
+
 ```bash
 ln -sf build/compile_commands.json compile_commands.json
 ```
@@ -131,6 +134,7 @@ ln -sf build/compile_commands.json compile_commands.json
 **Option 3: Tell clangd where to find it (via `.clangd` config file)**
 
 Create `.clangd` in your project root:
+
 ```yaml
 CompileFlags:
   CompilationDatabase: build/
@@ -157,9 +161,11 @@ build system that actually invokes the compiler.
 
 Once you're in Neovim on a CMake project, press `<leader>mcmg` (CMake generate).
 cmake-tools.nvim runs:
+
 ```bash
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 ```
+
 ...and then symlinks `build/compile_commands.json` to `./compile_commands.json`.
 clangd detects the new file and re-indexes automatically.
 
@@ -169,6 +175,7 @@ stay up to date.
 
 > **Limitation:** `cmake_regenerate_on_save` only watches the **root**
 > `CMakeLists.txt`. It does NOT fire for:
+>
 > - `CMakeLists.txt` files in subdirectories
 > - Adding a new `.cpp` source file (add it to `CMakeLists.txt` AND re-run
 >   `<leader>mcmg`)
@@ -178,6 +185,7 @@ stay up to date.
 ### Verify clangd Is Reading It
 
 Open a `.cpp` file and run:
+
 ```
 :LspInfo
 ```
@@ -201,15 +209,15 @@ If missing, generate it (CMake configure or `bear`).
 
 Running `ansible-playbook neovim.yml -K` installs everything system-wide:
 
-| Tool | Purpose | Installed Via |
-|------|---------|--------------|
-| `clangd` | LSP server | apt (llvm-dev or clang-tools package) |
-| `clang-format` | Auto-formatter | apt (clang-format) |
-| `clang-tidy` | Linter | apt (clang-tidy) |
-| `cmake` | Build system | apt |
-| `ninja-build` | Fast build backend | apt |
-| `bear` | compile_commands.json generator | apt (optional) |
-| `gdb` | GNU debugger (fallback) | apt |
+| Tool           | Purpose                         | Installed Via                         |
+| -------------- | ------------------------------- | ------------------------------------- |
+| `clangd`       | LSP server                      | apt (llvm-dev or clang-tools package) |
+| `clang-format` | Auto-formatter                  | apt (clang-format)                    |
+| `clang-tidy`   | Linter                          | apt (clang-tidy)                      |
+| `cmake`        | Build system                    | apt                                   |
+| `ninja-build`  | Fast build backend              | apt                                   |
+| `bear`         | compile_commands.json generator | apt (optional)                        |
+| `gdb`          | GNU debugger (fallback)         | apt                                   |
 
 ### Neovim Plugin Installation
 
@@ -244,29 +252,29 @@ complete reference with C++-specific ones highlighted:
 
 ### Standard LSP Keys (All Languages)
 
-| Key | Action | VSCode Equivalent |
-|-----|--------|------------------|
-| `K` | Hover documentation | Ctrl+K on hover |
-| `gd` | Go to definition | F12 |
-| `gD` | Go to declaration | (no direct equivalent) |
-| `gr` | Find all references | Shift+F12 |
-| `gI` | Go to implementation | Ctrl+F12 |
-| `<leader>lr` | Rename symbol | F2 |
-| `<leader>la` | Code actions | Ctrl+. |
-| `<leader>lf` | Format file | Shift+Alt+F |
-| `<leader>ld` | Open diagnostics list | Problems panel |
-| `<leader>li` | Toggle inlay hints | (no direct equivalent) |
-| `[d` / `]d` | Previous/next diagnostic | (no direct equivalent) |
+| Key          | Action                   | VSCode Equivalent      |
+| ------------ | ------------------------ | ---------------------- |
+| `K`          | Hover documentation      | Ctrl+K on hover        |
+| `gd`         | Go to definition         | F12                    |
+| `gD`         | Go to declaration        | (no direct equivalent) |
+| `gr`         | Find all references      | Shift+F12              |
+| `gI`         | Go to implementation     | Ctrl+F12               |
+| `<leader>lr` | Rename symbol            | F2                     |
+| `<leader>la` | Code actions             | Ctrl+.                 |
+| `<leader>lf` | Format file              | Shift+Alt+F            |
+| `<leader>ld` | Open diagnostics list    | Problems panel         |
+| `<leader>li` | Toggle inlay hints       | (no direct equivalent) |
+| `[d` / `]d`  | Previous/next diagnostic | (no direct equivalent) |
 
 ### C/C++ Specific Keys
 
-| Key | Action | When to Use |
-|-----|--------|-------------|
-| `<leader>lsph` | Switch header ↔ source | Flip between `.h` and `.cpp` |
-| `<leader>lspA` | Clangd AST view | See the Abstract Syntax Tree for current node |
-| `<leader>lspT` | Type hierarchy | See base/derived class relationships |
-| `<leader>lspS` | Symbol info | Detailed type/location info for symbol under cursor |
-| `<leader>lspM` | Clangd memory usage | Debug clangd if it's eating too much RAM |
+| Key            | Action                 | When to Use                                         |
+| -------------- | ---------------------- | --------------------------------------------------- |
+| `<leader>lsph` | Switch header ↔ source | Flip between `.h` and `.cpp`                        |
+| `<leader>lspA` | Clangd AST view        | See the Abstract Syntax Tree for current node       |
+| `<leader>lspT` | Type hierarchy         | See base/derived class relationships                |
+| `<leader>lspS` | Symbol info            | Detailed type/location info for symbol under cursor |
+| `<leader>lspM` | Clangd memory usage    | Debug clangd if it's eating too much RAM            |
 
 ### `<leader>lsph` — Header/Source Switch
 
@@ -300,6 +308,7 @@ decomposes it into a `LambdaExprClass` with a `CXXMethodDecl` and capture list.
 ### Inlay Hints
 
 In C++ files, inlay hints show:
+
 - **Parameter names** at call sites: `foo(/*count=*/5, /*name=*/"bar")`
 - **Deduced `auto` types**: `auto x = getWidget(); // ← Widget*`
 - **Return types** in lambdas
@@ -345,29 +354,31 @@ A typical CMake project workflow:
 
 All under `<leader>m` (the "make/cmake/format" group):
 
-| Key | Command | What It Does |
-|-----|---------|-------------|
-| `<leader>mcmg` | `:CMakeGenerate` | Configure the project (cmake -B build) |
-| `<leader>mcmb` | `:CMakeBuild` | Build the selected target |
-| `<leader>mcmr` | `:CMakeRun` | Run the selected target |
-| `<leader>mcmt` | `:CMakeTest` | Run CTest tests |
-| `<leader>mcmc` | `:CMakeClean` | Clean the build directory |
-| `<leader>mcms` | `:CMakeSelectBuildTarget` | Pick which binary to build |
-| `<leader>mcmT` | `:CMakeSelectBuildType` | Debug / Release / RelWithDebInfo / MinSizeRel |
-| `<leader>mcmo` | `:CMakeOpen` | Open cmake-tools panel |
-| `<leader>mp` | (existing) | Format file (clang-format) |
+| Key            | Command                   | What It Does                                  |
+| -------------- | ------------------------- | --------------------------------------------- |
+| `<leader>mcmg` | `:CMakeGenerate`          | Configure the project (cmake -B build)        |
+| `<leader>mcmb` | `:CMakeBuild`             | Build the selected target                     |
+| `<leader>mcmr` | `:CMakeRun`               | Run the selected target                       |
+| `<leader>mcmt` | `:CMakeTest`              | Run CTest tests                               |
+| `<leader>mcmc` | `:CMakeClean`             | Clean the build directory                     |
+| `<leader>mcms` | `:CMakeSelectBuildTarget` | Pick which binary to build                    |
+| `<leader>mcmT` | `:CMakeSelectBuildType`   | Debug / Release / RelWithDebInfo / MinSizeRel |
+| `<leader>mcmo` | `:CMakeOpen`              | Open cmake-tools panel                        |
+| `<leader>mp`   | (existing)                | Format file (clang-format)                    |
 
 ### First CMake Project: Step by Step
 
 Let's walk through setting up a brand new C++ project from scratch.
 
 **Step 1: Create the project directory**
+
 ```bash
 mkdir ~/Desktop/workspaces/hello-cpp
 cd ~/Desktop/workspaces/hello-cpp
 ```
 
 **Step 2: Create the CMakeLists.txt**
+
 ```cmake
 cmake_minimum_required(VERSION 3.20)
 project(HelloCpp VERSION 1.0.0 LANGUAGES CXX)
@@ -380,11 +391,13 @@ add_executable(hello src/main.cpp)
 ```
 
 **Step 3: Create the source file**
+
 ```bash
 mkdir src
 ```
 
 Create `src/main.cpp`:
+
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -397,6 +410,7 @@ int main() {
 ```
 
 **Step 4: Open Neovim and configure**
+
 ```bash
 nvim .
 ```
@@ -406,6 +420,7 @@ is created with `compile_commands.json` → symlinked to project root →
 clangd re-indexes.
 
 **Step 5: Build and run**
+
 ```
 <leader>mcms    → select "hello" target
 <leader>mcmb    → build it (overseer opens a terminal panel)
@@ -413,6 +428,7 @@ clangd re-indexes.
 ```
 
 **Step 6: Switch to Debug build**
+
 ```
 <leader>mcmT    → select "Debug"
 <leader>mcmb    → rebuild with -g symbols (needed for debugger)
@@ -421,6 +437,7 @@ clangd re-indexes.
 ### CMakeLists.txt Best Practices
 
 For projects you'll debug:
+
 ```cmake
 # Always export compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -452,6 +469,7 @@ calls `clang-format` on the current buffer.
 You have several style bases to choose from. Here are the most common:
 
 **LLVM style** (what this config defaults to if no `.clang-format` exists):
+
 ```yaml
 BasedOnStyle: LLVM
 IndentWidth: 4
@@ -459,6 +477,7 @@ ColumnLimit: 100
 ```
 
 **Google style** (popular in open-source projects):
+
 ```yaml
 BasedOnStyle: Google
 IndentWidth: 2
@@ -466,6 +485,7 @@ ColumnLimit: 80
 ```
 
 **Mozilla style** (good balance):
+
 ```yaml
 BasedOnStyle: Mozilla
 IndentWidth: 4
@@ -473,6 +493,7 @@ ColumnLimit: 80
 ```
 
 **Custom (common choices):**
+
 ```yaml
 BasedOnStyle: LLVM
 IndentWidth: 4
@@ -493,6 +514,7 @@ SpaceBeforeParens: ControlStatements
 ```
 
 Generate a full config for a base style:
+
 ```bash
 clang-format --dump-config --style=LLVM > .clang-format
 ```
@@ -502,11 +524,13 @@ Then edit it to your preferences.
 ### Verify It Works
 
 Open any `.cpp` file, make some messy changes, then:
+
 ```
 <leader>mp    → should reformat to match .clang-format
 ```
 
 Or check what clang-format would do without saving:
+
 ```bash
 clang-format --dry-run --Werror src/main.cpp
 ```
@@ -518,6 +542,7 @@ clang-format --dry-run --Werror src/main.cpp
 ### What clang-tidy Does
 
 clang-tidy is a static analysis tool that catches:
+
 - Modernization opportunities (C++11/14/17/20 idioms)
 - Performance issues (unnecessary copies, redundant operations)
 - Readability improvements (naming conventions, code structure)
@@ -527,6 +552,7 @@ clang-tidy is a static analysis tool that catches:
 ### Integration with clangd
 
 The clangd config in `lsp.lua` includes `--clang-tidy` flag:
+
 ```lua
 cmd = {
     "clangd",
@@ -552,14 +578,15 @@ Checks: >
   readability-*,
   -readability-magic-numbers,
   -modernize-use-trailing-return-type
-WarningsAsErrors: ''
-HeaderFilterRegex: '.*'
+WarningsAsErrors: ""
+HeaderFilterRegex: ".*"
 FormatStyle: file
 ```
 
 **Explanation of key options:**
 
 `Checks` uses a comma-separated list with `-` to disable:
+
 - `-*` — disable everything first (clean slate)
 - `modernize-*` — enable all modernization checks (auto, nullptr, range-for, etc.)
 - `performance-*` — unnecessary copies, move semantics, etc.
@@ -569,27 +596,27 @@ FormatStyle: file
 
 **Common individual checks to know:**
 
-| Check | What It Catches |
-|-------|----------------|
-| `modernize-use-auto` | Replace explicit type with `auto` where obvious |
-| `modernize-use-nullptr` | Replace `NULL` with `nullptr` |
-| `modernize-range-loop` | Replace index loops with range-for |
-| `modernize-use-emplace` | Replace `push_back(T(...))` with `emplace_back(...)` |
-| `performance-unnecessary-copy-initialization` | Avoidable copies |
-| `performance-move-const-arg` | Moving const objects (does nothing useful) |
-| `readability-const-return-type` | Returns `const T` when T is returned by value |
-| `bugprone-use-after-move` | Using moved-from objects |
-| `cppcoreguidelines-no-malloc` | Using malloc/free in C++ |
+| Check                                         | What It Catches                                      |
+| --------------------------------------------- | ---------------------------------------------------- |
+| `modernize-use-auto`                          | Replace explicit type with `auto` where obvious      |
+| `modernize-use-nullptr`                       | Replace `NULL` with `nullptr`                        |
+| `modernize-range-loop`                        | Replace index loops with range-for                   |
+| `modernize-use-emplace`                       | Replace `push_back(T(...))` with `emplace_back(...)` |
+| `performance-unnecessary-copy-initialization` | Avoidable copies                                     |
+| `performance-move-const-arg`                  | Moving const objects (does nothing useful)           |
+| `readability-const-return-type`               | Returns `const T` when T is returned by value        |
+| `bugprone-use-after-move`                     | Using moved-from objects                             |
+| `cppcoreguidelines-no-malloc`                 | Using malloc/free in C++                             |
 
 ### Viewing and Fixing Diagnostics
 
 Clang-tidy warnings appear as diagnostics. Navigate them with:
 
-| Key | Action |
-|-----|--------|
-| `]d` | Next diagnostic |
-| `[d` | Previous diagnostic |
-| `<leader>ld` | Open full diagnostics list |
+| Key          | Action                                                |
+| ------------ | ----------------------------------------------------- |
+| `]d`         | Next diagnostic                                       |
+| `[d`         | Previous diagnostic                                   |
+| `<leader>ld` | Open full diagnostics list                            |
 | `<leader>la` | Code actions (often includes auto-fix for clang-tidy) |
 
 For many clang-tidy checks, `<leader>la` → "Apply fix" will automatically
@@ -621,17 +648,18 @@ insert mode on `.cpp` files.
 
 ### Class Patterns
 
-| Trigger | Expands To | Use When |
-|---------|-----------|----------|
-| `;class` | Class with private members, ctor, dtor | Starting a new class |
-| `;classt` | Template class | Class that works on any type |
-| `;ctor` | Constructor body | Adding constructors |
-| `;dtor` | Destructor body | Explicit destructor |
-| `;copy` | Copy constructor + copy assignment | Rule of Three |
-| `;move` | Move constructor + move assignment | Rule of Five (move semantics) |
-| `;rule5` | Full Rule of Five boilerplate | Complete resource-owning class |
+| Trigger   | Expands To                             | Use When                       |
+| --------- | -------------------------------------- | ------------------------------ |
+| `;class`  | Class with private members, ctor, dtor | Starting a new class           |
+| `;classt` | Template class                         | Class that works on any type   |
+| `;ctor`   | Constructor body                       | Adding constructors            |
+| `;dtor`   | Destructor body                        | Explicit destructor            |
+| `;copy`   | Copy constructor + copy assignment     | Rule of Three                  |
+| `;move`   | Move constructor + move assignment     | Rule of Five (move semantics)  |
+| `;rule5`  | Full Rule of Five boilerplate          | Complete resource-owning class |
 
 **Example: `;class`**
+
 ```cpp
 class MyClass {
 public:
@@ -644,6 +672,7 @@ private:
 ```
 
 **Example: `;rule5`**
+
 ```cpp
 class Resource {
 public:
@@ -658,22 +687,23 @@ public:
 
 ### Inheritance
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;inherit` | Class inheriting from a base |
-| `;virtual` | Virtual method declaration |
+| Trigger     | Expands To                                |
+| ----------- | ----------------------------------------- |
+| `;inherit`  | Class inheriting from a base              |
+| `;virtual`  | Virtual method declaration                |
 | `;override` | Override method (with `override` keyword) |
-| `;pure` | Pure virtual method (`= 0`) |
+| `;pure`     | Pure virtual method (`= 0`)               |
 
 ### Templates
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;tmpl` | Template function |
-| `;tmplspec` | Template specialization |
-| `;concept` | Concept definition (C++20) |
+| Trigger     | Expands To                 |
+| ----------- | -------------------------- |
+| `;tmpl`     | Template function          |
+| `;tmplspec` | Template specialization    |
+| `;concept`  | Concept definition (C++20) |
 
 **Example: `;concept`**
+
 ```cpp
 template <typename T>
 concept Printable = requires(T t) {
@@ -683,23 +713,23 @@ concept Printable = requires(T t) {
 
 ### STL Containers
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;vec` | `std::vector<T> name;` |
-| `;map` | `std::map<K, V> name;` |
+| Trigger | Expands To                       |
+| ------- | -------------------------------- |
+| `;vec`  | `std::vector<T> name;`           |
+| `;map`  | `std::map<K, V> name;`           |
 | `;umap` | `std::unordered_map<K, V> name;` |
-| `;set` | `std::set<T> name;` |
-| `;arr` | `std::array<T, N> name;` |
-| `;pair` | `std::pair<T, U> name;` |
-| `;opt` | `std::optional<T> name;` |
-| `;var` | `std::variant<Ts...> name;` |
+| `;set`  | `std::set<T> name;`              |
+| `;arr`  | `std::array<T, N> name;`         |
+| `;pair` | `std::pair<T, U> name;`          |
+| `;opt`  | `std::optional<T> name;`         |
+| `;var`  | `std::variant<Ts...> name;`      |
 
 ### Smart Pointers
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;uptr` | `std::unique_ptr<T>` declaration |
-| `;sptr` | `std::shared_ptr<T>` declaration |
+| Trigger | Expands To                           |
+| ------- | ------------------------------------ |
+| `;uptr` | `std::unique_ptr<T>` declaration     |
+| `;sptr` | `std::shared_ptr<T>` declaration     |
 | `;mkun` | `auto p = std::make_unique<T>(args)` |
 | `;mksh` | `auto p = std::make_shared<T>(args)` |
 
@@ -708,60 +738,60 @@ make ownership explicit.
 
 ### Lambdas
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;lam` | `[](args) { body }` — no capture |
-| `;lamc` | `[=](args) { body }` — capture by value |
-| `;lamr` | `[&](args) { body }` — capture by reference |
+| Trigger  | Expands To                                   |
+| -------- | -------------------------------------------- |
+| `;lam`   | `[](args) { body }` — no capture             |
+| `;lamc`  | `[=](args) { body }` — capture by value      |
+| `;lamr`  | `[&](args) { body }` — capture by reference  |
 | `;lamat` | `[](args) mutable { body }` — mutable lambda |
 
 ### Range-based For
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;fore` | `for (auto& elem : container) { }` |
+| Trigger | Expands To                               |
+| ------- | ---------------------------------------- |
+| `;fore` | `for (auto& elem : container) { }`       |
 | `;forc` | `for (const auto& elem : container) { }` |
 
 ### Exceptions
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;try` | `try { } catch (const std::exception& e) { }` |
-| `;throw` | `throw std::runtime_error("message");` |
-| `;excl` | Custom exception class inheriting from `std::exception` |
+| Trigger  | Expands To                                              |
+| -------- | ------------------------------------------------------- |
+| `;try`   | `try { } catch (const std::exception& e) { }`           |
+| `;throw` | `throw std::runtime_error("message");`                  |
+| `;excl`  | Custom exception class inheriting from `std::exception` |
 
 ### Namespace
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;ns` | `namespace name { }` |
-| `;nsi` | `inline namespace name { }` |
-| `;using` | `using name = type;` |
+| Trigger  | Expands To                  |
+| -------- | --------------------------- |
+| `;ns`    | `namespace name { }`        |
+| `;nsi`   | `inline namespace name { }` |
+| `;using` | `using name = type;`        |
 
 ### Modern C++
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;sb` | Structured binding: `auto [a, b] = pair;` |
-| `;ifcx` | `if constexpr (condition) { }` |
-| `;noex` | `noexcept` function qualifier |
+| Trigger | Expands To                                |
+| ------- | ----------------------------------------- |
+| `;sb`   | Structured binding: `auto [a, b] = pair;` |
+| `;ifcx` | `if constexpr (condition) { }`            |
+| `;noex` | `noexcept` function qualifier             |
 
 ### I/O
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;cout` | `std::cout << value << '\n';` |
+| Trigger | Expands To                      |
+| ------- | ------------------------------- |
+| `;cout` | `std::cout << value << '\n';`   |
 | `;cerr` | `std::cerr << message << '\n';` |
-| `;cin` | `std::cin >> variable;` |
+| `;cin`  | `std::cin >> variable;`         |
 
 ### Testing (GoogleTest)
 
-| Trigger | Expands To |
-|---------|-----------|
-| `;gtest` | `TEST(SuiteName, TestName) { }` |
+| Trigger    | Expands To                           |
+| ---------- | ------------------------------------ |
+| `;gtest`   | `TEST(SuiteName, TestName) { }`      |
 | `;gtest_f` | `TEST_F(FixtureClass, TestName) { }` |
-| `;assert` | `ASSERT_EQ(expected, actual);` |
-| `;expect` | `EXPECT_EQ(expected, actual);` |
+| `;assert`  | `ASSERT_EQ(expected, actual);`       |
+| `;expect`  | `EXPECT_EQ(expected, actual);`       |
 
 ---
 
@@ -777,6 +807,7 @@ inspection.
 ### Prerequisite: Debug Build
 
 The debugger only works with binaries compiled with debug symbols:
+
 ```cmake
 # In CMakeLists.txt:
 target_compile_options(myapp PRIVATE -g -O0)
@@ -792,17 +823,17 @@ Set the Debug build type in Neovim with `<leader>mcmT` → select "Debug".
 
 ### DAP Keymaps (From Chapter 10)
 
-| Key | Action |
-|-----|--------|
-| `<F5>` | Launch/continue debugging |
-| `<F9>` | Toggle breakpoint |
-| `<F10>` | Step over (next line, don't enter functions) |
-| `<F11>` | Step into (enter function) |
-| `<F12>` | Step out (finish current function, return to caller) |
-| `<leader>dr` | Open DAP REPL (evaluate expressions) |
-| `<leader>du` | Toggle DAP UI |
-| `<leader>db` | List breakpoints |
-| `<leader>dc` | Clear all breakpoints |
+| Key             | Action                                               |
+| --------------- | ---------------------------------------------------- |
+| `<F5>`          | Launch/continue debugging                            |
+| `<F7>`          | Toggle DAP UI                                        |
+| `<F9>`          | Toggle breakpoint                                    |
+| `<F10>`         | Step over (next line, don't enter functions)         |
+| `<F11>`         | Step into (enter function)                           |
+| `<F12>`         | Step out (finish current function, return to caller) |
+| `<leader>dapr`  | Open DAP REPL (evaluate expressions)                 |
+| `<leader>daplb` | List breakpoints                                     |
+| `<leader>dapca` | Clear all breakpoints                                |
 
 ### Setting Up a Debug Configuration
 
@@ -851,7 +882,7 @@ dap.configurations.c = dap.configurations.cpp
 5. Start debugging: `<F5>`
    - nvim-dap shows a picker if you have multiple configurations
    - Execution starts, pauses at your breakpoint
-6. Inspect variables: `<leader>du` to open the DAP UI (shows locals, watches,
+6. Inspect variables: `<F7>` to open the DAP UI (shows locals, watches,
    call stack, breakpoints)
 7. Hover over any variable to see its value
 8. Navigate: `<F10>` (step over), `<F11>` (step into), `<F12>` (step out)
@@ -860,15 +891,17 @@ dap.configurations.c = dap.configurations.cpp
 
 ### The DAP UI Panels
 
-When you press `<leader>du`, four panels open:
+When you press `<F7>`, four panels open:
+
 - **Scopes** — local variables in the current stack frame
-- **Watches** — expressions you're monitoring (add with `<leader>da`)
+- **Watches** — expressions you're monitoring
 - **Call stack** — the chain of function calls that led here
 - **Breakpoints** — all active breakpoints (can toggle/delete from here)
 
 ### Memory Inspection (Advanced)
 
-In the REPL (`<leader>dr`):
+In the REPL (`<leader>dapr`):
+
 ```
 > p variable_name        -- print a value
 > p *pointer             -- dereference a pointer
@@ -886,6 +919,7 @@ In the REPL (`<leader>dr`):
 
 neotest-ctest is the neotest adapter for CTest, which is CMake's testing
 framework. It automatically discovers tests written with:
+
 - **GoogleTest** (most common)
 - **Catch2**
 - **doctest**
@@ -896,6 +930,7 @@ directly from Neovim with results shown inline.
 ### Setting Up a Test Project (GoogleTest Example)
 
 **Add GoogleTest to CMakeLists.txt:**
+
 ```cmake
 cmake_minimum_required(VERSION 3.20)
 project(MyProject CXX)
@@ -919,6 +954,7 @@ gtest_discover_tests(mylib_tests)
 ```
 
 **Write a test:**
+
 ```cpp
 // tests/mylib_test.cpp
 #include <gtest/gtest.h>
@@ -945,6 +981,7 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 ```
 
 **Build and configure CTest:**
+
 ```
 <leader>mcmg    → configure (cmake generates build/ with CTest support)
 <leader>mcmb    → build (compiles the test binary)
@@ -952,22 +989,23 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 
 ### neotest Keymaps
 
-| Key | Action |
-|-----|--------|
-| `<leader>tr` | Run test nearest to cursor |
-| `<leader>ts` | Run test suite (all tests in file) |
-| `<leader>ta` | Run all tests in project |
-| `<leader>tl` | Run last test (repeat) |
-| `<leader>to` | Open test output panel |
-| `<leader>tw` | Toggle watch mode (re-run on save) |
-| `<leader>tf` | Run tests in current file |
+| Key          | Action                     |
+| ------------ | -------------------------- |
+| `<leader>tn` | Run test nearest to cursor |
+| `<leader>tf` | Run tests in current file  |
+| `<leader>tl` | Run last test (repeat)     |
+| `<leader>to` | Open test output panel     |
+| `<leader>ts` | Toggle test summary panel  |
+
+> **Note:** `<leader>tr`, `<leader>tt`, `<leader>ta` are **Overseer** keymaps
+> (run task, toggle tasks, quick action) — not neotest.
 
 ### The Test Workflow
 
 1. Write tests using `;gtest` or `;gtest_f` snippets
 2. Build: `<leader>mcmb`
 3. Position cursor inside a test function
-4. Run: `<leader>tr` (run nearest test)
+4. Run: `<leader>tn` (run nearest test)
 5. A green gutter marker appears for pass, red for fail
 6. `<leader>to` opens the output panel to see assertion failures
 7. Fix the code, save, `<leader>tl` to re-run the last test
@@ -976,12 +1014,12 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 
 Unlike Go's `go test` which compiles automatically, CTest requires the test
 binary to already be compiled. The workflow is:
+
 1. Code change
 2. `<leader>mcmb` (build)
 3. `<leader>tl` (run last test)
 
-The build step is manual. Watch mode (`<leader>tw`) doesn't auto-compile —
-you'd need an overseer task watcher for that (advanced).
+The build step is manual — there is no watch mode that auto-compiles.
 
 ---
 
@@ -992,6 +1030,7 @@ you'd need an overseer task watcher for that (advanced).
 The `after/ftplugin/` directory has separate files for `c.lua` and `cpp.lua`:
 
 **`c.lua`** (C code):
+
 ```lua
 vim.opt_local.textwidth = 80
 vim.opt_local.colorcolumn = "80"
@@ -1001,6 +1040,7 @@ vim.opt_local.expandtab = true
 ```
 
 **`cpp.lua`** (C++ code):
+
 ```lua
 vim.opt_local.textwidth = 100
 vim.opt_local.colorcolumn = "100"
@@ -1016,6 +1056,7 @@ The key difference is line length: **80 columns for C, 100 for C++**.
 The 80-column limit in C comes from the Linux kernel coding style and the POSIX
 tradition. Most C code is still written with this constraint — not because of
 old terminals, but because:
+
 - C tends to be low-level systems code that benefits from narrower scope per function
 - Header files get included everywhere; wide lines make diffs noisy
 - It's the cultural norm in C open source (Linux kernel, glibc, etc.)
@@ -1023,6 +1064,7 @@ old terminals, but because:
 ### Why 100 for C++?
 
 Modern C++ code often has naturally wider lines:
+
 - Long template parameter lists
 - Method chains on smart pointers
 - `std::ranges::` prefixed algorithms
@@ -1038,7 +1080,7 @@ uses 100 as a reasonable compromise. Adjust it in `cpp.lua` if your project's
 
 Not every C/C++ project uses CMake or Make. Sometimes you're doing a quick
 experiment, working with a custom shell script build, or maintaining a
-header-only library. Clangd still needs to know *how* a file is compiled to
+header-only library. Clangd still needs to know _how_ a file is compiled to
 give accurate completions and type inference — without that, it falls back to
 guessing and gives you constant false-positive errors.
 
@@ -1069,8 +1111,8 @@ and works per-directory:
 # .clangd at project root
 CompileFlags:
   Add: [-std=c++20, -I./include, -DDEBUG]
-  Remove: [-W*]          # strip unwanted flags the compiler injects
-  Compiler: clang++      # tell clangd which compiler's stdlib to use
+  Remove: [-W*] # strip unwanted flags the compiler injects
+  Compiler: clang++ # tell clangd which compiler's stdlib to use
 ```
 
 Useful when different subdirectories use different standards (e.g. a C
@@ -1098,6 +1140,7 @@ editing existing files doesn't require it.
 
 After Bear generates the file (or after writing `compile_flags.txt`), reload
 clangd to pick up the changes:
+
 ```
 :LspRestart
 ```
@@ -1113,14 +1156,14 @@ Priority order (first match wins):
 
 ### Quick Reference
 
-| Scenario | Best approach |
-|----------|--------------|
-| Learning, quick experiments | `compile_flags.txt` with `-std=c++20 -I.` |
-| Header-only library | `compile_flags.txt` |
-| Custom `sh` / `bash` build script | `bear -- sh build.sh` |
-| Makefile project | `bear -- make` |
-| CMake project | cmake-tools.nvim auto-generates via `<leader>mcmg` |
-| Mixed flags per subdirectory | `.clangd` config file |
+| Scenario                          | Best approach                                      |
+| --------------------------------- | -------------------------------------------------- |
+| Learning, quick experiments       | `compile_flags.txt` with `-std=c++20 -I.`          |
+| Header-only library               | `compile_flags.txt`                                |
+| Custom `sh` / `bash` build script | `bear -- sh build.sh`                              |
+| Makefile project                  | `bear -- make`                                     |
+| CMake project                     | cmake-tools.nvim auto-generates via `<leader>mcmg` |
+| Mixed flags per subdirectory      | `.clangd` config file                              |
 
 ---
 
@@ -1132,23 +1175,30 @@ Priority order (first match wins):
 shows clangd in the server list but no "attached" line.
 
 **Check 1:** Does `compile_commands.json` exist in the project root?
+
 ```bash
 ls -la compile_commands.json
 ```
+
 If no: run `<leader>mcmg` (cmake configure) or `bear -- make`.
 
 **Check 2:** Is clangd installed?
+
 ```bash
 which clangd
 clangd --version
 ```
+
 If no: run the Ansible playbook or `sudo apt install clangd`.
 
 **Check 3:** Are there errors in clangd's log?
+
 ```
 :LspLog
 ```
+
 Scroll to the bottom. Common errors:
+
 - `failed to find compile_commands.json` → generate it
 - `clangd: command not found` → path issue, check `:echo $PATH`
 
@@ -1157,6 +1207,7 @@ Scroll to the bottom. Common errors:
 **Symptom:** `#include <vector>` is underlined red with "file not found".
 
 **Cause:** clangd can't find the system includes, usually because:
+
 1. `compile_commands.json` is missing (see above)
 2. The wrong `--sysroot` or `-I` path is in compile_commands.json
 3. clang is not installed (clangd ships headers separately from gcc)
@@ -1164,19 +1215,24 @@ Scroll to the bottom. Common errors:
 **Fix 1:** Run `<leader>mcmg` to regenerate compile commands.
 
 **Fix 2:** Check if `clang` itself is installed:
+
 ```bash
 clang --version    # not just clangd
 ```
+
 The standard library headers are shipped with clang. If only `clangd` is
 installed but not `clang`, the headers may be missing.
+
 ```bash
 sudo apt install clang
 ```
 
 **Fix 3:** Create a fallback `.clangd` config:
+
 ```yaml
 CompileFlags:
-  Add: [-std=c++20, -I/usr/include/c++/12, -I/usr/include/x86_64-linux-gnu/c++/12]
+  Add:
+    [-std=c++20, -I/usr/include/c++/12, -I/usr/include/x86_64-linux-gnu/c++/12]
 ```
 
 ### clangd Is Slow / High Memory Usage
@@ -1185,6 +1241,7 @@ CompileFlags:
 shows >2GB.
 
 **Fix 1:** Limit the number of background index workers:
+
 ```lua
 -- In lsp.lua clangd cmd:
 "--j=4",    -- use max 4 threads for background indexing
@@ -1192,15 +1249,18 @@ shows >2GB.
 
 **Fix 2:** Disable background index for large projects (re-enable after first
 full index):
+
 ```lua
 "--background-index=false",
 ```
 
 **Fix 3:** The `.cache/clangd/` directory in your project root contains the
 index. If it gets corrupted:
+
 ```bash
 rm -rf .cache/clangd/
 ```
+
 Then restart Neovim and wait for re-index.
 
 ### Multi-subproject Repos (cmake-tools uses the wrong root)
@@ -1232,11 +1292,13 @@ internally** and doesn't reliably react to `:cd`. You need to tell it manually.
 ```
 
 Verify it worked:
+
 ```
 :CMakeInfo        → should show the correct project path and build directory
 ```
 
 **Project structure example:**
+
 ```
 build-your-own-game/        ← you ran nvim . here
 ├── .git
@@ -1261,11 +1323,14 @@ Open a `.cpp` file first, or a `CMakeLists.txt` file. The plugin may not be
 loaded if you opened Neovim directly on a Lua file.
 
 **Check:** Is `CMakeLists.txt` in the current working directory?
+
 ```
 :pwd
 ```
+
 If the auto-detection didn't fire, run `<leader>mcd` to manually set the root,
 or change it explicitly:
+
 ```
 :cd /path/to/subproject
 ```
@@ -1275,6 +1340,7 @@ or change it explicitly:
 **Symptom:** `<leader>lh` says "no corresponding file" or does nothing.
 
 **Check:** The header and source files must have matching basenames:
+
 - `Foo.h` ↔ `Foo.cpp` ✓
 - `foo.h` ↔ `foo.cpp` ✓
 - `FooImpl.cpp` ↔ `Foo.h` ✗ (different base names)
@@ -1294,6 +1360,7 @@ normal mode.
 as the snippet expand key.
 
 **Check 3:** Does `cpp.lua` exist in `~/.config/nvim/snippets/`?
+
 ```bash
 ls ~/.config/nvim/snippets/
 # Should show: cpp.lua, c.lua, go.lua, etc.
@@ -1315,6 +1382,7 @@ nvim .
 ```
 
 In Neovim:
+
 ```
 <leader>mcmg    → configure cmake, generate compile_commands.json
 <leader>mcmT    → select "Debug" build type
@@ -1329,7 +1397,7 @@ In Neovim:
    ↓
 3. <leader>mcmb                     ← Build (overseer shows output)
    ↓
-4. <leader>tr                     ← Run nearest test
+4. <leader>tn                     ← Run nearest test
    ↓
 5. Test fails (red gutter marker) ← Expected: you haven't implemented yet
    ↓
@@ -1341,7 +1409,7 @@ In Neovim:
    ↓
 9. Test passes (green gutter)
    ↓
-10. <leader>ta                    ← Run all tests (make sure nothing broke)
+10. <leader>ts                    ← Toggle summary to see all tests green
    ↓
 11. <leader>mp                    ← Format file (clang-format)
    ↓
@@ -1353,21 +1421,24 @@ In Neovim:
 ### If a Test Fails and You're Confused
 
 Add debug output with `;cout` snippet:
+
 ```cpp
 std::cout << "value is: " << myVar << '\n';  // temporary debug
 ```
 
 Or use the debugger:
+
 ```
 1. Set breakpoint in test: <F9>
 2. <F5> to launch (pick your test binary config)
-3. Step through: <F10>, inspect variables with <leader>du
+3. Step through: <F10>, inspect variables with <F7>
 4. Find the bug, remove breakpoint: <F9>
 ```
 
 ### Jumping Between Header and Source While Implementing
 
 You're implementing `Foo::doSomething()` in `Foo.cpp`:
+
 ```
 <leader>lh    → jumps to Foo.h (check the declaration)
 <leader>lh    → jumps back to Foo.cpp
@@ -1380,18 +1451,18 @@ auto-implementation options (clangd can generate the stub in `.cpp`).
 
 ## VSCode Comparison
 
-| VSCode Workflow | This Neovim Workflow |
-|----------------|---------------------|
-| cmake-tools extension → status bar buttons | `<leader>m*` keymaps |
-| "Build" button in status bar | `<leader>mcmb` |
-| "Debug" F5 | `<F5>` (same!) |
-| Breakpoints in gutter (click) | `<F9>` (toggle) |
-| "Go to Header/Source" (right-click) | `<leader>lh` |
-| IntelliSense (msvc/clangd) | clangd (identical engine) |
-| clang-format on save | `:w` + conform.nvim format-on-save (or `<leader>mp`) |
-| Test Explorer extension | neotest (`<leader>tr/ts/ta`) |
-| C/C++ extension pack | clangd + cmake-tools.nvim + clangd_extensions.nvim |
-| compile_commands.json (auto) | compile_commands.json via cmake-tools.nvim |
+| VSCode Workflow                            | This Neovim Workflow                                 |
+| ------------------------------------------ | ---------------------------------------------------- |
+| cmake-tools extension → status bar buttons | `<leader>m*` keymaps                                 |
+| "Build" button in status bar               | `<leader>mcmb`                                       |
+| "Debug" F5                                 | `<F5>` (same!)                                       |
+| Breakpoints in gutter (click)              | `<F9>` (toggle)                                      |
+| "Go to Header/Source" (right-click)        | `<leader>lh`                                         |
+| IntelliSense (msvc/clangd)                 | clangd (identical engine)                            |
+| clang-format on save                       | `:w` + conform.nvim format-on-save (or `<leader>mp`) |
+| Test Explorer extension                    | neotest (`<leader>tn/tl/ts`)                         |
+| C/C++ extension pack                       | clangd + cmake-tools.nvim + clangd_extensions.nvim   |
+| compile_commands.json (auto)               | compile_commands.json via cmake-tools.nvim           |
 
 The main difference: VSCode does most of this with GUI clicks. Neovim does it
 with keybindings. After a week of muscle memory, the Neovim version is faster.
@@ -1458,7 +1529,7 @@ In the project from Exercise 1:
 3. Build: `<leader>mcmb`
 4. Set a breakpoint on the `std::cout` line: `<F9>`
 5. Launch debugger: `<F5>`
-6. Open DAP UI: `<leader>du`
+6. Open DAP UI: `<F7>`
 7. Step through the loop with `<F10>`, watching `i` in the Scopes panel
 8. See where the bug occurs
 9. Fix it (`<` instead of `<=`), rebuild, re-run
@@ -1468,6 +1539,7 @@ In the project from Exercise 1:
 ### Exercise 5: Tests
 
 1. Add GoogleTest to your project (or use `FetchContent` in CMakeLists.txt):
+
    ```cmake
    include(FetchContent)
    FetchContent_Declare(
@@ -1482,11 +1554,12 @@ In the project from Exercise 1:
    include(GoogleTest)
    gtest_discover_tests(tests)
    ```
+
 2. Create `tests/calculator_test.cpp` using the `;gtest` snippet
 3. Write 2-3 test cases for your Calculator class
 4. Build: `<leader>mcmb`
-5. Run nearest test: `<leader>tr` (cursor inside a test function)
-6. Run all tests: `<leader>ta`
+5. Run nearest test: `<leader>tn` (cursor inside a test function)
+6. Toggle summary to see all tests: `<leader>ts`
 7. Intentionally break a test (change the expected value) — observe the red
    gutter marker and `<leader>to` output
 

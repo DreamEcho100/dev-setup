@@ -9,7 +9,7 @@
 
 Welcome. You're about to learn the most powerful text editor on the planet. Yes, that's a bold claim. Yes, it's also widely considered to be true by the kind of engineers who spend more time in their editor than anywhere else.
 
-Here's the deal: the first hour of Neovim is the hardest. Everyone who's ever become proficient at it has also rage-quit it at least once in the first session. That's completely normal. What gets people through is understanding *why* Neovim works the way it does — not just memorizing commands, but grokking the philosophy behind them.
+Here's the deal: the first hour of Neovim is the hardest. Everyone who's ever become proficient at it has also rage-quit it at least once in the first session. That's completely normal. What gets people through is understanding _why_ Neovim works the way it does — not just memorizing commands, but grokking the philosophy behind them.
 
 By the end of this tutorial, you'll be able to open files, navigate around, make edits, save, and quit. That's the whole Day One goal. Modest on the surface — genuinely transformative in practice.
 
@@ -23,7 +23,7 @@ The very first thing Neovim does to every VSCode refugee is deeply confuse them.
 
 What's happening?
 
-Neovim is a **modal editor**. It has multiple *modes*, and what your keystrokes do depends entirely on which mode you're currently in.
+Neovim is a **modal editor**. It has multiple _modes_, and what your keystrokes do depends entirely on which mode you're currently in.
 
 ### A Brief History of Why This Exists
 
@@ -31,7 +31,7 @@ Back in the 1970s, the original `vi` editor (Neovim's ancestor) was created for 
 
 More importantly, modems in that era were painfully slow — sometimes 300 baud, which is about 30 characters per second. You couldn't afford to waste a single keypress. The idea of holding `Ctrl` for every single editing command was expensive. Modes let you use the entire keyboard as a command palette when you're not typing text.
 
-But here's the deep insight that makes modal editing genuinely *good* rather than just *old*: **most of your time is spent reading and navigating code, not typing new characters**. Modal editing optimizes for the common case. Inserting text is the exception; moving, selecting, changing, and searching are the rule.
+But here's the deep insight that makes modal editing genuinely _good_ rather than just _old_: **most of your time is spent reading and navigating code, not typing new characters**. Modal editing optimizes for the common case. Inserting text is the exception; moving, selecting, changing, and searching are the rule.
 
 ### The "You're Always in INSERT Mode" Analogy
 
@@ -95,6 +95,7 @@ Here's a diagram of the main modes and how you travel between them:
 ```
 
 **There's also:**
+
 - **Replace mode** — `R` key, overwrites characters (like `Insert` key in Windows). Not used often; just know it exists.
 - **Operator-pending mode** — a transient state while Neovim waits for a motion after an operator like `d` (delete) or `c` (change). You'll learn about this in later tutorials.
 
@@ -129,6 +130,7 @@ The mode name in the bottom-left corner is your compass. Check it constantly whe
 ### Why Is This Actually Powerful?
 
 Once it clicks, Normal mode becomes your superpower. Think about it: in VSCode, to delete a word, you have to:
+
 1. Double-click to select the word
 2. Press Delete (or Backspace)
 
@@ -147,19 +149,19 @@ We'll get deep into this in later tutorials. For now, just know: Normal mode is 
 
 ## 3. Getting Into Insert Mode
 
-Okay, so if Normal mode is where you start, how do you actually type text? There are several ways to enter Insert mode, and they differ in *where* your cursor lands before you start typing. This is one of the first "aha" moments of Vim — each entry point is optimized for a different context.
+Okay, so if Normal mode is where you start, how do you actually type text? There are several ways to enter Insert mode, and they differ in _where_ your cursor lands before you start typing. This is one of the first "aha" moments of Vim — each entry point is optimized for a different context.
 
 ### The Entry Points
 
-| Key | What It Does | Best Used When |
-|-----|-------------|----------------|
-| `i` | Insert BEFORE the cursor | Most common — general purpose inserting |
-| `a` | Insert AFTER the cursor (append) | Adding text after the current character |
-| `o` | Open new line BELOW and enter insert | Adding a new line below current position |
-| `O` | Open new line ABOVE and enter insert | Adding a new line above current position |
-| `I` | Insert at the START of the line | Jumping to line beginning to type |
+| Key | What It Does                           | Best Used When                              |
+| --- | -------------------------------------- | ------------------------------------------- |
+| `i` | Insert BEFORE the cursor               | Most common — general purpose inserting     |
+| `a` | Insert AFTER the cursor (append)       | Adding text after the current character     |
+| `o` | Open new line BELOW and enter insert   | Adding a new line below current position    |
+| `O` | Open new line ABOVE and enter insert   | Adding a new line above current position    |
+| `I` | Insert at the START of the line        | Jumping to line beginning to type           |
 | `A` | Insert at the END of the line (Append) | Appending to end of line — extremely common |
-| `s` | *(In this config: Flash jump!)* | See note below |
+| `s` | _(In this config: Flash jump!)_        | See note below                              |
 
 > **Note on `s` in this config:** In a stock Neovim, `s` deletes the current character and enters Insert mode (substitute). However, in **this configuration**, `s` is remapped to trigger **Flash.nvim** — the blazing-fast jump plugin. So `s` is a motion, not an insert entry. Don't try to use `s` to insert. Use `i` instead. We'll cover Flash in a dedicated tutorial.
 
@@ -169,7 +171,7 @@ Okay, so if Normal mode is where you start, how do you actually type text? There
 >
 > **In Neovim you...** navigate your cursor to the general area you want to edit (using Normal mode movements), then choose the most efficient insert entry point. If you want to add text at the end of a line, `A` takes you directly there without having to navigate to the exact end first.
 
-Here's the thing that blows VSCode users' minds once they get it: `o` (open line below) is *incredibly* useful. In VSCode, to add a new line below your current line, you'd typically press `End` to go to end of line, then `Enter`. In Neovim: `o`. One key. Does it all.
+Here's the thing that blows VSCode users' minds once they get it: `o` (open line below) is _incredibly_ useful. In VSCode, to add a new line below your current line, you'd typically press `End` to go to end of line, then `Enter`. In Neovim: `o`. One key. Does it all.
 
 Similarly, `O` (open line above) replaces `End`, `Enter`, `Up arrow` with a single keystroke.
 
@@ -189,13 +191,14 @@ There are three ways to leave Insert mode and return to Normal mode:
 
 ### The Options
 
-| Key Combo | Notes |
-|-----------|-------|
-| `Esc` | The classic. Works everywhere. Slightly far from home row on most keyboards. |
-| `Ctrl+C` | **Custom in this config** — mapped to `<Esc>` in Insert mode (see `keymaps.lua`). Faster to reach than `Esc` for most people. |
-| `Ctrl+[` | Vim standard alternative to `Esc`. Works in all Vim-compatible editors. |
+| Key Combo | Notes                                                                                                                         |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `Esc`     | The classic. Works everywhere. Slightly far from home row on most keyboards.                                                  |
+| `Ctrl+C`  | **Custom in this config** — mapped to `<Esc>` in Insert mode (see `keymaps.lua`). Faster to reach than `Esc` for most people. |
+| `Ctrl+[`  | Vim standard alternative to `Esc`. Works in all Vim-compatible editors.                                                       |
 
 In the config's `keymaps.lua`:
+
 ```lua
 vim.keymap.set("i", "<C-c>", "<Esc>")
 ```
@@ -222,20 +225,21 @@ First: **you quit from Normal mode, using the command line.** Press `:` to enter
 
 ### The Quit Commands
 
-| Command | What It Does | Use When |
-|---------|-------------|----------|
-| `:q` | Quit | No unsaved changes, single window |
-| `:q!` | Quit without saving (force) | You want to discard changes |
-| `:w` | Write (save) file | You want to save without quitting |
-| `:wq` | Write and quit | Save and exit — very common |
-| `:wq!` | Write and quit (force) | Force save even if readonly (if you have permission) |
-| `:x` | Save and quit (only writes if changed) | Like `:wq` but smarter about timestamps |
-| `:qa` | Quit ALL windows/buffers | Close everything |
-| `:qa!` | Quit all, discard all changes | Nuclear option — close everything without saving |
-| `ZZ` | Save and quit (Normal mode shortcut) | Equivalent to `:wq` |
-| `ZQ` | Quit without saving (Normal mode shortcut) | Equivalent to `:q!` |
+| Command | What It Does                               | Use When                                             |
+| ------- | ------------------------------------------ | ---------------------------------------------------- |
+| `:q`    | Quit                                       | No unsaved changes, single window                    |
+| `:q!`   | Quit without saving (force)                | You want to discard changes                          |
+| `:w`    | Write (save) file                          | You want to save without quitting                    |
+| `:wq`   | Write and quit                             | Save and exit — very common                          |
+| `:wq!`  | Write and quit (force)                     | Force save even if readonly (if you have permission) |
+| `:x`    | Save and quit (only writes if changed)     | Like `:wq` but smarter about timestamps              |
+| `:qa`   | Quit ALL windows/buffers                   | Close everything                                     |
+| `:qa!`  | Quit all, discard all changes              | Nuclear option — close everything without saving     |
+| `ZZ`    | Save and quit (Normal mode shortcut)       | Equivalent to `:wq`                                  |
+| `ZQ`    | Quit without saving (Normal mode shortcut) | Equivalent to `:q!`                                  |
 
 **Custom in this config:** `Ctrl+Q` is mapped to `:q` for quick quitting:
+
 ```lua
 keymap.set('n', '<C-q>', '<cmd> q <CR>', { desc = 'Quit file' })
 ```
@@ -270,6 +274,7 @@ Open file → make edit → :wq → done
 ```
 
 Or, using the custom keybindings in this config:
+
 ```
 Open file → make edit → Ctrl+S (saves) → Ctrl+Q (quits) → done
 ```
@@ -282,21 +287,23 @@ Saving is something you'll do constantly. Know your options.
 
 ### Save Commands
 
-| Method | How | Notes |
-|--------|-----|-------|
-| `:w` | Command mode | Classic, always works |
-| `:w filename` | Command mode | Save-as (creates new file with that name) |
-| `:wa` | Command mode | Write ALL open buffers |
-| `Ctrl+S` | Normal OR Insert mode | **Custom in this config** — most intuitive for VSCode refugees |
-| `<leader>sn` | Normal mode | Save WITHOUT running autoformat (useful when you want to save mid-edit) |
+| Method        | How                   | Notes                                                                   |
+| ------------- | --------------------- | ----------------------------------------------------------------------- |
+| `:w`          | Command mode          | Classic, always works                                                   |
+| `:w filename` | Command mode          | Save-as (creates new file with that name)                               |
+| `:wa`         | Command mode          | Write ALL open buffers                                                  |
+| `Ctrl+S`      | Normal OR Insert mode | **Custom in this config** — most intuitive for VSCode refugees          |
+| `<leader>sn`  | Normal mode           | Save WITHOUT running autoformat (useful when you want to save mid-edit) |
 
 > **💡 In VSCode you'd...** `Ctrl+S` to save. Muscle memory from years of use.
 >
 > **In Neovim (this config) you...** can also use `Ctrl+S`! It's explicitly mapped to save in Normal mode and Insert mode:
+>
 > ```lua
 > keymap.set('n', '<C-s>', save_current_buffer, save_opts)
 > keymap.set('i', '<C-s>', save_current_buffer, save_opts)
 > ```
+>
 > So your `Ctrl+S` muscle memory still works. Nice.
 
 ### Auto-Save: Available but Disabled
@@ -319,18 +326,18 @@ Navigation in Normal mode is the heart of Neovim's speed advantage. Let's start 
 
 ### The Core 10
 
-| Key | Movement | VSCode Equivalent |
-|-----|----------|------------------|
-| `h` | Move left one character | Left arrow |
-| `j` | Move down one line | Down arrow |
-| `k` | Move up one line | Up arrow |
-| `l` | Move right one character | Right arrow |
-| `w` | Jump to start of next **w**ord | `Ctrl+Right` (word forward) |
-| `b` | Jump **b**ack to start of previous word | `Ctrl+Left` (word back) |
-| `0` | Jump to column 0 (start of line) | `Home` key |
-| `$` | Jump to end of line | `End` key |
-| `gg` | Go to first line of file | `Ctrl+Home` |
-| `G` | Go to last line of file | `Ctrl+End` |
+| Key  | Movement                                | VSCode Equivalent           |
+| ---- | --------------------------------------- | --------------------------- |
+| `h`  | Move left one character                 | Left arrow                  |
+| `j`  | Move down one line                      | Down arrow                  |
+| `k`  | Move up one line                        | Up arrow                    |
+| `l`  | Move right one character                | Right arrow                 |
+| `w`  | Jump to start of next **w**ord          | `Ctrl+Right` (word forward) |
+| `b`  | Jump **b**ack to start of previous word | `Ctrl+Left` (word back)     |
+| `0`  | Jump to column 0 (start of line)        | `Home` key                  |
+| `$`  | Jump to end of line                     | `End` key                   |
+| `gg` | Go to first line of file                | `Ctrl+Home`                 |
+| `G`  | Go to last line of file                 | `Ctrl+End`                  |
 
 ### ASCII Motion Diagram
 
@@ -351,7 +358,7 @@ Here's a line of code and where each motion takes you:
 
 ### Why Not Arrow Keys?
 
-You *can* use arrow keys in Neovim. They work in both Insert and Normal mode. But experienced users discourage it, especially in Normal mode, for one reason: **your hands leave the home row**. The `hjkl` keys are right there under your index, middle, ring, and pinky fingers. Arrow keys require moving your right hand 10-15cm off the home position. Over a workday of editing, that's a lot of unnecessary movement.
+You _can_ use arrow keys in Neovim. They work in both Insert and Normal mode. But experienced users discourage it, especially in Normal mode, for one reason: **your hands leave the home row**. The `hjkl` keys are right there under your index, middle, ring, and pinky fingers. Arrow keys require moving your right hand 10-15cm off the home position. Over a workday of editing, that's a lot of unnecessary movement.
 
 This config actually has the `hardtime.nvim` plugin installed, which can block repeated arrow key usage to encourage you to build `hjkl` habits. It's there if you want the tough love approach.
 
@@ -359,23 +366,24 @@ This config actually has the `hardtime.nvim` plugin installed, which can block r
 
 Every motion can be prefixed with a **count**. This is a multiplier:
 
-| Command | Does |
-|---------|------|
-| `5j` | Move down 5 lines |
-| `3w` | Jump forward 3 words |
-| `10k` | Move up 10 lines |
-| `2b` | Jump back 2 words |
+| Command | Does                 |
+| ------- | -------------------- |
+| `5j`    | Move down 5 lines    |
+| `3w`    | Jump forward 3 words |
+| `10k`   | Move up 10 lines     |
+| `2b`    | Jump back 2 words    |
 
 This is why navigation in Neovim gets so fast — you glance at a line that's 7 lines below you and type `7j`. Done. No scrolling, no holding keys, no mouse.
 
 ### Bonus: Two More Motions Worth Learning Today
 
-| Key | Movement |
-|-----|----------|
+| Key      | Movement                                    |
+| -------- | ------------------------------------------- |
 | `Ctrl+D` | Scroll DOWN half a page (and center cursor) |
-| `Ctrl+U` | Scroll UP half a page (and center cursor) |
+| `Ctrl+U` | Scroll UP half a page (and center cursor)   |
 
 In this config, both of these are additionally mapped to `zz` after the scroll, which centers the cursor on screen. This prevents the disorienting jump to the edge of the screen when scrolling:
+
 ```lua
 keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down and center' })
 keymap.set('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up and center' })
@@ -393,11 +401,11 @@ Here's one of the first traps VSCode users fall into.
 
 ### The Undo/Redo Keys
 
-| Key | Action | VSCode Equivalent |
-|-----|--------|------------------|
-| `u` | Undo | `Ctrl+Z` |
-| `Ctrl+R` | Redo | `Ctrl+Y` or `Ctrl+Shift+Z` |
-| `U` | Undo all changes on current line | (no direct equivalent) |
+| Key      | Action                           | VSCode Equivalent          |
+| -------- | -------------------------------- | -------------------------- |
+| `u`      | Undo                             | `Ctrl+Z`                   |
+| `Ctrl+R` | Redo                             | `Ctrl+Y` or `Ctrl+Shift+Z` |
+| `U`      | Undo all changes on current line | (no direct equivalent)     |
 
 > **💡 In VSCode you'd...** `Ctrl+Z` to undo. Brains just know this. It's a universal shortcut since WordPerfect.
 >
@@ -411,7 +419,7 @@ In VSCode: if you make change A, then change B, then undo back to A, then make c
 
 In Neovim: every state is preserved in the undo tree. Even if you undo back to A and make change C, you can still navigate back to state B using `Ctrl+R` to redo or via the `undotree` plugin (`<leader>uu`). This means you **never** truly lose work in Neovim as long as Neovim was open.
 
-There's even a feature to persist the undo history to disk (`undodir` option), so you can undo changes from *previous sessions*. Wild.
+There's even a feature to persist the undo history to disk (`undodir` option), so you can undo changes from _previous sessions_. Wild.
 
 For Day One, just remember: `u` undoes, `Ctrl+R` redoes. The rest is advanced territory.
 
@@ -425,10 +433,10 @@ There are three types of Visual mode:
 
 ### The Three Visual Modes
 
-| Key | Visual Mode Type | Description |
-|-----|-----------------|-------------|
-| `v` | Character-wise | Select character by character — like click+drag |
-| `V` | Line-wise | Select entire lines — even partial selections snap to whole lines |
+| Key      | Visual Mode Type  | Description                                                          |
+| -------- | ----------------- | -------------------------------------------------------------------- |
+| `v`      | Character-wise    | Select character by character — like click+drag                      |
+| `V`      | Line-wise         | Select entire lines — even partial selections snap to whole lines    |
 | `Ctrl+V` | Block/column-wise | Select a rectangular block — like VSCode's `Alt+Click` column select |
 
 > **💡 In VSCode you'd...** click and drag for character selection, click then `Shift+Down` for line selection, or `Alt+Click` / `Shift+Alt+Down` for column/block selection.
@@ -444,18 +452,19 @@ There are three types of Visual mode:
 
 ### Actions on Visual Selections
 
-| Key | Action |
-|-----|--------|
-| `d` | Delete (cut) the selection |
-| `c` | Change: delete selection and enter Insert mode |
-| `y` | Yank (copy) the selection |
-| `>` | Indent the selection one level |
-| `<` | Unindent the selection one level |
-| `Esc` | Cancel the selection, return to Normal mode |
+| Key   | Action                                         |
+| ----- | ---------------------------------------------- |
+| `d`   | Delete (cut) the selection                     |
+| `c`   | Change: delete selection and enter Insert mode |
+| `y`   | Yank (copy) the selection                      |
+| `>`   | Indent the selection one level                 |
+| `<`   | Unindent the selection one level               |
+| `Esc` | Cancel the selection, return to Normal mode    |
 
 ### Quick Example
 
 To copy a word:
+
 1. Navigate cursor to the start of the word
 2. Press `v` — enter character Visual mode
 3. Press `e` — extend selection to end of word
@@ -502,24 +511,24 @@ Command mode is the `:` mode. It's where you run editor commands, open files, ch
 
 ### The Essential Commands Table
 
-| Command | What It Does |
-|---------|-------------|
-| `:w` | Write (save) current file |
-| `:q` | Quit (close window) |
-| `:wq` | Write and quit |
-| `:q!` | Quit without saving |
-| `:e filename` | Edit (open) a file |
-| `:e .` | Open file explorer (Oil.nvim) in current dir |
-| `:help keyword` | Open help for keyword |
-| `:set option` | Set a Neovim option (e.g. `:set number`) |
-| `:set option?` | Query current value of an option |
-| `:ls` | List all open buffers |
-| `:bn` | Buffer next |
-| `:bp` | Buffer previous |
-| `:bd` | Buffer delete (close buffer) |
-| `:nohl` | Clear search highlights (or `<leader>nh`) |
+| Command          | What It Does                                   |
+| ---------------- | ---------------------------------------------- |
+| `:w`             | Write (save) current file                      |
+| `:q`             | Quit (close window)                            |
+| `:wq`            | Write and quit                                 |
+| `:q!`            | Quit without saving                            |
+| `:e filename`    | Edit (open) a file                             |
+| `:e .`           | Open file explorer (Oil.nvim) in current dir   |
+| `:help keyword`  | Open help for keyword                          |
+| `:set option`    | Set a Neovim option (e.g. `:set number`)       |
+| `:set option?`   | Query current value of an option               |
+| `:ls`            | List all open buffers                          |
+| `:bn`            | Buffer next                                    |
+| `:bp`            | Buffer previous                                |
+| `:bd`            | Buffer delete (close buffer)                   |
+| `:nohl`          | Clear search highlights (or `<leader>nh`)      |
 | `:%s/old/new/gc` | Find and replace throughout file, confirm each |
-| `:%s/old/new/g` | Find and replace throughout file, no confirm |
+| `:%s/old/new/g`  | Find and replace throughout file, no confirm   |
 
 ### Searching
 
@@ -533,6 +542,7 @@ From Normal mode, `/` starts a forward search:
 6. Press `Esc` to cancel and stay at current position
 
 In this config, `n` and `N` are enhanced to center the screen after each jump:
+
 ```lua
 keymap.set('n', 'n', 'nzzzv', { desc = 'Find next and center' })
 keymap.set('n', 'N', 'Nzzzv', { desc = 'Find previous and center' })
@@ -625,10 +635,10 @@ This is the procedure to run whenever Neovim is doing something unexpected and y
 ```
 Step 1: Press Esc
         ↓ (Are you still seeing weird behavior?)
-        
+
 Step 2: Press Esc again (twice more for good measure)
         ↓ (Check the bottom-left status line)
-        
+
 Step 3: What does it say?
         ├── "NORMAL" → You're fine, continue to Step 4
         ├── "INSERT" → Press Esc again
@@ -641,7 +651,7 @@ Step 4: Is there text in the command line at the bottom?
 
 Step 5: Type :wa (write all — saves everything)
         Press Enter
-        
+
 Step 6: Did it error?
         ├── Yes (e.g., "read-only") → Type :qa! and press Enter (abandons unsaved)
         └── No → Your files are saved
@@ -655,21 +665,27 @@ Step 7: If everything is broken and you just want out:
 ### Common "What Happened" Scenarios
 
 **"I pressed something and now there's a number in the corner and nothing works"**
+
 - You typed a partial command or a count. Press `Esc` to cancel it.
 
 **"There are weird characters on my screen and the cursor is at the bottom"**
+
 - You accidentally entered Command mode (pressed `:`). Press `Esc`.
 
 **"My whole screen turned into a terminal / shell"**
+
 - You may have pressed `Ctrl+Z` which suspended Neovim. Type `fg` + Enter in the terminal to bring it back.
 
 **"All my text is gone!"**
+
 - Almost certainly not. Press `Esc`, then `u` to undo repeatedly. Or `:e!` to reload from disk (discards all changes since last save).
 
 **"I'm in some mode I've never seen before with 'REPLACE' at the bottom"**
+
 - You accidentally pressed `R`. Press `Esc` to return to Normal mode.
 
 **"The screen is split into two and I don't know how to close the extra window"**
+
 - Press `<leader>sx` (closes current split) or `:q` (closes current window, not the whole editor).
 
 ---
@@ -827,6 +843,7 @@ You've survived Day One. Here's what you can do now:
 In **Tutorial 02**, you'll get the complete VSCode-to-Neovim translation guide — every shortcut you know from VSCode, mapped to its Neovim equivalent. It covers file management, LSP features, Git, debugging, testing, and more. Think of it as the reference you'll actually use.
 
 After that, we'll go deeper into:
+
 - **Tutorial 03:** Moving like a Ninja — advanced motions, Flash.nvim jumps, marks
 - **Tutorial 04:** Editing Mastery — operators, text objects, the `.` command
 - **Tutorial 05:** The Leader Key System — understanding the full `<Space>` key map
@@ -848,20 +865,21 @@ Before you go, let's talk about the status line. It's at the very bottom of the 
 
 **Reading the status line, left to right:**
 
-| Section | What It Shows | Example |
-|---------|--------------|---------|
-| Mode | Current mode (NORMAL/INSERT/VISUAL/etc.) | `NORMAL` |
-| Git branch | Current git branch name | `main` |
-| Git changes | +added ~modified -deleted hunks | `+2 ~5 -1` |
-| File path | Relative path to current file | `src/Button.tsx` |
-| Modified flag | `[+]` if unsaved changes | `[+]` |
-| LSP diagnostics | Error/warning/info/hint counts | `E:2 W:1` |
-| Filetype | The detected file type | `typescript` |
-| Position | Line:Column | `42:17` |
+| Section         | What It Shows                            | Example          |
+| --------------- | ---------------------------------------- | ---------------- |
+| Mode            | Current mode (NORMAL/INSERT/VISUAL/etc.) | `NORMAL`         |
+| Git branch      | Current git branch name                  | `main`           |
+| Git changes     | +added ~modified -deleted hunks          | `+2 ~5 -1`       |
+| File path       | Relative path to current file            | `src/Button.tsx` |
+| Modified flag   | `[+]` if unsaved changes                 | `[+]`            |
+| LSP diagnostics | Error/warning/info/hint counts           | `E:2 W:1`        |
+| Filetype        | The detected file type                   | `typescript`     |
+| Position        | Line:Column                              | `42:17`          |
 
 > **💡 In VSCode you'd...** see all of this in the bottom status bar too. Blue for normal, orange for remote. Neovim's lualine does the same thing, and the mode color changes with the current mode — a visual cue you'll start relying on.
 
 The mode indicator changes color:
+
 - Green → Normal mode
 - Blue → Insert mode
 - Yellow → Visual mode
@@ -911,9 +929,9 @@ nvim filename.txt
 
 **Why does this matter?**
 
-It explains **lazy loading**. Many plugins only load when they're first needed. This is why Neovim starts fast even with 50+ plugins — most aren't loaded until you actually use them. When you press `<leader>dbt` for the first time, that's when the DAP plugin actually loads. Press `<leader>gn` for the first time and that's when Neogit loads.
+It explains **lazy loading**. Many plugins only load when they're first needed. This is why Neovim starts fast even with 50+ plugins — most aren't loaded until you actually use them. When you press `<leader>daptb` for the first time, that's when the DAP plugin actually loads. Press `<leader>gn` for the first time and that's when Neogit loads.
 
-You'll sometimes notice a tiny delay the *first* time you use a feature. That's the lazy load. Subsequent uses are instant.
+You'll sometimes notice a tiny delay the _first_ time you use a feature. That's the lazy load. Subsequent uses are instant.
 
 ---
 
@@ -922,16 +940,19 @@ You'll sometimes notice a tiny delay the *first* time you use a feature. That's 
 Let's make your first configuration change. This is important: **Neovim is configured with code, not a settings GUI**. Your config file is a Lua program.
 
 The main options file for this config is:
+
 ```
 dotfiles/.config/nvim/lua/de100/core/options.lua
 ```
 
 Open it with:
+
 ```vim
 :e ~/.config/nvim/lua/de100/core/options.lua
 ```
 
 Or from within a Neovim session using the file picker:
+
 ```
 <leader>pf   → type "options" → Enter
 ```
@@ -940,16 +961,16 @@ Or from within a Neovim session using the file picker:
 
 Here's what the options file contains and what you might want to tweak:
 
-| Option | What It Does | Default | Try This |
-|--------|-------------|---------|---------|
-| `vim.opt.number` | Show line numbers | `true` | — |
-| `vim.opt.relativenumber` | Show relative line numbers | `true` | `false` if confusing |
-| `vim.opt.tabstop` | How wide a tab is displayed | (set to config value) | `4` for Python-style |
-| `vim.opt.shiftwidth` | How wide `>` indents | (set to config value) | Match tabstop |
-| `vim.opt.scrolloff` | Lines to keep above/below cursor | `8` | `5` if you prefer less |
-| `vim.opt.wrap` | Whether long lines wrap | `false` | `true` for prose |
-| `vim.opt.cursorline` | Highlight the current line | (check config) | `true` helps track cursor |
-| `vim.opt.colorcolumn` | Show a column guide | (check config) | `"80"` or `"120"` |
+| Option                   | What It Does                     | Default               | Try This                  |
+| ------------------------ | -------------------------------- | --------------------- | ------------------------- |
+| `vim.opt.number`         | Show line numbers                | `true`                | —                         |
+| `vim.opt.relativenumber` | Show relative line numbers       | `true`                | `false` if confusing      |
+| `vim.opt.tabstop`        | How wide a tab is displayed      | (set to config value) | `4` for Python-style      |
+| `vim.opt.shiftwidth`     | How wide `>` indents             | (set to config value) | Match tabstop             |
+| `vim.opt.scrolloff`      | Lines to keep above/below cursor | `8`                   | `5` if you prefer less    |
+| `vim.opt.wrap`           | Whether long lines wrap          | `false`               | `true` for prose          |
+| `vim.opt.cursorline`     | Highlight the current line       | (check config)        | `true` helps track cursor |
+| `vim.opt.colorcolumn`    | Show a column guide              | (check config)        | `"80"` or `"120"`         |
 
 ### Relative vs Absolute Line Numbers
 
@@ -968,7 +989,7 @@ This config likely has `relativenumber = true`. Here's why this matters enormous
   4  }
 ```
 
-With relative numbers, every line shows its *distance* from the cursor. This is incredibly useful because Neovim commands take counts: `5j` jumps down 5 lines. You look at line 5 above you, see `5`, and type `5k` to jump there. No mental math needed.
+With relative numbers, every line shows its _distance_ from the cursor. This is incredibly useful because Neovim commands take counts: `5j` jumps down 5 lines. You look at line 5 above you, see `5`, and type `5k` to jump there. No mental math needed.
 
 > **💡 In VSCode you'd...** see only absolute line numbers. You'd have to calculate "I'm on line 42, that function is at line 37, so I need to go up 5 lines." With relative numbers in Neovim, that calculation is done for you — just read the number and use it as the count.
 
@@ -981,6 +1002,7 @@ Neovim has the most comprehensive built-in help system of any editor. And it's a
 ### How to Use Help
 
 From Normal mode:
+
 - `:help topic` — open help for a specific topic
 - `:help :command` — help for a command (the colon prefix matters)
 - `:help option` — help for a vim option
@@ -991,12 +1013,12 @@ From Normal mode:
 
 When you open help, you get a split window showing the documentation:
 
-| Key | Action in Help |
-|-----|---------------|
+| Key      | Action in Help                                           |
+| -------- | -------------------------------------------------------- |
 | `Ctrl+]` | Follow the link under cursor (like clicking a hyperlink) |
-| `Ctrl+O` | Go back (jump list) |
-| `Ctrl+T` | Go to previous help tag |
-| `:q` | Close the help window |
+| `Ctrl+O` | Go back (jump list)                                      |
+| `Ctrl+T` | Go to previous help tag                                  |
+| `:q`     | Close the help window                                    |
 
 ### Useful Help Topics for Beginners
 
@@ -1038,6 +1060,7 @@ One of the biggest advantages of this config is **which-key.nvim**. When you pre
 ```
 
 You don't need to memorize every keybinding. You just need to remember:
+
 1. Press `Space` and pause
 2. Read the menu to find your category
 3. Press the category key and pause
@@ -1059,28 +1082,28 @@ A **mark** is a saved cursor position. You can set a mark and later jump back to
 
 ### Setting and Using Marks
 
-| Command | Action |
-|---------|--------|
-| `ma` | Set mark `a` at current position |
-| `mA` | Set global mark `A` (works across files!) |
-| `` `a `` | Jump to exact position of mark `a` |
-| `'a` | Jump to start of line where mark `a` is |
-| `` `A `` | Jump to global mark `A` (can cross files) |
-| `:marks` | List all marks |
-| `:delmarks a` | Delete mark `a` |
+| Command       | Action                                    |
+| ------------- | ----------------------------------------- |
+| `ma`          | Set mark `a` at current position          |
+| `mA`          | Set global mark `A` (works across files!) |
+| `` `a ``      | Jump to exact position of mark `a`        |
+| `'a`          | Jump to start of line where mark `a` is   |
+| `` `A ``      | Jump to global mark `A` (can cross files) |
+| `:marks`      | List all marks                            |
+| `:delmarks a` | Delete mark `a`                           |
 
 ### Automatic Marks You Should Know
 
 Neovim maintains some marks automatically:
 
-| Mark | What It Points To |
-|------|-------------------|
-| `` `. `` | Last change (where you last edited) |
-| `` `" `` | Last cursor position when you closed this file |
+| Mark           | What It Points To                              |
+| -------------- | ---------------------------------------------- |
+| `` `. ``       | Last change (where you last edited)            |
+| `` `" ``       | Last cursor position when you closed this file |
 | `''` or ` `` ` | Position before last jump (like `Ctrl+O` once) |
-| `'<` and `'>` | Start and end of last visual selection |
+| `'<` and `'>`  | Start and end of last visual selection         |
 
-The most useful automatic mark is `` `. `` — last change. Press `` ``. `` to jump to wherever you last made an edit. Incredibly useful when you jump away from your working area and need to return.
+The most useful automatic mark is `` `. `` — last change. Press ` `. `` to jump to wherever you last made an edit. Incredibly useful when you jump away from your working area and need to return.
 
 > **💡 In VSCode you'd...** have no direct equivalent to marks. The closest is bookmarks (via an extension), but they're managed through a separate UI rather than being instant keyboard-driven positions.
 
@@ -1143,6 +1166,7 @@ Counts apply to almost everything: `3w` (forward 3 words), `4k` (up 4 lines), `2
 
 **What happens:** You type `:q` when you have multiple windows and close a split instead of the whole editor. Or the opposite — you close a buffer and wonder why the window layout changed.
 **Remember:**
+
 - `:q` closes the WINDOW (split), not just the buffer
 - `<leader>bx` closes the BUFFER (file) from all windows showing it
 - `<leader>sx` closes a SPLIT without affecting the buffer
@@ -1151,6 +1175,7 @@ Counts apply to almost everything: `3w` (forward 3 words), `4k` (up 4 lines), `2
 
 **What happens:** You spend 10 minutes trying to find the file tree sidebar and wondering why there isn't one.
 **Remember:** There's no permanent sidebar in this config by design. Use:
+
 - `<leader>ee` for mini.files (visual explorer)
 - `-` for Oil (parent directory as buffer)
 - `<leader>pf` for file picker (fastest for opening files)
@@ -1180,16 +1205,20 @@ When you `dd` (delete a line), that deleted text goes into the default register.
 **Solutions:**
 
 1. **The black hole register** `"_`: Delete without saving to any register.
+
    ```
    "_dd    " delete line and don't save it anywhere
    "_dw    " delete word and don't save it
    ```
+
    This config already sets `x` to use the black hole register:
+
    ```lua
    keymap.set('n', 'x', '"_x', { desc = 'Delete single character without copying' })
    ```
 
 2. **Named registers**: Yank to a specific register so it's never overwritten.
+
    ```
    "ayy    " yank current line into register 'a'
    "ap     " paste from register 'a'
@@ -1200,6 +1229,7 @@ When you `dd` (delete a line), that deleted text goes into the default register.
 ### System Clipboard
 
 To copy to the system clipboard (so you can paste outside Neovim):
+
 ```
 "+yy    " yank current line to system clipboard
 "+y$    " yank from cursor to end of line to system clipboard
@@ -1210,20 +1240,21 @@ Or in Visual mode, select text and `"+y`.
 
 ### The Special Registers You Should Know
 
-| Register | Contents |
-|----------|----------|
-| `"` | Default (unnamed) register — last yank/delete/change |
-| `0` | Last YANK only (not affected by deletes) |
-| `+` | System clipboard |
-| `*` | Selection clipboard (middle-click paste on Linux) |
-| `_` | Black hole register (discard — nothing saved) |
-| `/` | Last search pattern |
-| `:` | Last command-line command |
-| `%` | Current file name |
-| `#` | Alternate file name |
-| `.` | Last inserted text |
+| Register | Contents                                             |
+| -------- | ---------------------------------------------------- |
+| `"`      | Default (unnamed) register — last yank/delete/change |
+| `0`      | Last YANK only (not affected by deletes)             |
+| `+`      | System clipboard                                     |
+| `*`      | Selection clipboard (middle-click paste on Linux)    |
+| `_`      | Black hole register (discard — nothing saved)        |
+| `/`      | Last search pattern                                  |
+| `:`      | Last command-line command                            |
+| `%`      | Current file name                                    |
+| `#`      | Alternate file name                                  |
+| `.`      | Last inserted text                                   |
 
 **Hot tip:** Register `0` holds the last YANK only. So if you:
+
 1. Yank a word: `yw`
 2. Delete some stuff: `dd`, `dd`
 3. Now paste the original yank: `"0p` — it's in register 0
@@ -1245,6 +1276,7 @@ The `.` (period/dot) command in Normal mode **repeats the last change**. "Last c
 ### Examples
 
 **Example 1: Deleting multiple words**
+
 1. Cursor on "unnecessary" in `const unnecessary = getValue();`
 2. `dw` — deletes "unnecessary"
 3. Cursor on another word you want to delete
@@ -1252,6 +1284,7 @@ The `.` (period/dot) command in Normal mode **repeats the last change**. "Last c
 5. Move to another word, `.` again — deleted
 
 **Example 2: Adding semicolons to multiple lines**
+
 1. Cursor at end of first line missing a semicolon
 2. `A;Esc` — Append (A), type semicolon, Escape
 3. `j` — next line
@@ -1259,6 +1292,7 @@ The `.` (period/dot) command in Normal mode **repeats the last change**. "Last c
 5. `j.j.j.` — repeat for each line
 
 **Example 3: Changing quotes**
+
 1. Cursor on `'single-quoted'`
 2. `cs'"` — change surrounding single quotes to double quotes (mini.surround)
 3. Navigate to next occurrence
@@ -1272,25 +1306,26 @@ The dot command plus normal mode navigation is one of the most efficient editing
 
 You'll constantly need to work with whole lines. Here are the line-specific operations that are your everyday bread and butter.
 
-| Command | Action |
-|---------|--------|
-| `dd` | Delete current line (cut) |
-| `2dd` | Delete 2 lines |
-| `yy` | Yank (copy) current line |
-| `3yy` | Yank 3 lines |
-| `p` | Paste BELOW current line |
-| `P` | Paste ABOVE current line |
-| `cc` | Change entire line (delete + enter Insert) |
-| `C` | Change from cursor to end of line |
-| `D` | Delete from cursor to end of line |
-| `>>` | Indent current line one level |
-| `<<` | Unindent current line one level |
-| `==` | Auto-indent current line (treesitter-based) |
-| `J` | Join current line with the line below (removes newline) |
+| Command | Action                                                  |
+| ------- | ------------------------------------------------------- |
+| `dd`    | Delete current line (cut)                               |
+| `2dd`   | Delete 2 lines                                          |
+| `yy`    | Yank (copy) current line                                |
+| `3yy`   | Yank 3 lines                                            |
+| `p`     | Paste BELOW current line                                |
+| `P`     | Paste ABOVE current line                                |
+| `cc`    | Change entire line (delete + enter Insert)              |
+| `C`     | Change from cursor to end of line                       |
+| `D`     | Delete from cursor to end of line                       |
+| `>>`    | Indent current line one level                           |
+| `<<`    | Unindent current line one level                         |
+| `==`    | Auto-indent current line (treesitter-based)             |
+| `J`     | Join current line with the line below (removes newline) |
 
 ### Moving Lines
 
 In Visual mode, you can move selected lines up or down:
+
 ```
 V       " select line in visual mode
 j       " extend to select more lines
@@ -1299,6 +1334,7 @@ K       " move lines UP
 ```
 
 From `keymaps.lua`:
+
 ```lua
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "moves lines down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "moves lines up" })
@@ -1325,14 +1361,14 @@ We touched on `/` for search earlier. Let's go deeper into the substitution comm
 
 **Common flags:**
 
-| Flag | Meaning |
-|------|---------|
-| `g` | Global — all occurrences on each line (without this, only first per line) |
-| `c` | Confirm — ask before each replacement |
-| `i` | Case-insensitive |
-| `I` | Case-sensitive (overrides `:set ignorecase`) |
-| `e` | Suppress error if no match found |
-| `n` | Don't replace — just count matches |
+| Flag | Meaning                                                                   |
+| ---- | ------------------------------------------------------------------------- |
+| `g`  | Global — all occurrences on each line (without this, only first per line) |
+| `c`  | Confirm — ask before each replacement                                     |
+| `i`  | Case-insensitive                                                          |
+| `I`  | Case-sensitive (overrides `:set ignorecase`)                              |
+| `e`  | Suppress error if no match found                                          |
+| `n`  | Don't replace — just count matches                                        |
 
 ### Practical Examples
 
@@ -1384,6 +1420,7 @@ This is the secret sauce. Understanding this unlocks why Neovim users are so fas
 ```
 
 **Operators** (what to do):
+
 - `d` — delete
 - `c` — change (delete + enter insert)
 - `y` — yank (copy)
@@ -1395,6 +1432,7 @@ This is the secret sauce. Understanding this unlocks why Neovim users are so fas
 - `g~` — toggle case
 
 **Motions** (where to apply):
+
 - `w` — to next word start
 - `e` — to end of current word
 - `b` — to previous word start
@@ -1439,20 +1477,20 @@ Text objects are used in combination with operators. They describe "the thing my
 - `i` = "inner" (excludes surrounding delimiters)
 - `a` = "around" (includes surrounding delimiters)
 
-| Object | Description |
-|--------|-------------|
-| `w` | word |
-| `W` | WORD (whitespace-delimited) |
-| `s` | sentence |
-| `p` | paragraph |
-| `"` | double-quoted string |
-| `'` | single-quoted string |
-| `` ` `` | backtick-quoted string |
-| `(` or `)` | parentheses |
-| `[` or `]` | brackets |
-| `{` or `}` | braces |
-| `<` or `>` | angle brackets |
-| `t` | HTML/XML tag |
+| Object     | Description                 |
+| ---------- | --------------------------- |
+| `w`        | word                        |
+| `W`        | WORD (whitespace-delimited) |
+| `s`        | sentence                    |
+| `p`        | paragraph                   |
+| `"`        | double-quoted string        |
+| `'`        | single-quoted string        |
+| `` ` ``    | backtick-quoted string      |
+| `(` or `)` | parentheses                 |
+| `[` or `]` | brackets                    |
+| `{` or `}` | braces                      |
+| `<` or `>` | angle brackets              |
+| `t`        | HTML/XML tag                |
 
 ### Examples in Action
 
@@ -1467,6 +1505,7 @@ vit     " Visual select Inner Tag — select content between <tag></tag>
 ```
 
 This config also includes **mini.ai** which extends text objects. With mini.ai, you get enhanced text objects for:
+
 - Function arguments: `ia` (inside argument), `aa` (around argument)
 - And more complex Treesitter-based objects
 
@@ -1476,7 +1515,7 @@ This config also includes **mini.ai** which extends text objects. With mini.ai, 
 
 ## 27. A Note on This Config's Philosophy
 
-Before you finish Day One, it's worth understanding the *intent* behind this configuration.
+Before you finish Day One, it's worth understanding the _intent_ behind this configuration.
 
 This is not a minimal config. It's a **full IDE replacement** designed to handle real-world software development workflows. It includes:
 
@@ -1505,6 +1544,7 @@ Start with Day One basics. Don't try to master everything at once. Week 1: basic
 Here's a concrete plan for building Neovim fluency without overwhelming yourself:
 
 ### Day 1 (Today): Survive
+
 - Open files, edit, save, quit
 - `hjkl` navigation
 - `i`, `a`, `o`, `A` for insert modes
@@ -1512,6 +1552,7 @@ Here's a concrete plan for building Neovim fluency without overwhelming yourself
 - `Esc` to escape everything
 
 ### Day 2-3: Navigate
+
 - `w`, `b`, `e`, `0`, `$`, `gg`, `G`
 - `Ctrl+D` and `Ctrl+U` for scrolling
 - `/` for searching
@@ -1519,13 +1560,15 @@ Here's a concrete plan for building Neovim fluency without overwhelming yourself
 - Practice for 30 minutes: do your ACTUAL WORK in Neovim, even slowly
 
 ### Day 4-5: Edit Better
+
 - `dw`, `dd`, `yy`, `p` — delete, yank, paste
-- `cw`, `cc` — change operations  
+- `cw`, `cc` — change operations
 - `ciw`, `ci"`, `di(` — inner/around text objects
 - `.` to repeat last change
 - `V` for line selection, `d`/`y` on selections
 
 ### Day 6-7: Use the Config
+
 - `<leader>pf` for files, `<leader>pg` for grep
 - `gd`/`gR`/`K` for LSP features
 - `<leader>gn` for Neogit
@@ -1533,6 +1576,7 @@ Here's a concrete plan for building Neovim fluency without overwhelming yourself
 - `<leader>xd` for Trouble diagnostics
 
 ### Week 2: Master the Basics
+
 - Text objects deeply: `ci"`, `da(`, `yit`, etc.
 - Marks: `ma`, `` `a ``
 - Buffers: `Tab`/`Shift+Tab`, `<leader>bx`
@@ -1558,12 +1602,14 @@ require("de100.lazy")
 ```
 
 The `core` module lives in `lua/de100/core/` with two files:
+
 - `options.lua` — Neovim settings (line numbers, tabs, scrolloff, etc.)
 - `keymaps.lua` — core keybindings not tied to any plugin
 
 The `lazy` module lives in `lua/de100/lazy.lua` and sets up lazy.nvim, telling it to find all plugin specs in `lua/de100/plugins/`.
 
 This organization means:
+
 - Core behavior = `core/*.lua`
 - Plugin behavior = `plugins/*.lua`
 - Each plugin file = one or more related plugins
@@ -1650,15 +1696,15 @@ You might have heard of LazyVim, NvChad, or AstroNvim — popular Neovim "distri
 
 This config is a **custom personal config**, not a distribution. Here's what that means in practice:
 
-| Feature | Distribution (LazyVim/NvChad) | This Config |
-|---------|------------------------------|-------------|
-| Pre-configured plugins | Yes — curated set | Yes — curated set |
-| Plugin management | lazy.nvim | lazy.nvim |
-| Default keybindings | Distribution's own | Personally crafted |
-| Customization | Override distribution defaults | Modify directly |
-| Updates | Upgrade the distribution | Upgrade individual plugins |
-| Learning curve | Lower (more magic) | Higher (must understand your own config) |
-| Flexibility | Higher with overrides | Maximum — it's all yours |
+| Feature                | Distribution (LazyVim/NvChad)  | This Config                              |
+| ---------------------- | ------------------------------ | ---------------------------------------- |
+| Pre-configured plugins | Yes — curated set              | Yes — curated set                        |
+| Plugin management      | lazy.nvim                      | lazy.nvim                                |
+| Default keybindings    | Distribution's own             | Personally crafted                       |
+| Customization          | Override distribution defaults | Modify directly                          |
+| Updates                | Upgrade the distribution       | Upgrade individual plugins               |
+| Learning curve         | Lower (more magic)             | Higher (must understand your own config) |
+| Flexibility            | Higher with overrides          | Maximum — it's all yours                 |
 
 **Why this matters for you:** When something breaks or you want to change behavior, you look at YOUR config files directly. There's no "distribution layer" to understand. `dotfiles/.config/nvim/lua/de100/` contains everything — read it, understand it, change it.
 
@@ -1715,16 +1761,20 @@ When Neovim shows an error at startup or when using a plugin, here's how to read
 ### Common Error Types
 
 **"module 'X' not found"**
+
 ```
 E5113: Error while calling lua chunk
 module 'nvim-treesitter' not found
 ```
+
 This means a plugin is referenced before it's installed. Run `:Lazy sync` to install missing plugins.
 
 **"attempt to index a nil value"**
+
 ```
 E5108: Error executing lua: ...nil value (field 'X')
 ```
+
 A plugin or function returned `nil` when something expected a table. Usually means a plugin failed to load or a config is misconfigured.
 
 **"No such file or directory"**
@@ -1736,6 +1786,7 @@ Check `:LspLog` for the full log of LSP server communication. Often a missing de
 ### How to Read Stack Traces
 
 When Lua code throws an error, you get a stack trace:
+
 ```
 ...nvim/lua/de100/plugins/lsp/lsp.lua:42: attempt to call a nil value
 stack traceback:
@@ -1754,6 +1805,7 @@ One of Neovim's strengths is that it handles every text-based file type well. He
 ### Markdown Files
 
 Markdown gets special treatment:
+
 - `render-markdown.nvim` renders markdown formatting inline (headers look like headers, bold text looks bold)
 - `markdown-preview.nvim` opens a live preview in the browser (`:MarkdownPreview`)
 - `bullets.nvim` makes bullet list editing ergonomic
@@ -1875,6 +1927,7 @@ A: Yes. Mouse support is enabled by default. You can click to position the curso
 **Q: Why is my TypeScript/LSP not working?**
 
 A: Check these in order:
+
 1. `:Mason` → is `vtsls` installed? If not, install it.
 2. `:LspInfo` (when in a TS file) → is the LSP attached?
 3. Check for `tsconfig.json` in your project root — most TypeScript LSP servers require it.
@@ -1921,6 +1974,7 @@ A: `~/.local/share/nvim/lazy/` — each plugin is a git repo there. lazy.nvim ma
 **Q: My Neovim is slow on large files. What do I do?**
 
 A: Large files can slow down treesitter syntax highlighting and LSP. Quick fixes:
+
 - `:TSBufDisable highlight` — disable treesitter highlighting for this buffer
 - `:LspStop` — stop the LSP for this session
 - Add the file to conform.nvim's exclusion list if it's being formatted on save
@@ -1937,6 +1991,7 @@ The fastest path to fluency is deliberate daily practice layered on top of real 
 Open any code file you're familiar with. Complete these without using arrow keys or mouse:
 
 **Round 1 — Basic navigation:**
+
 1. Jump to the first line: `gg`
 2. Jump to the last line: `G`
 3. Jump to line 25: `25G`
@@ -1947,6 +2002,7 @@ Open any code file you're familiar with. Complete these without using arrow keys
 8. Jump back 3 words: `3b`
 
 **Round 2 — Find and navigate:**
+
 1. Search for a function name: `/function`
 2. Jump to next match: `n`
 3. Jump to previous match: `N`
@@ -1956,6 +2012,7 @@ Open any code file you're familiar with. Complete these without using arrow keys
 7. Jump to just before the next `(`: `t(`
 
 **Round 3 — Scroll comfortably:**
+
 1. Scroll down half page: `Ctrl+D`
 2. Scroll up half page: `Ctrl+U`
 3. Center current line: `zz`
@@ -1991,7 +2048,7 @@ Create a test file with this content:
 ```javascript
 function greetUser(firstName, lastName) {
   const message = "Hello, " + firstName + " " + lastName;
-  const greeting = 'Welcome to our platform!';
+  const greeting = "Welcome to our platform!";
   return message;
 }
 
@@ -2003,17 +2060,17 @@ const users = [
 
 Now practice these operations (undo with `u` between each):
 
-| Operation | Command | Expected Result |
-|-----------|---------|----------------|
-| Delete the word `firstName` | `daw` | removes word + trailing space |
-| Delete text inside `"Hello, "` | `di"` | leaves `""` |
-| Change text inside `'...'` | `ci'` | removes and enters insert inside quotes |
-| Delete the entire function first line | `dd` | removes that line |
-| Yank 3 lines from `const users` | `3yy` | 3 lines in clipboard |
-| Change `message` wherever cursor is on it | `ciw` then type replacement | replaces the whole word |
-| Delete from cursor to end of line | `D` | removes rest of line |
-| Indent the `const message` line one level | `>>` | indents right |
-| Lowercase the word `INSERTED` | `guw` | makes it lowercase |
+| Operation                                 | Command                     | Expected Result                         |
+| ----------------------------------------- | --------------------------- | --------------------------------------- |
+| Delete the word `firstName`               | `daw`                       | removes word + trailing space           |
+| Delete text inside `"Hello, "`            | `di"`                       | leaves `""`                             |
+| Change text inside `'...'`                | `ci'`                       | removes and enters insert inside quotes |
+| Delete the entire function first line     | `dd`                        | removes that line                       |
+| Yank 3 lines from `const users`           | `3yy`                       | 3 lines in clipboard                    |
+| Change `message` wherever cursor is on it | `ciw` then type replacement | replaces the whole word                 |
+| Delete from cursor to end of line         | `D`                         | removes rest of line                    |
+| Indent the `const message` line one level | `>>`                        | indents right                           |
+| Lowercase the word `INSERTED`             | `guw`                       | makes it lowercase                      |
 
 ---
 
@@ -2072,7 +2129,7 @@ TIER 3 — PROFICIENCY (Weeks 4-6):
   [ ] Registers: "0, "+, "_, named registers
 
 TIER 4 — MASTERY (Months 2-3):
-  [ ] Debugging: F5, F1/F2/F3, <leader>dbt
+  [ ] Debugging: F5, F1/F2/F3, <leader>daptb
   [ ] Testing: <leader>tN, <leader>tF, <leader>tS
   [ ] Custom snippets: LuaSnip
   [ ] Aerial + Treesitter navigation
@@ -2100,7 +2157,7 @@ Let's end with some philosophy, because understanding the "why" makes the "what"
 
 Mice are excellent for spatial, visual tasks: drawing, navigating GUIs, selecting items from lists. Editing text is NOT a spatial task. It's a semantic task: "go to this function," "change this variable name," "delete this block." These are conceptual operations that map naturally to commands, not to pointing and clicking.
 
-When you double-click to select a word in VSCode, you're using a spatial metaphor (draw a rectangle around this pixel region) to represent a semantic operation (select this word). It works, but it's imprecise and slow. `ciw` (change inner word) is more direct: it *says* what it does.
+When you double-click to select a word in VSCode, you're using a spatial metaphor (draw a rectangle around this pixel region) to represent a semantic operation (select this word). It works, but it's imprecise and slow. `ciw` (change inner word) is more direct: it _says_ what it does.
 
 ### Every Keystroke Counts
 
@@ -2117,6 +2174,7 @@ The operator + motion + text-object grammar gives you a language for describing 
 ### The Keyboard-First Principle
 
 When your hands are on the keyboard, there's a natural efficiency to staying on the keyboard. Every time you reach for the mouse, you:
+
 1. Move your hand 10-15cm to the right
 2. Visually reacquire your position on screen
 3. Perform the operation
@@ -2129,4 +2187,4 @@ This doesn't mean never use the mouse. It means: every time you catch yourself r
 
 ---
 
-*"The key to Neovim mastery is not learning 500 commands at once. It's learning 5 commands so well that they become reflex, then adding 5 more. Repeat until you're terrifyingly fast."*
+_"The key to Neovim mastery is not learning 500 commands at once. It's learning 5 commands so well that they become reflex, then adding 5 more. Repeat until you're terrifyingly fast."_

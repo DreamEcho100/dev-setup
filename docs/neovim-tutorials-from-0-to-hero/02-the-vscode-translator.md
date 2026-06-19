@@ -11,7 +11,7 @@ This is the reference file. Bookmark it. The philosophy of this tutorial is simp
 
 We're not going to pretend Neovim and VSCode are the same. They're not. But 95% of what you do in VSCode has a direct or nearly-direct equivalent in Neovim, and in many cases the Neovim version is faster or more powerful once you know it. We'll call those out.
 
-Let's start with the mental model shifts, because some VSCode concepts simply don't map 1:1 to Neovim — and if you try to force them, you'll be frustrated. Once you understand *why* Neovim works differently, the new approach will make sense.
+Let's start with the mental model shifts, because some VSCode concepts simply don't map 1:1 to Neovim — and if you try to force them, you'll be frustrated. Once you understand _why_ Neovim works differently, the new approach will make sense.
 
 ---
 
@@ -22,6 +22,7 @@ Let's start with the mental model shifts, because some VSCode concepts simply do
 This is the most important conceptual shift, and getting it wrong will make Neovim feel chaotic.
 
 **In VSCode:**
+
 - You open a "file" and it appears in a "tab" at the top
 - You can split the editor into multiple panes
 - Closing a "tab" closes that file from your view
@@ -58,9 +59,10 @@ This is the most important conceptual shift, and getting it wrong will make Neov
 
 **Windows** are the visible panes. A window is a "viewport" showing a buffer. You can have the same buffer open in two windows simultaneously (useful for viewing different parts of the same file).
 
-**Tabs** in Neovim are *not* like browser tabs or VSCode tabs. A Neovim tab is a full window layout — each tab has its own arrangement of windows. Most Neovim users use them sparingly, for completely different workspace layouts. This is where VSCode refugees get confused: the "tab line" at the top of Neovim (if you have one configured) typically shows *buffers*, not Neovim tabs.
+**Tabs** in Neovim are _not_ like browser tabs or VSCode tabs. A Neovim tab is a full window layout — each tab has its own arrangement of windows. Most Neovim users use them sparingly, for completely different workspace layouts. This is where VSCode refugees get confused: the "tab line" at the top of Neovim (if you have one configured) typically shows _buffers_, not Neovim tabs.
 
 In this config:
+
 - `Tab` / `Shift+Tab` cycles through buffers (like `Ctrl+Tab` in VSCode)
 - `<leader>bx` closes a buffer (like closing a VSCode tab)
 - `<leader>sv` / `<leader>sh` creates window splits
@@ -80,7 +82,7 @@ The VSCode workflow: open sidebar → expand folders → find file → click.
 
 The Neovim workflow: press `<leader>pf` → type 3-4 chars of filename → Enter.
 
-Once you're used to the picker workflow, the sidebar feels painfully slow. You'll go back to VSCode and think "why do I need to *click* this?" Pickers are that good.
+Once you're used to the picker workflow, the sidebar feels painfully slow. You'll go back to VSCode and think "why do I need to _click_ this?" Pickers are that good.
 
 That said, sometimes you want to browse the file tree visually — especially for exploring an unfamiliar project. That's what Oil.nvim and mini.files are for.
 
@@ -108,7 +110,7 @@ dotfiles/.config/nvim/lua/de100/plugins/
 
 To install a new plugin: add a file (or add an entry to an existing file), describe the plugin spec, and run `:Lazy sync`. To update: `:Lazy update`. To see what's installed: `:Lazy` or `:Lazy show`.
 
-**Key difference:** Neovim plugins are code, not black boxes. You can read their source, understand exactly what they do, and customize them completely. Your plugin config *is* your editor configuration. This is both more powerful and more responsibility.
+**Key difference:** Neovim plugins are code, not black boxes. You can read their source, understand exactly what they do, and customize them completely. Your plugin config _is_ your editor configuration. This is both more powerful and more responsibility.
 
 ---
 
@@ -119,6 +121,7 @@ To install a new plugin: add a file (or add an entry to an existing file), descr
 **In Neovim:** Your configuration is Lua code. Options are set in `dotfiles/.config/nvim/lua/de100/core/options.lua`. Keymaps are in `keymaps.lua`. Plugins each have their own config file.
 
 The power of Lua config: you can use actual programming constructs. Conditionals, functions, loops, environment variable checks. This config, for example, enables Copilot only when an environment variable is set:
+
 ```lua
 enabled = vim.env.DE100_ENABLE_COPILOT == "1",
 ```
@@ -133,39 +136,40 @@ The everyday actions you do dozens of times per session.
 
 > **Note on `<leader>`:** In this config, the leader key is `Space`. So `<leader>pf` means press `Space` then `p` then `f`. You'll see `<leader>` throughout. When you press Space and then pause, the **which-key** plugin pops up a menu showing all available next keystrokes.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Open file | `Ctrl+O` / File menu | `:e path/to/file` OR `<leader>pf` (picker) |
-| Open recent files | File > Open Recent | `<leader>pr` (Snacks recent) |
-| Smart file picker | `Ctrl+P` | `<leader>pF` (smart: recent + frecency) |
-| Save | `Ctrl+S` | `Ctrl+S` or `:w` |
-| Save without format | — | `<leader>sn` |
-| Save all | `Ctrl+K S` | `:wa` |
-| Close file/tab | `Ctrl+W` | `<leader>bx` (bdelete) |
-| Close buffer (confirm) | — | `<leader>bD` (Snacks bufdelete, asks first) |
-| New empty buffer | `Ctrl+N` | `<leader>bo` (enew) |
-| Next buffer | `Ctrl+Tab` | `Tab` |
-| Previous buffer | `Ctrl+Shift+Tab` | `Shift+Tab` |
-| List/pick open buffers | — | `<leader>pb` |
-| Undo | `Ctrl+Z` | `u` |
-| Redo | `Ctrl+Y` | `Ctrl+R` |
-| Find in current file | `Ctrl+F` | `/pattern` then `n`/`N` |
-| Find + Replace in file | `Ctrl+H` | `:%s/old/new/gc` |
-| Find in project (grep) | `Ctrl+Shift+F` | `<leader>pg` (Snacks grep) |
-| Grep word under cursor | `Ctrl+Shift+F` + paste | `<leader>pws` |
-| Command palette | `Ctrl+Shift+P` | `<leader>pc` (commands picker) |
-| Go to file | `Ctrl+P` | `<leader>pf` |
-| Format document | `Shift+Alt+F` | `<leader>mp` (conform.nvim) |
-| Toggle terminal | `` Ctrl+` `` | See terminal section |
-| Edit settings | `Ctrl+,` | `:e ~/.config/nvim/lua/de100/core/options.lua` |
-| Copy file path to clipboard | — | `<leader>fp` |
-| Clear search highlights | `Esc` in search | `<leader>nh` |
-| Help pages | `F1` | `<leader>vh` (Snacks help picker) |
-| View keymaps | `Ctrl+K Ctrl+S` | `<leader>pk` (Snacks keymap picker) |
+| Action                      | VSCode                 | Neovim (this config)                           |
+| --------------------------- | ---------------------- | ---------------------------------------------- |
+| Open file                   | `Ctrl+O` / File menu   | `:e path/to/file` OR `<leader>pf` (picker)     |
+| Open recent files           | File > Open Recent     | `<leader>pr` (Snacks recent)                   |
+| Smart file picker           | `Ctrl+P`               | `<leader>pF` (smart: recent + frecency)        |
+| Save                        | `Ctrl+S`               | `Ctrl+S` or `:w`                               |
+| Save without format         | —                      | `<leader>sn`                                   |
+| Save all                    | `Ctrl+K S`             | `:wa`                                          |
+| Close file/tab              | `Ctrl+W`               | `<leader>bx` (bdelete)                         |
+| Close buffer (confirm)      | —                      | `<leader>bD` (Snacks bufdelete, asks first)    |
+| New empty buffer            | `Ctrl+N`               | `<leader>bo` (enew)                            |
+| Next buffer                 | `Ctrl+Tab`             | `Tab`                                          |
+| Previous buffer             | `Ctrl+Shift+Tab`       | `Shift+Tab`                                    |
+| List/pick open buffers      | —                      | `<leader>pb`                                   |
+| Undo                        | `Ctrl+Z`               | `u`                                            |
+| Redo                        | `Ctrl+Y`               | `Ctrl+R`                                       |
+| Find in current file        | `Ctrl+F`               | `/pattern` then `n`/`N`                        |
+| Find + Replace in file      | `Ctrl+H`               | `:%s/old/new/gc`                               |
+| Find in project (grep)      | `Ctrl+Shift+F`         | `<leader>pg` (Snacks grep)                     |
+| Grep word under cursor      | `Ctrl+Shift+F` + paste | `<leader>pws`                                  |
+| Command palette             | `Ctrl+Shift+P`         | `<leader>pc` (commands picker)                 |
+| Go to file                  | `Ctrl+P`               | `<leader>pf`                                   |
+| Format document             | `Shift+Alt+F`          | `<leader>mp` (conform.nvim)                    |
+| Toggle terminal             | `` Ctrl+` ``           | See terminal section                           |
+| Edit settings               | `Ctrl+,`               | `:e ~/.config/nvim/lua/de100/core/options.lua` |
+| Copy file path to clipboard | —                      | `<leader>fp`                                   |
+| Clear search highlights     | `Esc` in search        | `<leader>nh`                                   |
+| Help pages                  | `F1`                   | `<leader>vh` (Snacks help picker)              |
+| View keymaps                | `Ctrl+K Ctrl+S`        | `<leader>pk` (Snacks keymap picker)            |
 
 ### Notes on Find + Replace
 
 The command `:%s/old/new/gc` breaks down as:
+
 - `%` — apply to the whole file
 - `s` — substitute command
 - `/old/` — search pattern
@@ -185,25 +189,25 @@ Getting around your codebase — jumping to definitions, finding references, nav
 >
 > **In Neovim you...** use keyboard shortcuts mapped in the LSP `on_attach` callback (in `lsp/lsp.lua`). These activate when an LSP server attaches to your buffer.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Go to definition | `F12` | `gd` |
-| Go to declaration | (right-click menu) | `gD` |
-| Find all references | `Shift+F12` | `gR` (opens Snacks picker) |
-| Go to implementation | `Ctrl+F12` | `gi` (opens Snacks picker) |
-| Go to type definition | (right-click) | `gt` (opens Snacks picker) |
-| Hover documentation | Hover / `Ctrl+K Ctrl+I` | `K` |
-| Signature help | Auto-popup in insert | `<leader>ls` (in normal and insert) |
-| Back in jump list | `Alt+Left` | `Ctrl+O` |
-| Forward in jump list | `Alt+Right` | `Ctrl+I` |
-| Go to line number | `Ctrl+G` | `:{number}` or `{number}G` |
-| Go to symbol in file | `Ctrl+Shift+O` | `<leader>lo` (Aerial toggle) |
-| Next symbol | — | `]a` (Aerial next) |
-| Previous symbol | — | `[a` (Aerial prev) |
-| Next diagnostic | `F8` | `]d` |
-| Previous diagnostic | `Shift+F8` | `[d` |
-| Next git hunk | — | `]h` (gitsigns) |
-| Previous git hunk | — | `[h` (gitsigns) |
+| Action                | VSCode                  | Neovim (this config)                |
+| --------------------- | ----------------------- | ----------------------------------- |
+| Go to definition      | `F12`                   | `gd`                                |
+| Go to declaration     | (right-click menu)      | `gD`                                |
+| Find all references   | `Shift+F12`             | `gR` (opens Snacks picker)          |
+| Go to implementation  | `Ctrl+F12`              | `gi` (opens Snacks picker)          |
+| Go to type definition | (right-click)           | `gt` (opens Snacks picker)          |
+| Hover documentation   | Hover / `Ctrl+K Ctrl+I` | `K`                                 |
+| Signature help        | Auto-popup in insert    | `<leader>ls` (in normal and insert) |
+| Back in jump list     | `Alt+Left`              | `Ctrl+O`                            |
+| Forward in jump list  | `Alt+Right`             | `Ctrl+I`                            |
+| Go to line number     | `Ctrl+G`                | `:{number}` or `{number}G`          |
+| Go to symbol in file  | `Ctrl+Shift+O`          | `<leader>lo` (Aerial toggle)        |
+| Next symbol           | —                       | `]a` (Aerial next)                  |
+| Previous symbol       | —                       | `[a` (Aerial prev)                  |
+| Next diagnostic       | `F8`                    | `]d`                                |
+| Previous diagnostic   | `Shift+F8`              | `[d`                                |
+| Next git hunk         | —                       | `]h` (gitsigns)                     |
+| Previous git hunk     | —                       | `[h` (gitsigns)                     |
 
 ### Jump List Explained
 
@@ -229,21 +233,21 @@ This is where Neovim has genuinely caught up to — and in some ways surpassed �
 >
 > **In Neovim you...** get the same LSP backends (same language servers!), configured via Mason (the LSP installer) and `nvim-lspconfig`. The servers are the same; the editor integration is different but equally capable.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Code actions (quick fixes) | `Ctrl+.` | `<leader>ca` |
-| Rename symbol | `F2` | `<leader>rn` |
-| Rename file (preserving imports) | Right-click > Rename | `<leader>rN` (Snacks rename) |
-| Show workspace diagnostics | Problems panel | `<leader>xw` (Trouble workspace) |
-| Show file diagnostics | Problems panel (filtered) | `<leader>xd` (Trouble document) |
-| Open todos/fixmes list | (extension) | `<leader>xt` (Trouble + todo-comments) |
-| Open quickfix list | Quick fix panel | `<leader>xq` (Trouble quickfix) |
-| Show diagnostic float | Hover on error | `<leader>df` or `<leader>dd` |
-| Toggle virtual text (inline errors) | Settings: inline hints | `<leader>lv` (toggle virtual text) |
-| Toggle inlay hints | Settings: inlay hints | `<leader>li` (toggle inlay hints) |
-| Signature help | Auto-popup | `<leader>ls` |
-| Buffer diagnostics picker | — | `<leader>D` (Snacks diagnostics_buffer) |
-| Open Mason (LSP manager) | Extensions sidebar | `:Mason` |
+| Action                              | VSCode                    | Neovim (this config)                    |
+| ----------------------------------- | ------------------------- | --------------------------------------- |
+| Code actions (quick fixes)          | `Ctrl+.`                  | `<leader>ca`                            |
+| Rename symbol                       | `F2`                      | `<leader>rn`                            |
+| Rename file (preserving imports)    | Right-click > Rename      | `<leader>rN` (Snacks rename)            |
+| Show workspace diagnostics          | Problems panel            | `<leader>xw` (Trouble workspace)        |
+| Show file diagnostics               | Problems panel (filtered) | `<leader>xd` (Trouble document)         |
+| Open todos/fixmes list              | (extension)               | `<leader>xt` (Trouble + todo-comments)  |
+| Open quickfix list                  | Quick fix panel           | `<leader>xq` (Trouble quickfix)         |
+| Show diagnostic float               | Hover on error            | `<leader>df` or `<leader>dd`            |
+| Toggle virtual text (inline errors) | Settings: inline hints    | `<leader>lv` (toggle virtual text)      |
+| Toggle inlay hints                  | Settings: inlay hints     | `<leader>li` (toggle inlay hints)       |
+| Signature help                      | Auto-popup                | `<leader>ls`                            |
+| Buffer diagnostics picker           | —                         | `<leader>D` (Snacks diagnostics_buffer) |
+| Open Mason (LSP manager)            | Extensions sidebar        | `:Mason`                                |
 
 ### About Inlay Hints
 
@@ -273,22 +277,22 @@ Neovim uses two complementary file management tools in this config: **Oil.nvim**
 >
 > **In Neovim you...** use either Oil or mini.files. The philosophy is different: **you edit the filesystem the same way you edit text**. Want to rename a file? Edit the text that is the filename. Want to move a file? Cut its line and paste it somewhere else. Want to create a file? Type a new name. It's wild the first time. Then it's brilliant.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Toggle file explorer | `Ctrl+Shift+E` | `<leader>ee` (mini.files) |
-| Open explorer at current file | Right-click > Reveal | `<leader>ef` (mini.files to current file) |
-| Open parent directory (Oil) | — | `-` (minus key) |
-| Open parent dir in float | — | `<leader>-` (Oil float) |
-| Open explorer picker | — | `<leader>pe` (Snacks explorer picker) |
-| Navigate into folder | Click arrow/folder | `L` or `Enter` (mini.files) / `Enter` (Oil) |
-| Navigate out/up | Click parent | `H` or `-` (mini.files) |
-| Create new file | Right-click > New File | Edit a new line (Oil) or type filename (mini.files) |
-| Create new folder | Right-click > New Folder | Type `foldername/` (Oil handles trailing slash) |
-| Rename file | `F2` in explorer | Edit the filename text in the buffer |
-| Delete file | `Delete` key | Delete the line in Oil (`dd`), auto-confirms |
-| Move file | Drag and drop | Cut line (`dd`) and paste in new location |
-| Refresh | — | `Ctrl+R` (Oil keybinding) |
-| Close Oil | — | `q` |
+| Action                        | VSCode                   | Neovim (this config)                                |
+| ----------------------------- | ------------------------ | --------------------------------------------------- |
+| Toggle file explorer          | `Ctrl+Shift+E`           | `<leader>ee` (mini.files)                           |
+| Open explorer at current file | Right-click > Reveal     | `<leader>ef` (mini.files to current file)           |
+| Open parent directory (Oil)   | —                        | `-` (minus key)                                     |
+| Open parent dir in float      | —                        | `<leader>-` (Oil float)                             |
+| Open explorer picker          | —                        | `<leader>pe` (Snacks explorer picker)               |
+| Navigate into folder          | Click arrow/folder       | `L` or `Enter` (mini.files) / `Enter` (Oil)         |
+| Navigate out/up               | Click parent             | `H` or `-` (mini.files)                             |
+| Create new file               | Right-click > New File   | Edit a new line (Oil) or type filename (mini.files) |
+| Create new folder             | Right-click > New Folder | Type `foldername/` (Oil handles trailing slash)     |
+| Rename file                   | `F2` in explorer         | Edit the filename text in the buffer                |
+| Delete file                   | `Delete` key             | Delete the line in Oil (`dd`), auto-confirms        |
+| Move file                     | Drag and drop            | Cut line (`dd`) and paste in new location           |
+| Refresh                       | —                        | `Ctrl+R` (Oil keybinding)                           |
+| Close Oil                     | —                        | `q`                                                 |
 
 ### Oil.nvim Mental Model
 
@@ -329,30 +333,30 @@ This config has an excellent Git workflow, arguably better than VSCode's default
 >
 > **In Neovim you...** have multiple powerful options. The most approachable (closest to VSCode) is Neogit. The fastest is using gitsigns keybindings for hunk-level operations. The most powerful is LazyGit for complex operations.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Open Git UI | `Ctrl+Shift+G` | `<leader>gn` (Neogit) |
-| Open LazyGit (full TUI) | (GitLens extension) | `<leader>lg` |
-| View git log | GitLens panel | `<leader>gl` (Snacks lazygit log) |
-| Stage current hunk | Stage hunk button | `<leader>gs` |
-| Unstage/reset current hunk | Discard hunk | `<leader>gr` |
-| Stage entire file/buffer | Stage file | `<leader>gS` |
-| Reset entire file/buffer | Discard all changes | `<leader>gR` |
-| Undo last stage | — | `<leader>gu` (undo stage hunk) |
-| Preview hunk (inline diff) | Hover on gutter | `<leader>gp` |
-| Toggle line blame | GitLens inline blame | `<leader>gB` (toggle on/off) |
-| Show full line blame | GitLens hover | `<leader>gbl` |
-| Open diff view | Diff view panel | `<leader>gdo` (Diffview open) |
-| Close diff view | Close diff panel | `<leader>gdc` |
-| View current file history | GitLens timeline | `<leader>gdh` (Diffview file history) |
-| View repo history | GitLens repo history | `<leader>gdH` |
-| Open fugitive | — | `<leader>gf` (fullscreen tab) |
-| Git push (in fugitive) | Push button | `<leader>gP` (in fugitive buffer) |
-| Git pull --rebase (fugitive) | Pull button | `<leader>gpr` (in fugitive buffer) |
-| Next hunk | — | `]h` |
-| Previous hunk | — | `[h` |
-| Pick/switch git branch | — | `<leader>gbr` (Snacks branch picker) |
-| Diff this file (inline) | Split diff | `<leader>gdi` |
+| Action                       | VSCode               | Neovim (this config)                  |
+| ---------------------------- | -------------------- | ------------------------------------- |
+| Open Git UI                  | `Ctrl+Shift+G`       | `<leader>gn` (Neogit)                 |
+| Open LazyGit (full TUI)      | (GitLens extension)  | `<leader>lg`                          |
+| View git log                 | GitLens panel        | `<leader>gl` (Snacks lazygit log)     |
+| Stage current hunk           | Stage hunk button    | `<leader>gs`                          |
+| Unstage/reset current hunk   | Discard hunk         | `<leader>gr`                          |
+| Stage entire file/buffer     | Stage file           | `<leader>gS`                          |
+| Reset entire file/buffer     | Discard all changes  | `<leader>gR`                          |
+| Undo last stage              | —                    | `<leader>gu` (undo stage hunk)        |
+| Preview hunk (inline diff)   | Hover on gutter      | `<leader>gp`                          |
+| Toggle line blame            | GitLens inline blame | `<leader>gB` (toggle on/off)          |
+| Show full line blame         | GitLens hover        | `<leader>gbl`                         |
+| Open diff view               | Diff view panel      | `<leader>gdo` (Diffview open)         |
+| Close diff view              | Close diff panel     | `<leader>gdc`                         |
+| View current file history    | GitLens timeline     | `<leader>gdh` (Diffview file history) |
+| View repo history            | GitLens repo history | `<leader>gdH`                         |
+| Open fugitive                | —                    | `<leader>gf` (fullscreen tab)         |
+| Git push (in fugitive)       | Push button          | `<leader>gP` (in fugitive buffer)     |
+| Git pull --rebase (fugitive) | Pull button          | `<leader>gpr` (in fugitive buffer)    |
+| Next hunk                    | —                    | `]h`                                  |
+| Previous hunk                | —                    | `[h`                                  |
+| Pick/switch git branch       | —                    | `<leader>gbr` (Snacks branch picker)  |
+| Diff this file (inline)      | Split diff           | `<leader>gdi`                         |
 
 ### LazyGit Integration
 
@@ -382,29 +386,29 @@ This config uses **nvim-dap** (Debug Adapter Protocol) with **nvim-dap-ui** for 
 >
 > **In Neovim you...** use the same F-key shortcuts (mostly), and `F7` toggles the dap-ui panel which shows the same panels: variables, call stack, breakpoints, REPL.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Toggle breakpoint | `F9` | `<leader>dbt` |
-| Set conditional breakpoint | Right-click breakpoint | `<leader>B` (prompts for condition) |
-| Start / Continue debug | `F5` | `F5` |
-| Step over (next line) | `F10` | `F2` |
-| Step into (into function) | `F11` | `F1` |
-| Step out (out of function) | `Shift+F11` | `F3` |
-| Toggle debug UI panels | — | `F7` |
-| Show debug UI automatically | Yes | Yes (auto-opens on debug start) |
+| Action                      | VSCode                 | Neovim (this config)                   |
+| --------------------------- | ---------------------- | -------------------------------------- |
+| Toggle breakpoint           | `F9`                   | `<leader>daptb`                        |
+| Set conditional breakpoint  | Right-click breakpoint | `<leader>dapb` (prompts for condition) |
+| Start / Continue debug      | `F5`                   | `F5`                                   |
+| Step over (next line)       | `F10`                  | `F2`                                   |
+| Step into (into function)   | `F11`                  | `F1`                                   |
+| Step out (out of function)  | `Shift+F11`            | `F3`                                   |
+| Toggle debug UI panels      | —                      | `F7`                                   |
+| Show debug UI automatically | Yes                    | Yes (auto-opens on debug start)        |
 
 ### Supported Languages (Auto-Configured)
 
 This config ships with debug adapters pre-configured for:
 
-| Language | Adapter | Notes |
-|----------|---------|-------|
-| Go | delve (via `dap-go`) | Full support including test debugging |
-| JavaScript/TypeScript | js-debug-adapter | Launch file or attach to process |
-| Python | debugpy | Points to `/usr/bin/python3` — adjust as needed |
-| C/C++/Rust | codelldb | Requires compiling with debug symbols (`-g`) |
-| C# / .NET | netcoredbg | Requires DLL path |
-| React/Browser | Chrome DevTools | Attach or launch Chrome |
+| Language              | Adapter              | Notes                                           |
+| --------------------- | -------------------- | ----------------------------------------------- |
+| Go                    | delve (via `dap-go`) | Full support including test debugging           |
+| JavaScript/TypeScript | js-debug-adapter     | Launch file or attach to process                |
+| Python                | debugpy              | Points to `/usr/bin/python3` — adjust as needed |
+| C/C++/Rust            | codelldb             | Requires compiling with debug symbols (`-g`)    |
+| C# / .NET             | netcoredbg           | Requires DLL path                               |
+| React/Browser         | Chrome DevTools      | Attach or launch Chrome                         |
 
 ### VSCode launch.json Compatibility
 
@@ -420,23 +424,23 @@ This config uses **neotest** for a unified testing interface. It supports multip
 >
 > **In Neovim you...** use neotest, which shows pass/fail signs in the gutter, lets you run individual tests, and has an output panel.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Run nearest test | Click play button | `<leader>tN` |
-| Run all tests in file | "Run File" button | `<leader>tF` |
-| View test output | Output panel | `<leader>tO` |
-| Toggle test summary | Test Explorer panel | `<leader>tS` |
+| Action                | VSCode              | Neovim (this config) |
+| --------------------- | ------------------- | -------------------- |
+| Run nearest test      | Click play button   | `<leader>tN`         |
+| Run all tests in file | "Run File" button   | `<leader>tF`         |
+| View test output      | Output panel        | `<leader>tO`         |
+| Toggle test summary   | Test Explorer panel | `<leader>tS`         |
 
 ### Supported Test Frameworks
 
 Neotest adapters configured in this setup:
 
-| Framework | Language | Adapter |
-|-----------|----------|---------|
-| vitest | JavaScript/TypeScript | neotest-vitest |
-| pytest | Python | neotest-python |
-| plenary | Lua (Neovim plugin tests) | neotest-plenary |
-| cargo test | Rust | neotest-rust |
+| Framework  | Language                  | Adapter         |
+| ---------- | ------------------------- | --------------- |
+| vitest     | JavaScript/TypeScript     | neotest-vitest  |
+| pytest     | Python                    | neotest-python  |
+| plenary    | Lua (Neovim plugin tests) | neotest-plenary |
+| cargo test | Rust                      | neotest-rust    |
 
 ---
 
@@ -448,11 +452,11 @@ Multi-cursor is one of VSCode's most-loved features. Neovim has it too, via the 
 >
 > **In Neovim you...** use `<leader>cm` to add a cursor at the next match of the current word, or `<leader>cM` to add cursors at ALL matches. Then type normally — all cursors change together.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Add cursor at next occurrence | `Ctrl+D` | `<leader>cm` |
-| Add cursors at ALL occurrences | `Ctrl+Shift+L` | `<leader>cM` |
-| Cancel / clear all cursors | `Esc` | `Esc` (first press clears search highlight, second clears cursors) |
+| Action                         | VSCode         | Neovim (this config)                                               |
+| ------------------------------ | -------------- | ------------------------------------------------------------------ |
+| Add cursor at next occurrence  | `Ctrl+D`       | `<leader>cm`                                                       |
+| Add cursors at ALL occurrences | `Ctrl+Shift+L` | `<leader>cM`                                                       |
+| Cancel / clear all cursors     | `Esc`          | `Esc` (first press clears search highlight, second clears cursors) |
 
 ### Multi-Cursor in Visual Mode
 
@@ -472,26 +476,26 @@ Splitting your editor view is a core workflow. In VSCode you drag editor tabs in
 >
 > **In Neovim you...** use `<leader>s` prefix for split management, and `Ctrl+H/J/K/L` to navigate between splits (mirroring the `h/j/k/l` navigation keys).
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Split editor right | `Ctrl+\` | `<leader>sv` |
-| Split editor down | (via menu) | `<leader>sh` |
-| Make all splits equal size | (drag borders) | `<leader>se` |
-| Close current split | Drag to merge | `<leader>sx` |
-| Focus split left | `Ctrl+K Ctrl+Left` | `Ctrl+H` |
-| Focus split below | `Ctrl+K Ctrl+Down` | `Ctrl+J` |
-| Focus split above | `Ctrl+K Ctrl+Up` | `Ctrl+K` |
-| Focus split right | `Ctrl+K Ctrl+Right` | `Ctrl+L` |
-| Maximize / zoom current split | Drag to full screen | `<leader>sm` (toggle zoom) |
-| Resize split (larger height) | Drag border | `Down arrow` (in Normal mode) |
-| Resize split (smaller height) | Drag border | `Up arrow` (in Normal mode) |
-| Resize split (wider) | Drag border | `Right arrow` |
-| Resize split (narrower) | Drag border | `Left arrow` |
-| Open new Neovim tab | `Ctrl+T` (sometimes) | `<leader>to` |
-| Close Neovim tab | `Ctrl+W` on tab | `<leader>tx` |
-| Next Neovim tab | `Ctrl+PageDown` | `<leader>tn` |
-| Previous Neovim tab | `Ctrl+PageUp` | `<leader>tp` |
-| Open current file in new tab | — | `<leader>tf` |
+| Action                        | VSCode               | Neovim (this config)          |
+| ----------------------------- | -------------------- | ----------------------------- |
+| Split editor right            | `Ctrl+\`             | `<leader>sv`                  |
+| Split editor down             | (via menu)           | `<leader>sh`                  |
+| Make all splits equal size    | (drag borders)       | `<leader>se`                  |
+| Close current split           | Drag to merge        | `<leader>sx`                  |
+| Focus split left              | `Ctrl+K Ctrl+Left`   | `Ctrl+H`                      |
+| Focus split below             | `Ctrl+K Ctrl+Down`   | `Ctrl+J`                      |
+| Focus split above             | `Ctrl+K Ctrl+Up`     | `Ctrl+K`                      |
+| Focus split right             | `Ctrl+K Ctrl+Right`  | `Ctrl+L`                      |
+| Maximize / zoom current split | Drag to full screen  | `<leader>sm` (toggle zoom)    |
+| Resize split (larger height)  | Drag border          | `Down arrow` (in Normal mode) |
+| Resize split (smaller height) | Drag border          | `Up arrow` (in Normal mode)   |
+| Resize split (wider)          | Drag border          | `Right arrow`                 |
+| Resize split (narrower)       | Drag border          | `Left arrow`                  |
+| Open new Neovim tab           | `Ctrl+T` (sometimes) | `<leader>to`                  |
+| Close Neovim tab              | `Ctrl+W` on tab      | `<leader>tx`                  |
+| Next Neovim tab               | `Ctrl+PageDown`      | `<leader>tn`                  |
+| Previous Neovim tab           | `Ctrl+PageUp`        | `<leader>tp`                  |
+| Open current file in new tab  | —                    | `<leader>tf`                  |
 
 ### The Zoom Feature
 
@@ -505,21 +509,22 @@ Splitting your editor view is a core workflow. In VSCode you drag editor tabs in
 >
 > **In Neovim you...** use `<leader>th` to open a live colorscheme picker (Snacks), and toggle various display settings with keybindings.
 
-| Action | VSCode | Neovim (this config) |
-|--------|--------|----------------------|
-| Change color theme | `Ctrl+K Ctrl+T` | `<leader>th` (Snacks colorscheme picker) |
-| Toggle line wrap | View > Word Wrap | `<leader>lw` |
-| Toggle virtual text (LSP errors inline) | Settings | `<leader>lv` |
-| Toggle inlay hints | Settings | `<leader>li` |
-| Undo tree (non-linear history) | — | `<leader>uu` |
-| Search keymaps | `Ctrl+K Ctrl+S` | `<leader>pk` |
-| Help pages | `F1` | `<leader>vh` |
-| Copy current file path | — | `<leader>fp` |
-| Clear search highlights | `Esc` | `<leader>nh` |
+| Action                                  | VSCode           | Neovim (this config)                     |
+| --------------------------------------- | ---------------- | ---------------------------------------- |
+| Change color theme                      | `Ctrl+K Ctrl+T`  | `<leader>th` (Snacks colorscheme picker) |
+| Toggle line wrap                        | View > Word Wrap | `<leader>lw`                             |
+| Toggle virtual text (LSP errors inline) | Settings         | `<leader>lv`                             |
+| Toggle inlay hints                      | Settings         | `<leader>li`                             |
+| Undo tree (non-linear history)          | —                | `<leader>uu`                             |
+| Search keymaps                          | `Ctrl+K Ctrl+S`  | `<leader>pk`                             |
+| Help pages                              | `F1`             | `<leader>vh`                             |
+| Copy current file path                  | —                | `<leader>fp`                             |
+| Clear search highlights                 | `Esc`            | `<leader>nh`                             |
 
 ### Colorschemes in This Config
 
 The `colorscheme.lua` file includes several themes configured and ready:
+
 - **rose-pine** (primary)
 - Others can be added via the colorschemes file
 
@@ -531,48 +536,48 @@ The `<leader>th` picker lets you preview and switch themes live. The active them
 
 Here's the big reference table: every popular VSCode extension mapped to its Neovim equivalent in this config (or the recommended Neovim equivalent).
 
-| VSCode Extension | Neovim Equivalent | Plugin in This Config? | Notes |
-|-----------------|-------------------|----------------------|-------|
-| **Prettier** | conform.nvim + prettierd | Yes (`formatting.lua`) | Format on save, `<leader>mp` |
-| **ESLint** | nvim-lint + eslint_d | Yes (`linting.lua`) | Auto-lint on save |
-| **GitLens** | gitsigns.nvim + neogit | Yes (`gitstuff.lua`, `neogit.lua`) | Inline blame, hunk ops, full UI |
-| **GitHub Copilot** | copilot.lua | Yes (`ai.lua`) | Enable with `DE100_ENABLE_COPILOT=1` env var |
-| **GitHub Copilot Chat** | CodeCompanion.nvim | Yes (`ai.lua`) | Enable with `DE100_ENABLE_CODECOMPANION=1` |
-| **Avante (Cursor-like AI)** | avante.nvim | Yes (`ai.lua`) | Enable with `DE100_ENABLE_AVANTE=1` |
-| **Thunder Client** | kulala.nvim | Yes (`kulala.lua`) | `.http` file REST client, `<leader>H` group |
-| **SQLTools** | vim-dadbod-ui | Yes (`dadbod-ui.lua`) | Database explorer and query runner |
-| **Remote SSH** | remote-nvim.nvim | Yes (`remote-nvim.lua`) | Edit files on remote servers |
-| **Live Server** | (not needed in Neovim) | N/A | Run your own dev server externally |
-| **Bracket Pair Colorizer** | Built-in Neovim 0.10+ | N/A — built-in | `vim.opt.set_indent_with_tab = true` |
-| **Auto Rename Tag** | nvim-ts-autotag | Via languages.lua | Auto-closes and renames HTML/JSX tags |
-| **Path Intellisense** | blink.cmp path source | Yes (`blink-cmp.lua`) | Auto-completes file paths |
-| **Todo Highlight** | todo-comments.nvim | Yes (loaded via trouble) | Highlights TODO/FIXME/HACK/NOTE |
-| **Error Lens** | Diagnostics virtual text + Trouble | Yes (built-in + trouble.lua) | `<leader>lv` to toggle, `<leader>xw` for panel |
-| **File Icons** | nvim-web-devicons | Yes (as dependency) | Icons in file pickers, explorer, lualine |
-| **Rainbow Brackets** | Treesitter highlights | Yes (`treesitter.lua`) | Built into treesitter — no extra config needed |
-| **indent-rainbow** | indent-blankline (not in this config) | Not installed | Can be added if desired |
-| **Better Comments** | todo-comments.nvim | Yes | `TODO:`, `FIXME:`, `HACK:`, `NOTE:` highlighted |
-| **Code Spell Checker** | codespell (in conform.nvim) | Yes (`formatting.lua`) | Runs as a formatter via `["*"] = {"codespell"}` |
-| **Markdown Preview** | markdown-preview.nvim | Yes (`markdown-preview.lua`) | Opens in browser |
-| **Render Markdown** | render-markdown.nvim | Yes (`render-markdown.lua`) | Inline markdown rendering in Neovim |
-| **Image Preview** | snacks.image | Yes (in `snacks.lua`) | Images in markdown buffers |
-| **Kubernetes** | kubectl.nvim | Yes (`kubectl.lua`) | Kubernetes management from Neovim |
-| **REST Client** | kulala.nvim | Yes (`kulala.lua`) | Same as Thunder Client replacement |
-| **Draw.io / Diagrams** | (none great) | Not installed | Consider PlantUML via CLI |
-| **Live Share** | (no equivalent) | N/A | Use tmux with `pair` or `tmate` |
-| **Vim** | Neovim itself | N/A | You're already here |
-| **Which Key** | (no equivalent) | Yes (`which-key.lua`) | Shows all leader key options on pause |
-| **Auto Save** | auto-save.nvim | Yes (`auto-save.lua`) | Currently disabled (`enabled = false`) |
-| **Surround** | mini.surround | Yes (`mini.lua`) | `sa`, `ds`, `ca` for surround operations |
-| **Text Objects** | mini.ai | Yes (`mini.lua`) | Enhanced text objects for selections |
-| **Harpoon** | (no equivalent) | Yes (`harpoon.lua`) | Bookmark + instantly jump to 4 files |
-| **Session Manager** | auto-session | Yes (`auto-session.lua`) | Saves/restores window layouts |
-| **Status Bar** | lualine | Yes (`lualine.lua`) | Mode, git branch, diagnostics, file info |
-| **Fuzzy Finder (like Ctrl+P)** | snacks.picker | Yes (`snacks.lua`) | Replaces Telescope for most use cases |
-| **Treesitter** | nvim-treesitter | Yes (`treesitter.lua`) | Syntax, text objects, highlights |
-| **Flash / Leap** | (no equivalent) | Yes (`flash.lua`) | Jump anywhere on screen with 2 chars |
-| **Noice** | (no equivalent) | Yes (`noice.lua`) | Beautiful command line and notifications |
-| **Multicursor** | VSCode native | Yes (`multicursor.lua`) | `<leader>cm` / `<leader>cM` |
+| VSCode Extension               | Neovim Equivalent                     | Plugin in This Config?             | Notes                                           |
+| ------------------------------ | ------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| **Prettier**                   | conform.nvim + prettierd              | Yes (`formatting.lua`)             | Format on save, `<leader>mp`                    |
+| **ESLint**                     | nvim-lint + eslint_d                  | Yes (`linting.lua`)                | Auto-lint on save                               |
+| **GitLens**                    | gitsigns.nvim + neogit                | Yes (`gitstuff.lua`, `neogit.lua`) | Inline blame, hunk ops, full UI                 |
+| **GitHub Copilot**             | copilot.lua                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_COPILOT=1` env var    |
+| **GitHub Copilot Chat**        | CodeCompanion.nvim                    | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_CODECOMPANION=1`      |
+| **Avante (Cursor-like AI)**    | avante.nvim                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_AVANTE=1`             |
+| **Thunder Client**             | kulala.nvim                           | Yes (`kulala.lua`)                 | `.http` file REST client, `<leader>H` group     |
+| **SQLTools**                   | vim-dadbod-ui                         | Yes (`dadbod-ui.lua`)              | Database explorer and query runner              |
+| **Remote SSH**                 | remote-nvim.nvim                      | Yes (`remote-nvim.lua`)            | Edit files on remote servers                    |
+| **Live Server**                | (not needed in Neovim)                | N/A                                | Run your own dev server externally              |
+| **Bracket Pair Colorizer**     | Built-in Neovim 0.10+                 | N/A — built-in                     | `vim.opt.set_indent_with_tab = true`            |
+| **Auto Rename Tag**            | nvim-ts-autotag                       | Via languages.lua                  | Auto-closes and renames HTML/JSX tags           |
+| **Path Intellisense**          | blink.cmp path source                 | Yes (`blink-cmp.lua`)              | Auto-completes file paths                       |
+| **Todo Highlight**             | todo-comments.nvim                    | Yes (loaded via trouble)           | Highlights TODO/FIXME/HACK/NOTE                 |
+| **Error Lens**                 | Diagnostics virtual text + Trouble    | Yes (built-in + trouble.lua)       | `<leader>lv` to toggle, `<leader>xw` for panel  |
+| **File Icons**                 | nvim-web-devicons                     | Yes (as dependency)                | Icons in file pickers, explorer, lualine        |
+| **Rainbow Brackets**           | Treesitter highlights                 | Yes (`treesitter.lua`)             | Built into treesitter — no extra config needed  |
+| **indent-rainbow**             | indent-blankline (not in this config) | Not installed                      | Can be added if desired                         |
+| **Better Comments**            | todo-comments.nvim                    | Yes                                | `TODO:`, `FIXME:`, `HACK:`, `NOTE:` highlighted |
+| **Code Spell Checker**         | codespell (in conform.nvim)           | Yes (`formatting.lua`)             | Runs as a formatter via `["*"] = {"codespell"}` |
+| **Markdown Preview**           | markdown-preview.nvim                 | Yes (`markdown-preview.lua`)       | Opens in browser                                |
+| **Render Markdown**            | render-markdown.nvim                  | Yes (`render-markdown.lua`)        | Inline markdown rendering in Neovim             |
+| **Image Preview**              | snacks.image                          | Yes (in `snacks.lua`)              | Images in markdown buffers                      |
+| **Kubernetes**                 | kubectl.nvim                          | Yes (`kubectl.lua`)                | Kubernetes management from Neovim               |
+| **REST Client**                | kulala.nvim                           | Yes (`kulala.lua`)                 | Same as Thunder Client replacement              |
+| **Draw.io / Diagrams**         | (none great)                          | Not installed                      | Consider PlantUML via CLI                       |
+| **Live Share**                 | (no equivalent)                       | N/A                                | Use tmux with `pair` or `tmate`                 |
+| **Vim**                        | Neovim itself                         | N/A                                | You're already here                             |
+| **Which Key**                  | (no equivalent)                       | Yes (`which-key.lua`)              | Shows all leader key options on pause           |
+| **Auto Save**                  | auto-save.nvim                        | Yes (`auto-save.lua`)              | Currently disabled (`enabled = false`)          |
+| **Surround**                   | mini.surround                         | Yes (`mini.lua`)                   | `sa`, `ds`, `ca` for surround operations        |
+| **Text Objects**               | mini.ai                               | Yes (`mini.lua`)                   | Enhanced text objects for selections            |
+| **Harpoon**                    | (no equivalent)                       | Yes (`harpoon.lua`)                | Bookmark + instantly jump to 4 files            |
+| **Session Manager**            | auto-session                          | Yes (`auto-session.lua`)           | Saves/restores window layouts                   |
+| **Status Bar**                 | lualine                               | Yes (`lualine.lua`)                | Mode, git branch, diagnostics, file info        |
+| **Fuzzy Finder (like Ctrl+P)** | snacks.picker                         | Yes (`snacks.lua`)                 | Replaces Telescope for most use cases           |
+| **Treesitter**                 | nvim-treesitter                       | Yes (`treesitter.lua`)             | Syntax, text objects, highlights                |
+| **Flash / Leap**               | (no equivalent)                       | Yes (`flash.lua`)                  | Jump anywhere on screen with 2 chars            |
+| **Noice**                      | (no equivalent)                       | Yes (`noice.lua`)                  | Beautiful command line and notifications        |
+| **Multicursor**                | VSCode native                         | Yes (`multicursor.lua`)            | `<leader>cm` / `<leader>cM`                     |
 
 ---
 
@@ -584,101 +589,101 @@ Here's the big reference table: every popular VSCode extension mapped to its Neo
 
 ### `<leader>b` — Buffers
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>bx` | Close (delete) current buffer |
-| `<leader>bo` | Open new empty buffer |
+| Keybinding   | Action                                   |
+| ------------ | ---------------------------------------- |
+| `<leader>bx` | Close (delete) current buffer            |
+| `<leader>bo` | Open new empty buffer                    |
 | `<leader>bD` | Delete buffer (with confirmation prompt) |
 
-*(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)*
+_(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 
 ---
 
 ### `<leader>c` — Code
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                                      |
+| ------------ | ------------------------------------------- |
 | `<leader>ca` | Code actions (LSP — normal and visual mode) |
-| `<leader>cm` | Multi-cursor: add cursor at next match |
-| `<leader>cM` | Multi-cursor: add cursors at ALL matches |
+| `<leader>cm` | Multi-cursor: add cursor at next match      |
+| `<leader>cM` | Multi-cursor: add cursors at ALL matches    |
 
 ---
 
 ### `<leader>d` — Diagnostics / Debug
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>D` | Show buffer diagnostics (Snacks picker) |
-| `<leader>dd` | Open floating diagnostic message |
-| `<leader>df` | Open floating diagnostic (same as dd — from LSP config) |
-| `<leader>dbt` | DAP: Toggle breakpoint |
-| `<leader>B` | DAP: Set conditional breakpoint |
-| `[d` | Go to previous diagnostic |
-| `]d` | Go to next diagnostic |
-| `<leader>q` | Open diagnostics list (loclist) |
+| Keybinding      | Action                                                  |
+| --------------- | ------------------------------------------------------- |
+| `<leader>D`     | Show buffer diagnostics (Snacks picker)                 |
+| `<leader>dd`    | Open floating diagnostic message                        |
+| `<leader>df`    | Open floating diagnostic (same as dd — from LSP config) |
+| `<leader>daptb` | DAP: Toggle breakpoint                                  |
+| `<leader>dapb`  | DAP: Set conditional breakpoint                         |
+| `[d`            | Go to previous diagnostic                               |
+| `]d`            | Go to next diagnostic                                   |
+| `<leader>q`     | Open diagnostics list (loclist)                         |
 
 ---
 
 ### `<leader>e` — Explorer
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>ee` | Toggle mini.files explorer |
+| Keybinding   | Action                          |
+| ------------ | ------------------------------- |
+| `<leader>ee` | Toggle mini.files explorer      |
 | `<leader>ef` | Open mini.files at current file |
-| `<leader>pe` | Snacks explorer picker |
-| `-` | Oil: open parent directory |
-| `<leader>-` | Oil: toggle float |
+| `<leader>pe` | Snacks explorer picker          |
+| `-`          | Oil: open parent directory      |
+| `<leader>-`  | Oil: toggle float               |
 
 ---
 
 ### `<leader>f` — File
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                              |
+| ------------ | ----------------------------------- |
 | `<leader>fp` | Copy current file path to clipboard |
 
 ---
 
 ### `<leader>g` — Git
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>gn` | Open Neogit |
-| `<leader>lg` | Open LazyGit (Snacks) |
-| `<leader>gl` | LazyGit log view |
-| `<leader>gs` | Stage hunk |
-| `<leader>gr` | Reset hunk |
-| `<leader>gS` | Stage entire buffer |
-| `<leader>gR` | Reset entire buffer |
-| `<leader>gu` | Undo stage hunk |
-| `<leader>gp` | Preview hunk |
-| `<leader>gbl` | Show full blame for line |
-| `<leader>gB` | Toggle line blame (inline) |
-| `<leader>gdi` | Diff this (inline) |
-| `<leader>gD` | Diff this ~ |
-| `<leader>gdo` | Open Diffview |
-| `<leader>gdc` | Close Diffview |
+| Keybinding    | Action                         |
+| ------------- | ------------------------------ |
+| `<leader>gn`  | Open Neogit                    |
+| `<leader>lg`  | Open LazyGit (Snacks)          |
+| `<leader>gl`  | LazyGit log view               |
+| `<leader>gs`  | Stage hunk                     |
+| `<leader>gr`  | Reset hunk                     |
+| `<leader>gS`  | Stage entire buffer            |
+| `<leader>gR`  | Reset entire buffer            |
+| `<leader>gu`  | Undo stage hunk                |
+| `<leader>gp`  | Preview hunk                   |
+| `<leader>gbl` | Show full blame for line       |
+| `<leader>gB`  | Toggle line blame (inline)     |
+| `<leader>gdi` | Diff this (inline)             |
+| `<leader>gD`  | Diff this ~                    |
+| `<leader>gdo` | Open Diffview                  |
+| `<leader>gdc` | Close Diffview                 |
 | `<leader>gdh` | Diffview: current file history |
-| `<leader>gdH` | Diffview: repo history |
-| `<leader>gbr` | Pick and switch git branch |
-| `<leader>gf` | Fugitive fullscreen tab |
-| `]h` | Next git hunk |
-| `[h` | Previous git hunk |
+| `<leader>gdH` | Diffview: repo history         |
+| `<leader>gbr` | Pick and switch git branch     |
+| `<leader>gf`  | Fugitive fullscreen tab        |
+| `]h`          | Next git hunk                  |
+| `[h`          | Previous git hunk              |
 
 ---
 
 ### `<leader>h` — Harpoon
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                           |
+| ------------ | -------------------------------- |
 | `<leader>ha` | Add current file to Harpoon list |
-| `<leader>hh` | Open Harpoon quick menu |
-| `<leader>h1` | Jump to Harpoon file 1 |
-| `<leader>h2` | Jump to Harpoon file 2 |
-| `<leader>h3` | Jump to Harpoon file 3 |
-| `<leader>h4` | Jump to Harpoon file 4 |
-| `<leader>hp` | Harpoon: previous in list |
-| `<leader>hn` | Harpoon: next in list |
+| `<leader>hh` | Open Harpoon quick menu          |
+| `<leader>h1` | Jump to Harpoon file 1           |
+| `<leader>h2` | Jump to Harpoon file 2           |
+| `<leader>h3` | Jump to Harpoon file 3           |
+| `<leader>h4` | Jump to Harpoon file 4           |
+| `<leader>hp` | Harpoon: previous in list        |
+| `<leader>hn` | Harpoon: next in list            |
 
 > **Harpoon context:** Harpoon lets you bookmark up to 4 files and jump to them with a single keystroke. No more hunting through buffer lists for your most-used files. Mark your 4 most important files for the current task, then `<leader>h1` through `<leader>h4` to teleport between them.
 
@@ -686,144 +691,144 @@ Here's the big reference table: every popular VSCode extension mapped to its Neo
 
 ### `<leader>H` — HTTP / REST
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                    |
+| ------------ | ------------------------- |
 | `<leader>Hr` | Run HTTP request (kulala) |
-| `<leader>Ha` | Run all HTTP requests |
-| `<leader>Hp` | Replay last request |
-| `<leader>Hi` | Inspect request |
-| `<leader>Hc` | Copy as cURL |
-| `<leader>HE` | Set environment |
-| `]r` | Next request in file |
-| `[r` | Previous request in file |
+| `<leader>Ha` | Run all HTTP requests     |
+| `<leader>Hp` | Replay last request       |
+| `<leader>Hi` | Inspect request           |
+| `<leader>Hc` | Copy as cURL              |
+| `<leader>HE` | Set environment           |
+| `]r`         | Next request in file      |
+| `[r`         | Previous request in file  |
 
 ---
 
 ### `<leader>l` — LSP / Lint
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>lo` | Toggle Aerial symbols outline |
-| `<leader>lv` | Toggle LSP virtual text (inline errors) |
+| Keybinding   | Action                                                       |
+| ------------ | ------------------------------------------------------------ |
+| `<leader>lo` | Toggle Aerial symbols outline                                |
+| `<leader>lv` | Toggle LSP virtual text (inline errors)                      |
 | `<leader>lx` | Toggle LSP diagnostics visibility (underline + virtual text) |
-| `<leader>li` | Toggle inlay hints |
-| `<leader>lw` | Toggle line wrap |
-| `<leader>ls` | LSP signature help |
+| `<leader>li` | Toggle inlay hints                                           |
+| `<leader>lw` | Toggle line wrap                                             |
+| `<leader>ls` | LSP signature help                                           |
 
 ---
 
 ### `<leader>m` — Make / Format
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                                          |
+| ------------ | ----------------------------------------------- |
 | `<leader>mp` | Format current file or selection (conform.nvim) |
 
 ---
 
 ### `<leader>p` — Pick / Search
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>pf` | Find files (Snacks picker) |
-| `<leader>pF` | Smart picker (recent + frecency weighted) |
-| `<leader>pb` | Pick open buffers |
-| `<leader>pr` | Recent files |
-| `<leader>pg` | Grep project (live grep) |
-| `<leader>pc` | Commands picker |
-| `<leader>pe` | Explorer picker |
+| Keybinding    | Action                                    |
+| ------------- | ----------------------------------------- |
+| `<leader>pf`  | Find files (Snacks picker)                |
+| `<leader>pF`  | Smart picker (recent + frecency weighted) |
+| `<leader>pb`  | Pick open buffers                         |
+| `<leader>pr`  | Recent files                              |
+| `<leader>pg`  | Grep project (live grep)                  |
+| `<leader>pc`  | Commands picker                           |
+| `<leader>pe`  | Explorer picker                           |
 | `<leader>pws` | Grep word under cursor / visual selection |
-| `<leader>pk` | Search keymaps (ivy layout) |
+| `<leader>pk`  | Search keymaps (ivy layout)               |
 
 ---
 
 ### `<leader>r` — Rename / Refactor
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>rn` | Smart rename (LSP) |
+| Keybinding   | Action                                         |
+| ------------ | ---------------------------------------------- |
+| `<leader>rn` | Smart rename (LSP)                             |
 | `<leader>rN` | Rename current file (Snacks — updates imports) |
 
 ---
 
 ### `<leader>s` — Splits / Session
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>sv` | Split window vertically |
-| `<leader>sh` | Split window horizontally |
-| `<leader>se` | Make all splits equal size |
-| `<leader>sx` | Close current split |
+| Keybinding   | Action                               |
+| ------------ | ------------------------------------ |
+| `<leader>sv` | Split window vertically              |
+| `<leader>sh` | Split window horizontally            |
+| `<leader>se` | Make all splits equal size           |
+| `<leader>sx` | Close current split                  |
 | `<leader>sm` | Toggle split zoom (maximize/restore) |
-| `<leader>sn` | Save file without autoformat |
+| `<leader>sn` | Save file without autoformat         |
 
 ---
 
 ### `<leader>t` — Tabs / Tests / Tasks
 
-| Keybinding | Action |
-|-----------|--------|
-| `<leader>to` | Open new tab |
-| `<leader>tx` | Close current tab |
-| `<leader>tn` | Go to next tab |
-| `<leader>tp` | Go to previous tab |
+| Keybinding   | Action                         |
+| ------------ | ------------------------------ |
+| `<leader>to` | Open new tab                   |
+| `<leader>tx` | Close current tab              |
+| `<leader>tn` | Go to next tab                 |
+| `<leader>tp` | Go to previous tab             |
 | `<leader>tf` | Open current buffer in new tab |
-| `<leader>tN` | Neotest: run nearest test |
+| `<leader>tN` | Neotest: run nearest test      |
 | `<leader>tF` | Neotest: run all tests in file |
-| `<leader>tO` | Neotest: open output panel |
-| `<leader>tS` | Neotest: toggle summary panel |
+| `<leader>tO` | Neotest: open output panel     |
+| `<leader>tS` | Neotest: toggle summary panel  |
 
 ---
 
 ### `<leader>u` — UI / Toggles
 
-*(This group is available for custom UI toggles — check which-key for current bindings)*
+_(This group is available for custom UI toggles — check which-key for current bindings)_
 
 ---
 
 ### `<leader>v` — View / Help
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                     |
+| ------------ | -------------------------- |
 | `<leader>vh` | Help pages (Snacks picker) |
 
 ---
 
 ### `<leader>w` — Workspace / Session
 
-*(Session management via auto-session — check `auto-session.lua` for bindings)*
+_(Session management via auto-session — check `auto-session.lua` for bindings)_
 
 ---
 
 ### `<leader>x` — Trouble / Lists
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                         |
+| ------------ | ------------------------------ |
 | `<leader>xw` | Trouble: workspace diagnostics |
-| `<leader>xd` | Trouble: document diagnostics |
-| `<leader>xq` | Trouble: quickfix list |
-| `<leader>xl` | Trouble: location list |
-| `<leader>xt` | Trouble: TODO/FIXME list |
+| `<leader>xd` | Trouble: document diagnostics  |
+| `<leader>xq` | Trouble: quickfix list         |
+| `<leader>xl` | Trouble: location list         |
+| `<leader>xt` | Trouble: TODO/FIXME list       |
 
 ---
 
 ### `<leader>y` — Yank
 
-*(Yanky.nvim for enhanced clipboard — configured in `yanky.lua`. Provides yank history and paste cycling.)*
+_(Yanky.nvim for enhanced clipboard — configured in `yanky.lua`. Provides yank history and paste cycling.)_
 
 ---
 
 ### `<leader>k` — Keys / Show
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                                 |
+| ------------ | -------------------------------------- |
 | `<leader>pk` | Search all keymaps (Snacks ivy picker) |
 
 ---
 
 ### `<leader>n` — Clear
 
-| Keybinding | Action |
-|-----------|--------|
+| Keybinding   | Action                  |
+| ------------ | ----------------------- |
 | `<leader>nh` | Clear search highlights |
 
 ---
@@ -832,45 +837,45 @@ Here's the big reference table: every popular VSCode extension mapped to its Neo
 
 These don't use the leader but are important to know:
 
-| Keybinding | Mode | Action |
-|-----------|------|--------|
-| `Ctrl+S` | Normal, Insert, Command | Save current buffer |
-| `Ctrl+Q` | Normal | Quit |
-| `Ctrl+H` | Normal | Focus left split |
-| `Ctrl+J` | Normal | Focus lower split |
-| `Ctrl+K` | Normal | Focus upper split |
-| `Ctrl+L` | Normal | Focus right split |
-| `Ctrl+D` | Normal | Scroll down half page (+ center) |
-| `Ctrl+U` | Normal | Scroll up half page (+ center) |
-| `Ctrl+F` | Normal | New tmux session via tmux-sessionizer |
-| `Tab` | Normal | Next buffer |
-| `Shift+Tab` | Normal | Previous buffer |
-| `n` | Normal | Next search result (+ center) |
-| `N` | Normal | Previous search result (+ center) |
-| `Up/Down/Left/Right` | Normal | Resize current split |
-| `gd` | Normal (LSP) | Go to definition |
-| `gD` | Normal (LSP) | Go to declaration |
-| `gR` | Normal (LSP) | Find references |
-| `gi` | Normal (LSP) | Go to implementation |
-| `gt` | Normal (LSP) | Go to type definition |
-| `K` | Normal (LSP) | Hover documentation |
-| `Ctrl+O` | Normal | Jump list back |
-| `Ctrl+I` | Normal | Jump list forward |
-| `s` | Normal/Visual | Flash jump |
-| `S` | Normal/Visual | Flash treesitter jump |
-| `F5` | Normal | DAP: start/continue debug |
-| `F1` | Normal | DAP: step into |
-| `F2` | Normal | DAP: step over |
-| `F3` | Normal | DAP: step out |
-| `F7` | Normal | DAP: toggle UI |
-| `]a` / `[a` | Normal | Aerial: next/prev symbol |
-| `]h` / `[h` | Normal | Gitsigns: next/prev hunk |
-| `]d` / `[d` | Normal | Next/prev diagnostic |
-| `>` / `<` | Visual | Indent/unindent (stays in visual) |
-| `J` / `K` | Visual | Move selected lines down/up |
-| `x` | Normal | Delete char without copying to register |
-| `Ctrl+C` | Insert | Escape (back to Normal) |
-| `-` | Normal | Oil: open parent directory |
+| Keybinding           | Mode                    | Action                                  |
+| -------------------- | ----------------------- | --------------------------------------- |
+| `Ctrl+S`             | Normal, Insert, Command | Save current buffer                     |
+| `Ctrl+Q`             | Normal                  | Quit                                    |
+| `Ctrl+H`             | Normal                  | Focus left split                        |
+| `Ctrl+J`             | Normal                  | Focus lower split                       |
+| `Ctrl+K`             | Normal                  | Focus upper split                       |
+| `Ctrl+L`             | Normal                  | Focus right split                       |
+| `Ctrl+D`             | Normal                  | Scroll down half page (+ center)        |
+| `Ctrl+U`             | Normal                  | Scroll up half page (+ center)          |
+| `Ctrl+F`             | Normal                  | New tmux session via tmux-sessionizer   |
+| `Tab`                | Normal                  | Next buffer                             |
+| `Shift+Tab`          | Normal                  | Previous buffer                         |
+| `n`                  | Normal                  | Next search result (+ center)           |
+| `N`                  | Normal                  | Previous search result (+ center)       |
+| `Up/Down/Left/Right` | Normal                  | Resize current split                    |
+| `gd`                 | Normal (LSP)            | Go to definition                        |
+| `gD`                 | Normal (LSP)            | Go to declaration                       |
+| `gR`                 | Normal (LSP)            | Find references                         |
+| `gi`                 | Normal (LSP)            | Go to implementation                    |
+| `gt`                 | Normal (LSP)            | Go to type definition                   |
+| `K`                  | Normal (LSP)            | Hover documentation                     |
+| `Ctrl+O`             | Normal                  | Jump list back                          |
+| `Ctrl+I`             | Normal                  | Jump list forward                       |
+| `s`                  | Normal/Visual           | Flash jump                              |
+| `S`                  | Normal/Visual           | Flash treesitter jump                   |
+| `F5`                 | Normal                  | DAP: start/continue debug               |
+| `F1`                 | Normal                  | DAP: step into                          |
+| `F2`                 | Normal                  | DAP: step over                          |
+| `F3`                 | Normal                  | DAP: step out                           |
+| `F7`                 | Normal                  | DAP: toggle UI                          |
+| `]a` / `[a`          | Normal                  | Aerial: next/prev symbol                |
+| `]h` / `[h`          | Normal                  | Gitsigns: next/prev hunk                |
+| `]d` / `[d`          | Normal                  | Next/prev diagnostic                    |
+| `>` / `<`            | Visual                  | Indent/unindent (stays in visual)       |
+| `J` / `K`            | Visual                  | Move selected lines down/up             |
+| `x`                  | Normal                  | Delete char without copying to register |
+| `Ctrl+C`             | Insert                  | Escape (back to Normal)                 |
+| `-`                  | Normal                  | Oil: open parent directory              |
 
 ---
 
@@ -888,7 +893,7 @@ These exercises are designed to build real fluency with the VSCode-equivalent wo
 2. Press `<leader>pf` — the file picker opens. Type a few chars of a filename you know exists. Press `Enter` to open it.
 3. Press `<leader>pb` — the buffer picker opens. You should see the file you just opened. Press `Esc` to close.
 4. Press `<leader>pr` — recent files. Notice the history. Press `Esc`.
-5. Press `<leader>pg` — live grep. Type a function name you know exists in the project. Press `Enter` to jump to it. 
+5. Press `<leader>pg` — live grep. Type a function name you know exists in the project. Press `Enter` to jump to it.
 6. Press `Ctrl+O` to jump back to where you were before.
 7. Press `<leader>bx` to close the current buffer.
 8. Press `<leader>pb` again — notice the buffer is gone.
@@ -966,7 +971,7 @@ For each of these VSCode actions, perform the Neovim equivalent without looking 
 9. "Open a diff view of the current file's history" → What leader key combo?
 10. "Toggle the symbols outline (like VSCode's Outline panel)" → What key?
 
-*(Answers: `<leader>pc`, `<leader>mp`, `<leader>xd`, `<leader>rn`, `<leader>gB`, `gd` then `Ctrl+O`, `<leader>ef`, `<leader>cm`, `<leader>gdh`, `<leader>lo`)*
+_(Answers: `<leader>pc`, `<leader>mp`, `<leader>xd`, `<leader>rn`, `<leader>gB`, `gd` then `Ctrl+O`, `<leader>ef`, `<leader>cm`, `<leader>gdh`, `<leader>lo`)_
 
 ---
 
@@ -1029,18 +1034,18 @@ select (simple dropdown):
 
 Once a picker is open:
 
-| Key | Action |
-|-----|--------|
-| Type anything | Fuzzy filter the list |
-| `Ctrl+J` or `Down` | Move selection down |
-| `Ctrl+K` or `Up` | Move selection up |
-| `Enter` | Open the selected item |
-| `Ctrl+V` | Open in vertical split |
-| `Ctrl+S` | Open in horizontal split |
-| `Ctrl+T` | Open in new tab |
-| `Esc` | Close picker without selecting |
-| `Ctrl+C` | Also close (since C-c is Esc in this config) |
-| `Tab` | Mark multiple items (for multi-open) |
+| Key                | Action                                       |
+| ------------------ | -------------------------------------------- |
+| Type anything      | Fuzzy filter the list                        |
+| `Ctrl+J` or `Down` | Move selection down                          |
+| `Ctrl+K` or `Up`   | Move selection up                            |
+| `Enter`            | Open the selected item                       |
+| `Ctrl+V`           | Open in vertical split                       |
+| `Ctrl+S`           | Open in horizontal split                     |
+| `Ctrl+T`           | Open in new tab                              |
+| `Esc`              | Close picker without selecting               |
+| `Ctrl+C`           | Also close (since C-c is Esc in this config) |
+| `Tab`              | Mark multiple items (for multi-open)         |
 
 ### Frecency Weighting
 
@@ -1062,25 +1067,25 @@ When you're in Insert mode and typing, completions appear automatically. This co
 
 When the completion menu appears:
 
-| Key | Action |
-|-----|--------|
-| `Tab` | Select next item / accept if only one |
-| `Shift+Tab` | Select previous item |
-| `Enter` | Accept current selection |
-| `Ctrl+Space` | Manually trigger completion |
-| `Ctrl+E` | Close/dismiss completion menu |
-| `Ctrl+N` | Next completion item |
-| `Ctrl+P` | Previous completion item |
+| Key          | Action                                |
+| ------------ | ------------------------------------- |
+| `Tab`        | Select next item / accept if only one |
+| `Shift+Tab`  | Select previous item                  |
+| `Enter`      | Accept current selection              |
+| `Ctrl+Space` | Manually trigger completion           |
+| `Ctrl+E`     | Close/dismiss completion menu         |
+| `Ctrl+N`     | Next completion item                  |
+| `Ctrl+P`     | Previous completion item              |
 
 ### Snippet Navigation
 
 When you accept a snippet completion (e.g., a function template), the cursor lands in a "snippet tabstop". You can jump between tabstops with:
 
-| Key | Action |
-|-----|--------|
-| `Tab` | Jump to next tabstop |
-| `Shift+Tab` | Jump to previous tabstop |
-| `Esc` | Exit snippet, return to normal editing |
+| Key         | Action                                 |
+| ----------- | -------------------------------------- |
+| `Tab`       | Jump to next tabstop                   |
+| `Shift+Tab` | Jump to previous tabstop               |
+| `Esc`       | Exit snippet, return to normal editing |
 
 ### Completion Sources
 
@@ -1113,6 +1118,7 @@ Neovim has a built-in terminal emulator. You can run shell commands without leav
 ### Terminal Options in This Config
 
 **Option 1: The built-in :terminal command**
+
 ```vim
 :terminal          " opens terminal in current window
 :vs | terminal    " opens terminal in a vertical split
@@ -1124,6 +1130,7 @@ Check the snacks.lua for any terminal bindings. The snacks terminal module can c
 
 **Option 3: External tmux integration**
 This config has `Ctrl+F` mapped to launch `tmux-sessionizer` — a script for quickly creating/switching tmux sessions:
+
 ```lua
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 ```
@@ -1185,17 +1192,20 @@ This confuses a lot of people coming from VSCode, where ESLint + Prettier are of
 ### How This Config Handles Each
 
 **Formatting** → `conform.nvim` (`formatting.lua`)
+
 - Runs automatically after each save (`format_after_save`)
 - Uses the best available formatter for each filetype
 - For JS/TS: tries `biome-check`, then `prettierd`, then `prettier` (first available wins)
 - Manual trigger: `<leader>mp`
 
 **Linting** → `nvim-lint` (`linting.lua`)
+
 - Runs on save and other events
 - Integrates with the LSP diagnostic system
 - Errors/warnings appear as virtual text and in Trouble
 
 **LSP diagnostics** → the language server itself (via Mason)
+
 - TypeScript errors from `vtsls`
 - Python errors from `pyright` + `ruff`
 - Go errors from `gopls`
@@ -1210,6 +1220,7 @@ The three layers work together. The LSP gives you real-time type errors. The lin
 Snippets are pre-written code templates that expand from a short trigger. You've probably used them in VSCode — type `for` and Tab expands it into a for loop template.
 
 This config uses **LuaSnip** with a library of snippet files in:
+
 ```
 dotfiles/.config/nvim/snippets/
 ```
@@ -1223,6 +1234,7 @@ Custom snippets exist for: TypeScript, JavaScript, Lua, Python, Go, Rust, C, she
 ### Writing Custom Snippets
 
 You can add your own snippets to the appropriate file in `snippets/`. Example format (from `typescript.lua`):
+
 ```lua
 ls.add_snippets("typescript", {
   s("comp", {  -- trigger: "comp"
@@ -1253,6 +1265,7 @@ The `auto-pairs.lua` plugin handles this. It's similar to VSCode's built-in brac
 > **In Neovim you...** get the same behavior from the auto-pairs plugin. It's so seamless you won't notice it's a separate plugin.
 
 **Smart pairs behavior:**
+
 - Type `(` → gets `()`, cursor inside
 - Type `"` in a string → closes the string
 - Press Backspace on an empty pair `()` → deletes both characters
@@ -1296,7 +1309,7 @@ Let's walk through a realistic multi-file workflow to see how all the pieces fit
    <leader>h1       ← jump to ButtonComponent.tsx
    <leader>h2       ← jump to types.ts
    <leader>h3       ← jump to button.test.tsx
-   
+
    No searching, no scrolling — instant teleportation.
 
 8. Make your changes across all 3 files
@@ -1312,6 +1325,7 @@ Let's walk through a realistic multi-file workflow to see how all the pieces fit
 ```
 
 This workflow is faster than the equivalent VSCode workflow because:
+
 - No mouse (opens files faster)
 - Harpoon (4 files instantly accessible instead of scanning tab bar)
 - Hunk-level staging (precise commits without leaving the editor)
@@ -1340,6 +1354,7 @@ Sometimes a plugin stops working or a LSP server doesn't start. Here's how to di
 ```
 
 The `:checkhealth` command is your first stop for any "why isn't X working" question. It checks:
+
 - Provider health (Python, Node.js, Ruby)
 - Plugin health
 - LSP server status
@@ -1348,21 +1363,25 @@ The `:checkhealth` command is your first stop for any "why isn't X working" ques
 ### Common Fixes
 
 **"LSP not working on my file"**
+
 1. `:LspInfo` — is a server attached? If not, check Mason has the server installed.
 2. `:Mason` — find the server, install if missing.
 3. `:e` the file again — sometimes LSP attaches late.
 
 **"Formatter not running on save"**
+
 1. `<leader>mp` to manually format — does it work?
 2. `:ConformInfo` — check what formatters are configured for this filetype.
 3. Check Mason has the formatter installed (prettierd, stylua, etc.).
 
 **"Plugin keybinding not working"**
+
 1. `<leader>pk` or `:Telescope keymaps` — search for the keybinding to verify it's registered.
 2. `:Lazy` — is the plugin loaded? (Check if it's lazy-loaded and hasn't triggered yet)
 3. Check the plugin spec for `enabled = false` flags (some are feature-flagged with env vars).
 
 **"Neovim is slow"**
+
 1. `:Lazy profile` — shows startup time breakdown per plugin
 2. Check for synchronous operations in plugins on large files
 3. Treesitter can be slow on huge files — `:TSBufDisable highlight` to disable for a buffer
@@ -1373,13 +1392,13 @@ The `:checkhealth` command is your first stop for any "why isn't X working" ques
 
 Some shortcuts work across all modes and contexts. These are your universal tools:
 
-| Shortcut | Works In | Action |
-|---------|----------|--------|
-| `Ctrl+S` | Normal, Insert, Command | Save file |
-| `Ctrl+C` | Insert mode | Escape to Normal |
-| `Ctrl+[` | Insert mode | Escape to Normal (Vim standard) |
-| `Esc` | All modes | Return to Normal / cancel |
-| `Ctrl+\` + `Ctrl+N` | Terminal mode | Exit terminal, return to Normal |
+| Shortcut            | Works In                | Action                          |
+| ------------------- | ----------------------- | ------------------------------- |
+| `Ctrl+S`            | Normal, Insert, Command | Save file                       |
+| `Ctrl+C`            | Insert mode             | Escape to Normal                |
+| `Ctrl+[`            | Insert mode             | Escape to Normal (Vim standard) |
+| `Esc`               | All modes               | Return to Normal / cancel       |
+| `Ctrl+\` + `Ctrl+N` | Terminal mode           | Exit terminal, return to Normal |
 
 ### The `Ctrl+C` Warning
 
@@ -1410,6 +1429,7 @@ Different languages have different LSP servers and capabilities. Here's what to 
 **Linter:** `eslint_d`
 
 Enabled features:
+
 - Full type checking and inference
 - Auto-imports
 - Organize imports (via `<leader>ca` → organize imports)
@@ -1480,17 +1500,17 @@ The `:verbose` prefix tells you not just what the mapping is, but WHERE it was d
 
 Vim has multiple modes and a mapping only applies in the modes it was registered for:
 
-| Mode prefix | Applies in |
-|-------------|-----------|
-| `n` | Normal mode |
-| `i` | Insert mode |
-| `v` | Visual mode (and select) |
-| `x` | Visual mode only (not select) |
-| `o` | Operator-pending mode |
-| `c` | Command-line mode |
-| `t` | Terminal mode |
-| `nv` or `{n,v}` | Multiple modes |
-| (none / `map`) | Normal + visual + operator-pending |
+| Mode prefix     | Applies in                         |
+| --------------- | ---------------------------------- |
+| `n`             | Normal mode                        |
+| `i`             | Insert mode                        |
+| `v`             | Visual mode (and select)           |
+| `x`             | Visual mode only (not select)      |
+| `o`             | Operator-pending mode              |
+| `c`             | Command-line mode                  |
+| `t`             | Terminal mode                      |
+| `nv` or `{n,v}` | Multiple modes                     |
+| (none / `map`)  | Normal + visual + operator-pending |
 
 So `nmap <C-s>` only affects Normal mode. `imap <C-s>` only Insert mode. This is why some keybindings work in one mode but not another.
 
@@ -1499,6 +1519,7 @@ So `nmap <C-s>` only affects Normal mode. `imap <C-s>` only Insert mode. This is
 When a plugin maps a key and you also map the same key in your config, the last mapping wins. In lazy.nvim, plugin key specs are loaded before your personal keymaps (since core/keymaps.lua loads during init). So your personal mappings in `keymaps.lua` override plugin defaults.
 
 If you want to disable a specific plugin-default mapping, set it to `false` in the plugin's `keys` table:
+
 ```lua
 keys = {
   { "<C-h>", false },  -- disable the default Ctrl+H mapping from this plugin
@@ -1530,6 +1551,7 @@ q       " stop recording
 ### Example: Converting a JSON Array to a TypeScript Interface
 
 Given:
+
 ```json
 "firstName": "string",
 "lastName": "string",
@@ -1537,6 +1559,7 @@ Given:
 ```
 
 Goal — transform each line to:
+
 ```typescript
 firstName: string;
 lastName: string;
@@ -1544,6 +1567,7 @@ age: number;
 ```
 
 **Macro approach:**
+
 1. Position cursor on first line: `"firstName": "string",`
 2. `qa` — start recording into register 'a'
 3. `0` — go to start of line
@@ -1591,6 +1615,7 @@ The UI is self-explanatory: `j/k` to navigate, `Enter` to expand, `u` to update 
 The `lazy-lock.json` file in your config directory pins every plugin to a specific commit. This means your config is **reproducible** — if a plugin update breaks something, you can restore to the last known good state with `:Lazy restore`.
 
 **Workflow for updating:**
+
 1. `:Lazy update` — update all plugins
 2. Test that everything works
 3. If something breaks: `:Lazy restore` to roll back
@@ -1621,15 +1646,15 @@ Then `:Lazy sync` to install it.
 
 Lazy loading means a plugin doesn't load until it's needed. Common trigger events:
 
-| Event | When it fires |
-|-------|--------------|
-| `BufReadPre` | Before reading any file |
-| `BufReadPost` | After reading any file |
-| `BufNewFile` | When creating a new file |
-| `VeryLazy` | After the initial UI is loaded (deferred) |
-| `InsertEnter` | When entering Insert mode the first time |
-| `CmdlineEnter` | When entering command line |
-| `ft = "typescript"` | When a TypeScript file is opened |
+| Event               | When it fires                             |
+| ------------------- | ----------------------------------------- |
+| `BufReadPre`        | Before reading any file                   |
+| `BufReadPost`       | After reading any file                    |
+| `BufNewFile`        | When creating a new file                  |
+| `VeryLazy`          | After the initial UI is loaded (deferred) |
+| `InsertEnter`       | When entering Insert mode the first time  |
+| `CmdlineEnter`      | When entering command line                |
+| `ft = "typescript"` | When a TypeScript file is opened          |
 
 Using `keys = { ... }` without an event means the plugin loads the first time that key is pressed.
 
@@ -1641,16 +1666,16 @@ Let's go beyond basic `/` search. Here's the complete navigation toolkit.
 
 ### In-File Search
 
-| Command | Action |
-|---------|--------|
-| `/pattern` | Search forward |
-| `?pattern` | Search backward |
-| `n` | Next match (+ centers screen in this config) |
-| `N` | Previous match |
-| `*` | Search for word under cursor (forward) |
-| `#` | Search for word under cursor (backward) |
-| `g*` | Like `*` but without word boundary |
-| `<leader>nh` | Clear search highlights |
+| Command      | Action                                       |
+| ------------ | -------------------------------------------- |
+| `/pattern`   | Search forward                               |
+| `?pattern`   | Search backward                              |
+| `n`          | Next match (+ centers screen in this config) |
+| `N`          | Previous match                               |
+| `*`          | Search for word under cursor (forward)       |
+| `#`          | Search for word under cursor (backward)      |
+| `g*`         | Like `*` but without word boundary           |
+| `<leader>nh` | Clear search highlights                      |
 
 ### Flash.nvim: Jump Anywhere
 
@@ -1659,6 +1684,7 @@ Let's go beyond basic `/` search. Here's the complete navigation toolkit.
 > **In Neovim (this config) you...** press `s` in Normal mode and type 1-2 characters of your target. Flash labels all visible matches with unique letter hints. Type the hint to jump instantly. No mouse, no arrow navigation.
 
 Flash usage:
+
 1. Press `s`
 2. Type the first 1-2 characters you see at your target
 3. Flash highlights all matches with letters (`a`, `b`, `c`, etc.)
@@ -1695,29 +1721,30 @@ Working with surrounding characters (parentheses, quotes, brackets, HTML tags) i
 >
 > **In Neovim (this config) you...** use mini.surround for instant surrounding operations with the `s` prefix (when not in a motion context).
 
-| Command | Action | Example |
-|---------|--------|---------|
-| `sa{motion}{char}` | Add surrounding | `saiwb` → surround word with `()` |
-| `ds{char}` | Delete surrounding | `ds"` → remove `"` from `"hello"` |
-| `ca{old}{new}` | Change surrounding | `ca'"` → change `'hello'` to `"hello"` |
-| `sf{char}` | Find surrounding right | |
-| `sF{char}` | Find surrounding left | |
-| `sh{char}` | Highlight surrounding | |
+| Command            | Action                 | Example                                |
+| ------------------ | ---------------------- | -------------------------------------- |
+| `sa{motion}{char}` | Add surrounding        | `saiwb` → surround word with `()`      |
+| `ds{char}`         | Delete surrounding     | `ds"` → remove `"` from `"hello"`      |
+| `ca{old}{new}`     | Change surrounding     | `ca'"` → change `'hello'` to `"hello"` |
+| `sf{char}`         | Find surrounding right |                                        |
+| `sF{char}`         | Find surrounding left  |                                        |
+| `sh{char}`         | Highlight surrounding  |                                        |
 
 **Character mappings for surround:**
 
-| Char | What it means |
-|------|--------------|
-| `b` or `(` | `( )` parentheses |
-| `B` or `{` | `{ }` braces |
-| `r` or `[` | `[ ]` brackets |
-| `'` | `' '` single quotes |
-| `"` | `" "` double quotes |
-| `` ` `` | `` ` ` `` backticks |
-| `t` | HTML tag |
-| `>` | `< >` angle brackets |
+| Char       | What it means        |
+| ---------- | -------------------- |
+| `b` or `(` | `( )` parentheses    |
+| `B` or `{` | `{ }` braces         |
+| `r` or `[` | `[ ]` brackets       |
+| `'`        | `' '` single quotes  |
+| `"`        | `" "` double quotes  |
+| `` ` ``    | `` ` ` `` backticks  |
+| `t`        | HTML tag             |
+| `>`        | `< >` angle brackets |
 
 **Examples:**
+
 - Cursor inside `hello`: `sa iw"` → `"hello"` (add double quotes around word)
 - Cursor inside `"world"`: `ds"` → `world` (delete surrounding double quotes)
 - Cursor inside `'text'`: `ca'"` → `"text"` (change single to double quotes)
@@ -1734,6 +1761,7 @@ One of the underrated features for VSCode users is automatic session restoration
 > **In Neovim you...** use `auto-session.nvim` (configured in `auto-session.lua`). Sessions are saved per directory. When you `cd ~/projects/my-app && nvim`, it restores exactly where you left off.
 
 The session stores:
+
 - Open buffers
 - Window/split layout
 - Cursor positions in each buffer
@@ -1743,6 +1771,7 @@ The session stores:
 ### Session Commands
 
 Check `auto-session.lua` for the specific keybindings, but common auto-session commands:
+
 ```vim
 :SessionSave         " manually save current session
 :SessionRestore      " manually restore session
@@ -1769,11 +1798,13 @@ As you navigate the picker, the colorscheme applies in real-time so you can see 
 ### The Current Theme System
 
 The active theme is stored in:
+
 ```
 dotfiles/.config/nvim/lua/current-theme.lua
 ```
 
 This file is loaded by the config to apply your chosen theme on startup. It's a simple Lua file:
+
 ```lua
 return "rose-pine"  -- or whatever theme you picked
 ```
@@ -1785,6 +1816,7 @@ The `colorscheme.lua` plugin file includes several themes configured and ready t
 ### Rose-Pine (The Default)
 
 The default theme is Rose-Pine (main variant). It's configured with custom highlight groups in `colorscheme.lua`:
+
 ```lua
 ColorColumn = { bg = "#1C1C21" },   -- column guide color
 NormalFloat = { bg = "#1C1C21" },   -- floating window background
@@ -1796,6 +1828,7 @@ These tweaks make the UI feel cohesive — floating windows and the completion m
 ### Dark/Light Mode
 
 Rose-Pine has:
+
 - `main` — dark with warm rose tones
 - `moon` — darker, cooler variation
 - `dawn` — light mode
@@ -1813,8 +1846,9 @@ This config includes **noice.nvim** which upgrades several Neovim UI elements:
 > **In Neovim (default) you'd...** have a fairly plain command line at the bottom and basic messages. With noice.nvim, you get...
 
 **What Noice does:**
+
 - Moves the command line (`/`, `:`) into a beautiful centered floating window
-- Shows completion documentation in styled floating windows  
+- Shows completion documentation in styled floating windows
 - Provides notification popups in the corner instead of the command line
 - Makes `vim.notify()` messages appear as styled toasts
 - Shows macro recording indicator in a styled popup
@@ -1831,17 +1865,17 @@ Code folding lets you collapse sections of code to reduce visual noise.
 >
 > **In Neovim you...** use fold commands. This config uses **nvim-ufo** for better folding (with LSP and treesitter-based fold regions).
 
-| Command | Action |
-|---------|--------|
-| `zc` | Close (fold) current fold |
-| `zo` | Open (unfold) current fold |
-| `za` | Toggle fold under cursor |
-| `zC` | Close all folds in current tree |
-| `zO` | Open all folds in current tree |
-| `zM` | Close ALL folds in buffer |
-| `zR` | Open ALL folds in buffer |
-| `zj` | Move to next fold |
-| `zk` | Move to previous fold |
+| Command | Action                          |
+| ------- | ------------------------------- |
+| `zc`    | Close (fold) current fold       |
+| `zo`    | Open (unfold) current fold      |
+| `za`    | Toggle fold under cursor        |
+| `zC`    | Close all folds in current tree |
+| `zO`    | Open all folds in current tree  |
+| `zM`    | Close ALL folds in buffer       |
+| `zR`    | Open ALL folds in buffer        |
+| `zj`    | Move to next fold               |
+| `zk`    | Move to previous fold           |
 
 With nvim-ufo (configured in `nvim-ufo.lua`), folding is powered by LSP and treesitter, so fold regions correspond to actual code structures (functions, classes, blocks) rather than just indentation.
 
@@ -1858,6 +1892,7 @@ For anyone who used Thunder Client or REST Client in VSCode, this config has a f
 ### Creating an HTTP File
 
 Create a file `requests.http`:
+
 ```http
 ### Get users
 GET https://api.example.com/users
@@ -1878,20 +1913,21 @@ Content-Type: application/json
 
 ### kulala.nvim Keybindings (from kulala.lua)
 
-| Key | Action |
-|-----|--------|
-| `<leader>Hr` | Run request under cursor |
-| `<leader>Ha` | Run all requests in file |
-| `<leader>Hp` | Replay last request |
-| `<leader>Hi` | Inspect current request |
-| `<leader>Hc` | Copy request as cURL command |
-| `<leader>HE` | Set active environment |
-| `]r` | Jump to next request in file |
-| `[r` | Jump to previous request in file |
+| Key          | Action                           |
+| ------------ | -------------------------------- |
+| `<leader>Hr` | Run request under cursor         |
+| `<leader>Ha` | Run all requests in file         |
+| `<leader>Hp` | Replay last request              |
+| `<leader>Hi` | Inspect current request          |
+| `<leader>Hc` | Copy request as cURL command     |
+| `<leader>HE` | Set active environment           |
+| `]r`         | Jump to next request in file     |
+| `[r`         | Jump to previous request in file |
 
 ### Environment Variables
 
 kulala supports environment files (`.env` or `.env.dev`) for per-environment variables:
+
 ```
 # .env.dev
 TOKEN=my-dev-token
@@ -1927,6 +1963,7 @@ This config includes **incline.nvim** which shows the current filename in the to
 > **In Neovim you...** see the filename (with git status) floating at the top-right of each window via incline.
 
 It shows:
+
 - File name with icon
 - `[+]` for modified buffers
 - Git status indicators
@@ -1937,17 +1974,18 @@ It shows:
 
 The `todo-comments.nvim` plugin (integrated with Trouble) highlights specific comment patterns throughout your codebase:
 
-| Pattern | Color | Use For |
-|---------|-------|---------|
-| `TODO:` | Yellow | Things to implement |
-| `FIXME:` | Red | Bugs to fix |
-| `HACK:` | Orange | Temporary workarounds |
-| `NOTE:` | Blue | Important information |
-| `WARN:` | Orange | Warnings |
-| `PERF:` | Purple | Performance issues |
-| `TEST:` | Green | Test-related notes |
+| Pattern  | Color  | Use For               |
+| -------- | ------ | --------------------- |
+| `TODO:`  | Yellow | Things to implement   |
+| `FIXME:` | Red    | Bugs to fix           |
+| `HACK:`  | Orange | Temporary workarounds |
+| `NOTE:`  | Blue   | Important information |
+| `WARN:`  | Orange | Warnings              |
+| `PERF:`  | Purple | Performance issues    |
+| `TEST:`  | Green  | Test-related notes    |
 
 You've probably noticed these already in the config files themselves! For example in `lsp/lsp.lua`:
+
 ```lua
 -- Inlay hints are off by default due to a Neovim 0.12.2 bug where
 -- LSP servers returning end-of-line hint positions crash the extmark
@@ -1955,6 +1993,7 @@ You've probably noticed these already in the config files themselves! For exampl
 ```
 
 And in `snacks.lua`:
+
 ```lua
 -- HACK: read picker docs @ https://...
 -- NOTE: Options
@@ -1992,7 +2031,7 @@ For those who want a single lookup table covering the most-used VSCode shortcuts
 ║  Ctrl+F12     — Go to impl.           ║  gi                           ║
 ║  F2           — Rename symbol         ║  <leader>rn                   ║
 ║  Ctrl+.       — Code actions          ║  <leader>ca                   ║
-║  F9           — Toggle breakpoint     ║  <leader>dbt                  ║
+║  F9           — Toggle breakpoint     ║  <leader>daptb                  ║
 ║  F5           — Start/continue debug  ║  F5                           ║
 ║  F10          — Step over             ║  F2                           ║
 ║  F11          — Step into             ║  F1                           ║
@@ -2015,4 +2054,4 @@ For those who want a single lookup table covering the most-used VSCode shortcuts
 
 ---
 
-*"A week into Neovim you'll wonder how you ever worked without it. A month in, you'll try VSCode at someone else's computer and feel like you're coding with oven mitts."*
+_"A week into Neovim you'll wonder how you ever worked without it. A month in, you'll try VSCode at someone else's computer and feel like you're coding with oven mitts."_

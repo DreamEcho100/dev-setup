@@ -17,32 +17,29 @@ return {
     },
     keys = {
         {
-            "<leader>tN",
-            function()
-                require("neotest").run.run()
-            end,
-            desc = "Run nearest test",
+            "<leader>tn",
+            function() require("neotest").run.run() end,
+            desc = "Test: Run nearest",
         },
         {
-            "<leader>tF",
-            function()
-                require("neotest").run.run(vim.fn.expand("%"))
-            end,
-            desc = "Run file tests",
+            "<leader>tf",
+            function() require("neotest").run.run(vim.fn.expand("%")) end,
+            desc = "Test: Run file",
         },
         {
-            "<leader>tO",
-            function()
-                require("neotest").output.open({ enter = true })
-            end,
-            desc = "Open test output",
+            "<leader>tl",
+            function() require("neotest").run.run_last() end,
+            desc = "Test: Run last",
         },
         {
-            "<leader>tS",
-            function()
-                require("neotest").summary.toggle()
-            end,
-            desc = "Toggle test summary",
+            "<leader>to",
+            function() require("neotest").output.open({ enter = true }) end,
+            desc = "Test: Open output",
+        },
+        {
+            "<leader>ts",
+            function() require("neotest").summary.toggle() end,
+            desc = "Test: Toggle summary",
         },
     },
     config = function()
