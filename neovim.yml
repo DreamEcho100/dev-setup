@@ -70,7 +70,7 @@
       - latexmk
       - fzf
       - wordnet
-      - bear      # generates compile_commands.json for non-CMake C/C++ projects
+      - bear # generates compile_commands.json for non-CMake C/C++ projects
 
     debian_java_packages:
       - default-jdk
@@ -232,7 +232,7 @@
 
     - name: Install Go editor tools
       ansible.builtin.command:
-        cmd: go install golang.org/x/tools/cmd/goimports@latest
+        cmd: go install golang.org/x/tools/cmd/goimports@latest github.com/golangci/golangci-lint/cmd/golangci-lint@latest
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ lookup('env', 'HOME') }}/go/bin"
       changed_when: true

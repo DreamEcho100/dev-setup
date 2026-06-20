@@ -711,8 +711,9 @@ pip3 install --user \
 **Category 6: Go tools**
 
 ```bash
-go install golang.org/x/tools/cmd/goimports@latest
+go install golang.org/x/tools/cmd/goimports@latest github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 # goimports: organizes Go imports + basic formatting
+# golangci-lint: fast Go linter that runs multiple linters in parallel
 ```
 
 **Zig (via snap):**
@@ -2149,7 +2150,7 @@ REFERENCE TOOLS
 
 ## What's Next?
 
-Move on to **[01-surviving-neovim.md](./01-surviving-neovim.md)** — where you
+Move on to **[01-surviving-day-one.md](./01-surviving-day-one.md)** — where you
 learn the modal editing model, how to move the cursor properly, how to insert
 and delete text, and the core grammar that makes everything else click.
 

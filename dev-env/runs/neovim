@@ -14,15 +14,15 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --dry|--dry-run)
             dry="1"
-            ;;
+        ;;
         --nightly)
             channel="nightly"
             version=""
-            ;;
+        ;;
         --stable)
             channel="stable"
             version=""
-            ;;
+        ;;
         --version)
             shift
             version="${1:-}"
@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
                 echo "--version requires a value such as v0.12.2"
                 exit 1
             fi
-            ;;
+        ;;
         --prefix)
             shift
             prefix="${1:-}"
@@ -38,17 +38,17 @@ while [[ $# -gt 0 ]]; do
                 echo "--prefix requires a path"
                 exit 1
             fi
-            ;;
+        ;;
         --with-java)
             install_java="1"
-            ;;
+        ;;
         --with-dotnet)
             install_dotnet="1"
-            ;;
+        ;;
         *)
             echo "Unknown arg: $1"
             exit 1
-            ;;
+        ;;
     esac
     shift
 done
@@ -74,20 +74,20 @@ resolve_ref() {
         printf '%s\n' "$version"
         return
     fi
-
+    
     if [[ "$channel" == "nightly" ]]; then
         printf '%s\n' "nightly"
         return
     fi
-
+    
     if [[ "$dry" == "1" ]]; then
         printf '%s\n' "stable-latest-dry-run"
         return
     fi
-
+    
     curl -fsSL https://api.github.com/repos/neovim/neovim/releases/latest \
-        | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' \
-        | head -n 1
+    | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' \
+    | head -n 1
 }
 
 install_apt_package() {
@@ -96,7 +96,7 @@ install_apt_package() {
         log "already installed: $package"
         return
     fi
-
+    
     if ! execute sudo apt install -y "$package"; then
         log "optional package failed or unavailable: $package"
     fi
@@ -106,10 +106,10 @@ is_truthy() {
     case "${1,,}" in
         1|true|yes|on)
             return 0
-            ;;
+        ;;
         *)
             return 1
-            ;;
+        ;;
     esac
 }
 
@@ -128,11 +128,11 @@ if [[ -f /etc/debian_version ]]; then
         log "exec: sudo tee /etc/apt/sources.list.d/ascii-image-converter.list"
     else
         echo 'deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /' \
-            | sudo tee /etc/apt/sources.list.d/ascii-image-converter.list >/dev/null || true
+        | sudo tee /etc/apt/sources.list.d/ascii-image-converter.list >/dev/null || true
     fi
-
+    
     execute sudo apt update
-
+    
     core_packages=(
         ninja-build gettext cmake unzip curl wget tar gzip build-essential git
         jq ripgrep fd-find lldb gdb lua5.1 liblua5.1-0-dev luarocks
@@ -141,21 +141,21 @@ if [[ -f /etc/debian_version ]]; then
         shellcheck shfmt codespell imagemagick graphviz xclip wl-clipboard
         tmux openssh-client docker.io
     )
-
+    
     optional_packages=(
         lazygit tree-sitter-cli ascii-image-converter
         texlive-latex-base texlive-latex-extra texlive-fonts-recommended latexmk
     )
-
+    
     execute sudo apt install -y "${core_packages[@]}"
     for package in "${optional_packages[@]}"; do
         install_apt_package "$package"
     done
-
+    
     if is_truthy "$install_java"; then
         install_apt_package default-jdk
     fi
-
+    
     if is_truthy "$install_dotnet"; then
         install_apt_package dotnet-sdk-8.0
     fi
@@ -180,16 +180,16 @@ execute sudo make -C "$neovim_dir" install CMAKE_INSTALL_PREFIX="$prefix"
 
 if command -v npm >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
     execute sudo npm install -g \
-        tree-sitter-cli \
-        @mermaid-js/mermaid-cli \
-        prettier \
-        typescript \
-        typescript-language-server \
-        vscode-langservers-extracted
+    tree-sitter-cli \
+    @mermaid-js/mermaid-cli \
+    prettier \
+    typescript \
+    typescript-language-server \
+    vscode-langservers-extracted
 fi
 
 if command -v go >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
-    execute go install golang.org/x/tools/cmd/goimports@latest
+    execute go install golang.org/x/tools/cmd/goimports@latest github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 fi
 
 if command -v python3 >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
