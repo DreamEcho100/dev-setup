@@ -592,7 +592,7 @@ chosen, and how to install it.
 | Zsh | shfmt | single | Zsh scripts | `:MasonInstall shfmt` |
 | C | clang_format | single | Uses project `.clang-format` if present | `:MasonInstall clang-format` |
 | C++ | clang_format | single | Same as C | `:MasonInstall clang-format` |
-| C# | LSP fallback | lsp | `omnisharp` provides formatting | LSP auto-installed |
+| C# | LSP fallback | lsp | `roslyn.nvim`/Roslyn provides formatting when available | `install_dotnet=true` |
 | GDScript | LSP fallback | lsp | Godot's LSP handles formatting | LSP auto-installed |
 | Go | goimports → gofumpt | pipeline | `goimports` fixes imports; `gofumpt` adds stricter style | `:MasonInstall goimports gofumpt` |
 | Java | google-java-format | single | Google's Java formatter | `:MasonInstall google-java-format` |

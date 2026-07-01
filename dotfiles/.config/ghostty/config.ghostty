@@ -1,0 +1,18 @@
+# Ghostty terminal profile managed by mfansible.
+# Override machine-specific settings in local.ghostty.
+
+theme = tokyo-night
+config-file = ?local.ghostty
+
+font-family = JetBrainsMono Nerd Font Mono
+font-size = 11
+font-feature = calt
+
+window-padding-x = 8
+window-padding-y = 6
+mouse-hide-while-typing = true
+cursor-style = bar
+cursor-style-blink = false
+scrollback-limit = 100000000
+copy-on-select = clipboard
+confirm-close-surface = false

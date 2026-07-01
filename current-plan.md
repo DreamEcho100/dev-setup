@@ -110,6 +110,79 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Added `neotest-golang` with `gotestsum`, Go DAP test keymaps, and Overseer Go tasks for test/build/tidy/lint workflows.
 - Added `docs/neovim-tutorials-from-0-to-hero/15-go-development.md` and updated existing LSP, linting, debug/test/task docs to match the final Go workflow.
 
+### Phase 10: Blink V2 Polyglot LSP and Diagnostics UX
+
+- Kept `blink.cmp` on V2/main with required `blink.lib`.
+- Removed Blink V2 `prefetch_on_insert` because the installed V2 schema marks it as buggy/not recommended.
+- Rebalanced completion toward a calmer manual-first workflow: automatic menu stays on, documentation and signature help are manual, cmdline completion avoids search/input prompts and short commands.
+- Removed hidden semicolon snippet rewriting between LuaSnip and Blink; custom snippets now use explicit `;` triggers directly in snippet files.
+- Quieted inline diagnostics to warnings/errors while keeping signs, underline, statusline counts, floats, Snacks, and Trouble workflows available.
+- Fixed VS Code Snap XDG recovery for config/data/state/cache paths in shell dotfiles, Ansible dotfile setup, and the Ubuntu dotfiles runner.
+- Started polyglot LSP cleanup: Java `jdtls` is enabled through native LSP, Rust remains `rustaceanvim`-managed, and C# uses `roslyn.nvim` instead of auto-starting Omnisharp.
+- Updated tutorial docs to match Blink V2/manual-first completion, quiet diagnostics, explicit `;` snippet triggers, Rust ownership, and Roslyn C# ownership.
+- Added `docs/neovim-tutorials-from-0-to-hero/19-polyglot-lsp-checklist.md` with a language-by-language LSP/completion/format/lint diagnosis matrix.
+- Validation completed for edited files: targeted `stylua --check`, targeted `luac -p`, `bash -n` for the dotfiles/Neovim runners, `ansible-playbook --syntax-check` for `dotfiles.yml` and `neovim.yml` with Ansible temp dirs under `/tmp`, `dev-env/runs/dotfiles --dry`, `dev-env/runs/neovim --dry`, and `git diff --check`.
+- Verified the normalized runtime XDG target paths with headless Neovim: `stdpath('data')` resolves to `/home/viavi/.local/share/nvim`, `stdpath('state')` to `/home/viavi/.local/state/nvim`, and `stdpath('cache')` to `/home/viavi/.cache/nvim`.
+- Full headless health validation remains sandbox-limited in this environment because real `$HOME` state/cache writes are blocked and isolated XDG runs trigger Mason/Treesitter install/write attempts. Run the listed interactive checks from a normal terminal after applying dotfiles.
+
+### Phase 11: Blink/LSP/Go Hotfix and Git Cleanup
+
+- Revised Blink V2 decisions after user review: keep `prefetch_on_insert` off for this installed schema, use `prefer_rust_with_warning`, restore `<C-Space>` documentation toggling, and add `<C-@>` for terminal Ctrl-Space compatibility.
+- Tightened the Blink V2 native matcher build hook to the documented `require("blink.cmp").build():pwait(60000)` form so build failures are visible instead of being swallowed.
+- Hardened LSP startup so Blink capability failures do not prevent language servers from attaching.
+- Made `gopls` root detection explicit: nearest `go.work`, then `go.mod`, then `.git`.
+- Added `:De100Doctor` to report current buffer filetype, stdpaths, Blink native availability, active LSP clients/root dirs, nearest Go roots, and `go env GOWORK`.
+- Restored lost dynamic LuaSnip semicolon behavior by making generated snippets use explicit `;` triggers instead of the removed hidden decorator/Blink transform path.
+- Cleaned the working-tree view against `HEAD` by removing generated `nvim.log`, `.gitignore`, and `lazy-lock.json` changes from this hotfix scope.
+
+### Phase 12: Terminal Workstation Stack
+
+- Added `terminal.yml` and `dev-env/runs/terminal` as a separate install layer for zsh, Kitty, Ghostty, Starship, tmux, fonts, Antidote, and TPM.
+- Kept the terminal stack separate from `neovim.yml` because shell/terminal state, font setup, and tmux persistence have different lifecycle and backup needs than editor tooling.
+- Added backup-before-relink behavior to `dotfiles.yml` and `dev-env/runs/dotfiles` so existing `~/.zshenv`, `~/.zshrc`, `~/.profile`, `~/.config/kitty`, `~/.config/ghostty`, and related paths are archived before replacement.
+- Preserved useful pieces from the existing user `~/.zshrc`: NVM, PNPM, envman, Cursor aliases, Python aliases, local script paths, Go paths, and Powerlevel10k compatibility.
+- Chosen shell prompt behavior: existing machines with `~/.p10k.zsh` and the P10k theme keep the rich Powerlevel10k layout automatically; new machines fall back to Starship plus Antidote plugins.
+- Restored the useful old shell plugin behavior through Antidote: Oh My Zsh `git`, `colored-man-pages`, `colorize`, `zsh-autocomplete`, autosuggestions, history substring search, and one syntax highlighter.
+- Corrected the zsh completion stack after runtime testing: removed Oh My Zsh `path:lib` because it bootstraps completion before `zsh-autocomplete`, removed the optional `insert-unambiguous` zstyle that caused `_autocomplete__unambiguous` errors, kept `zsh-autocomplete` as the completion owner, and made history search bindings explicit.
+- Remapped `Ctrl+r` to `zsh-autocomplete`'s `history-search-backward` widget so it opens the menu-style history search instead of native zsh incremental search.
+- Added Kitty and Ghostty configs with Tokyo Night, JetBrainsMono Nerd Font, sane scrollback, copy-on-select, font zoom, and ignored local override files.
+- Fixed the Starship bootstrap shape by moving config to `dotfiles/.config/starship/starship.toml`, which is activated by the existing `.config` directory symlink model.
+- Added `de100-theme` to switch Kitty, Ghostty, Starship, and Neovim together without dirtying tracked config.
+- Added theme profiles for `tokyo-night`, `catppuccin-mocha`, `rose-pine-moon`, `gruvbox-dark`, and Neovim-only `evergarden-spring` fallback.
+- Modernized tmux around truecolor for Kitty/Ghostty, vim-style pane navigation, Wayland/X11 clipboard copy, popup sessionizer, Tokyo Night status styling, TPM, `tmux-resurrect`, and `tmux-continuum`.
+- Fixed `ready-tmux` path handling and made `tmux-sessionizer` roots configurable through `TMUX_SESSIONIZER_DIRS` or `~/.config/tmux/sessionizer-dirs`.
+- Added terminal/tmux tutorial docs covering VS Code equivalents, theme/font switching, zsh, Kitty, Ghostty, tmux persistence, Atuin opt-in, and XDG troubleshooting.
+- Validation completed for this phase: `bash -n`, `zsh -n`, `luac -p` for the theme loader, `shfmt -d`, `stylua --check` for the touched Lua file, Ansible syntax checks for `terminal.yml` and `dotfiles.yml`, `ansible-playbook --check dotfiles.yml`, `dev-env/runs/terminal --dry`, `dev-env/runs/dotfiles --dry`, temporary-XDG `de100-theme set`, corrected-XDG `nvim --headless -u NONE` stdpath check, targeted `:Lazy build blink.cmp`, targeted `:checkhealth blink.cmp`, and `git diff --check`.
+- Activated dotfiles in the live home directory and installed the user-local terminal pieces with `dev-env/runs/terminal --skip-apt`: Starship, Antidote, TPM, and JetBrainsMono Nerd Font.
+
+### Phase 13: Zsh UX Recovery
+
+- Reversed the default shell plugin decision after live UX testing showed the Antidote-first migration created avoidable completion and keybinding regressions for a beginner workflow.
+- Chosen default: Oh My Zsh plus Powerlevel10k when available, matching the previous working shell layout and plugin behavior.
+- Kept Antidote installed and documented as an explicit opt-in power-user mode through `DE100_ZSH_PLUGIN_MANAGER=antidote`.
+- Kept Starship installed as an optional prompt fallback through `DE100_SHELL_PROMPT=starship`, but not as the default on machines with P10k.
+- Updated the terminal installer paths so fresh machines install Oh My Zsh, Powerlevel10k, `zsh-autocomplete`, `zsh-autosuggestions`, and `fast-syntax-highlighting`; Antidote remains installed for opt-in use.
+- Removed `/` from zsh `WORDCHARS` so `Ctrl+w` deletes one path segment instead of the whole path.
+- Kept only one syntax highlighter by default: `fast-syntax-highlighting`; removed the `zsh-syntax-highlighting` fallback because it warns on `zsh-autocomplete` widgets.
+- Loaded `fast-syntax-highlighting` before `zsh-autocomplete` in both OMZ and Antidote modes to avoid Powerlevel10k instant-prompt warnings from highlighter widget binding output.
+- Updated terminal docs to explain the default OMZ/P10k path, Antidote opt-in path, Starship fallback, history search, and the `Ctrl+w` path behavior.
+
+### Phase 14: Neovim Startup Warning Hotfix
+
+- Fixed the Treesitter restore-time warning where `<leader>wr` could trigger background grammar downloads and stale `tree-sitter-*-tmp` git failures during session restore.
+- Chosen pattern: do not install broad Treesitter parser sets automatically on every startup. Session restore should restore editing state, not perform network/build work.
+- Added `:De100TreesitterInstall` to install only missing configured parsers on demand.
+- Added `:De100TreesitterUpdate` to update installed Treesitter parsers explicitly.
+- Kept safe per-buffer Treesitter startup: highlighting/indentation starts when the parser is available and stays quiet when it is missing.
+- Pinned `kubectl.nvim` to tagged `2.*` releases and added the required `blink.download` dependency so its Rust helper can download from a release tag instead of warning on an untagged `main` checkout.
+- Rebuilt Blink V2 native matcher after the lockfile refresh so the `blink.cmp` Rust fuzzy library matches the pinned plugin commit.
+- Verified headless Neovim startup and `:AutoSession restore` from the Pokedex project no longer print the Treesitter git fetch error.
+- Traced the remaining `Failed to fetch tree-sitter grammar` restore warning to `kulala.nvim`, not `nvim-treesitter`.
+- Disabled Kulala's automatic custom parser fetch/build during normal startup and session restore.
+- Added `:De100KulalaParserInstall` for explicit Kulala HTTP parser preparation when working on `.http`/`.rest` request files.
+- Removed the broken live Kulala parser checkout at `~/.local/share/nvim/kulala.nvim/tree-sitter-kulala-http`.
+- Verified fresh `:AutoSession restore` from the Pokedex project and fresh `filetype=http` startup no longer trigger Kulala/Treesitter parser fetch warnings.
+
 ## Implementation Checklist
 
 - [x] Restore accidental artifacts.
@@ -134,6 +207,36 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - [x] Rebalance Go linting toward `gopls` first and `golangci-lint` second.
 - [x] Add Go test/debug/task workflow integrations.
 - [x] Add beginner-focused Go development docs.
+- [x] Start Blink V2 completion/diagnostics UX cleanup.
+- [x] Normalize XDG paths across shell, Ansible, and Bash dotfile setup.
+- [x] Deduplicate C# LSP ownership around Roslyn.
+- [x] Update tutorial docs for Blink V2, diagnostics, and polyglot language checks.
+- [x] Run targeted Blink/LSP/polyglot validation after XDG cleanup.
+- [x] Revise Blink/LSP/Go hotfix decisions after user review.
+- [x] Restore dynamic `;` snippet trigger behavior without the old Blink transform glue.
+- [x] Add a current-buffer Blink/LSP/Go doctor command.
+- [x] Clean generated log, `.gitignore`, and lockfile changes from the working tree relative to `HEAD`.
+- [x] Add a separate terminal workstation playbook and Ubuntu/Linux runner.
+- [x] Add zsh, Kitty, Ghostty, Starship, Atuin, and tmux dotfiles.
+- [x] Add backup-safe dotfile activation for Ansible and Bash paths.
+- [x] Add repo-managed multi-theme switching for terminals, Starship, and Neovim.
+- [x] Modernize tmux persistence, clipboard, popup/sessionizer, and ready hooks.
+- [x] Add terminal/tmux tutorial docs.
+- [x] Validate terminal playbook and runner with syntax/dry-run checks.
+- [x] Activate dotfiles from a normal unsandboxed shell so the live VS Code Snap XDG leak is fixed.
+- [x] Install user-local terminal pieces that do not require sudo.
+- [x] Restore Oh My Zsh plus Powerlevel10k as the default zsh UX.
+- [x] Keep Antidote as an explicit opt-in zsh mode.
+- [x] Update terminal installers to reproduce the default Oh My Zsh plugin stack.
+- [x] Fix zsh `Ctrl+w` path-segment behavior.
+- [x] Stop Treesitter from installing parsers during startup/session restore.
+- [x] Add explicit Treesitter install/update commands.
+- [x] Pin `kubectl.nvim` to tagged releases for its Rust helper download path.
+- [x] Clean stale `tree-sitter-*-tmp` directories from `~/.local/share/nvim`.
+- [x] Stop Kulala from fetching/building its custom parser during startup/session restore.
+- [x] Add explicit Kulala parser install command.
+- [ ] Run the full terminal installer from a normal terminal for apt-managed packages.
+- [ ] Run full interactive Neovim health checks from a normal unsandboxed terminal.
 - [ ] Split into logical commits after Git index access is available.
 
 ## Known Risks
@@ -144,12 +247,26 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Neovim health checks may attempt plugin/parser installation and therefore write under XDG data/cache paths.
 - Ansible check mode cannot fully validate symlink replacement semantics because removed paths still exist during simulation; the playbook skips symlink creation tasks in check mode after validating discovery and planned removals.
 - Java and .NET language plugins remain configured even when runtime installers are opt-in; those workflows need the runtime installed before use.
+- Blink V2/main is intentionally current but can break more often than tagged stable releases; keep `lazy-lock.json` pinned and verify after plugin updates.
+- C# now expects Roslyn language server availability for full C# LSP behavior; Omnisharp is no longer auto-enabled to avoid duplicate clients.
 - The current Git index may contain staged entries from the patching workflow. Clear the index with `git reset` before creating the final logical commits.
+- This sandbox cannot clear the staged index because `.git/index.lock` cannot be created; use `git diff HEAD` for the true final content in this environment.
 - Go projects opened above their nearest `go.mod` need a `go.work` when sibling local modules should resolve together.
 - `neotest-golang` requires the Go tree-sitter parser and works best with `gotestsum`; Mason now installs `gotestsum`.
+- `de100-theme` writes local Kitty/Ghostty override files under the live config directory. They are intentionally ignored by Git.
+- Ghostty installed through Snap may not be runnable inside this sandbox, so config validation may need a normal desktop terminal.
+- tmux runtime config loading could not be validated here because sandboxed tmux socket creation fails with `Operation not permitted`; validate from a normal terminal after activation.
+- Existing local shell files are backed up during dotfile activation, but activation still changes what a new shell sources. Review `~/.zshrc.local`, `~/.zshenv.local`, and `~/.profile.local` for machine-specific overrides after the first run.
+- The full terminal package install needs an interactive sudo prompt; this session installed the user-local pieces with `--skip-apt` and left apt-managed packages for a normal terminal run.
+- The default zsh path now expects Oh My Zsh and the custom plugins to be installed by `terminal.yml` or `dev-env/runs/terminal`; if they are missing, the shell falls back to a minimal Starship prompt instead of printing startup warnings.
+- Antidote remains available, but because it is lower-level than Oh My Zsh, plugin load-order debugging is expected when using `DE100_ZSH_PLUGIN_MANAGER=antidote`.
+- Broad Treesitter parser installation is now explicit. Run `:De100TreesitterInstall` after plugin setup, or install individual parsers with `:TSInstall <language>` when a language has no Treesitter highlighting.
+- Stale `tree-sitter-*-tmp` directories under live Neovim data can preserve failed git clone state until they are deleted from a normal shell.
+- Kulala's enhanced HTTP parser is now explicit. Run `:De100KulalaParserInstall` from a normal terminal session when you want its custom parser installed for `.http`/`.rest` request files.
 
 ## Follow-Up Questions
 
 - Should nightly Neovim remain only an opt-in installer path, or should this repo keep a separate nightly test profile?
 - Should Java and .NET opt-in flags install only runtimes, or also project templates and SDK-specific helper tools?
 - Should the next pass add sample projects for automated LSP/format/lint/DAP validation across every configured language?
+- Should the next terminal pass add more theme packs, such as Kanagawa, Solarized Osaka, Monokai Pro, and Evergarden terminal palettes?

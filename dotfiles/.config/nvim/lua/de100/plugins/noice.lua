@@ -15,7 +15,7 @@ return {
                 -- This enables the border on vim.lsp.buf.hover() that I bring up with
                 -- uppercase K, solution provided by @abhra-linux in my video:
                 -- https://youtu.be/SXKsIyYJIrU
-                lsp_doc_border = true -- add a border to hover docs and signature help
+                lsp_doc_border = true, -- add a border to hover docs and signature help
             },
             messages = {
                 -- NOTE: If you enable messages, then the cmdline is enabled automatically.
@@ -25,7 +25,7 @@ return {
                 view_error = "mini", -- view for errors
                 view_warn = "mini", -- view for warnings
                 view_history = "mini", -- view for :messages
-                view_search = "mini" -- view for search count messages. Set to `false` to disable
+                view_search = "mini", -- view for search count messages. Set to `false` to disable
             },
             notify = {
                 -- Noice can be used as `vim.notify` so you can route any notification like other messages
@@ -34,22 +34,26 @@ return {
                 -- The default routes will forward notifications to nvim-notify
                 -- Benefit of using Noice for this is the routing and consistent history view
                 enabled = true,
-                view = "mini"
+                view = "mini",
             },
             lsp = {
                 override = {
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-                    ["vim.lsp.util.stylize_markdown"] = true
+                    ["vim.lsp.util.stylize_markdown"] = true,
+                },
+                signature = {
+                    enabled = true,
+                    auto_open = { enabled = false },
                 },
                 message = {
                     -- Messages shown by lsp servers
                     enabled = true,
-                    view = "mini"
-                }
+                    view = "mini",
+                },
             },
             views = {
                 -- This sets the position for the search popup that shows up with / or with :
-                cmdline_popup = {position = {row = "40%", col = "50%"}},
+                cmdline_popup = { position = { row = "40%", col = "50%" } },
                 mini = {
                     -- timeout = 5000, -- timeout in milliseconds
                     timeout = vim.g.neovim_mode == "skitty" and 2000 or 5000,
@@ -58,10 +62,10 @@ return {
                         -- Centers messages top to bottom
                         row = "95%",
                         -- Aligns messages to the far right
-                        col = "100%"
-                    }
-                }
-            }
-        }
-    }
+                        col = "100%",
+                    },
+                },
+            },
+        },
+    },
 }

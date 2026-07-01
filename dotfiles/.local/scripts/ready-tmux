@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 
-if [[ -x ".ready-tmux" ]]; then
-	./.ready-tmux
-	echo "Ran local .ready-tmux"
-elif [[ -x "~/.ready-tmux" ]]; then
-	~/.ready-tmux
-	echo "Ran home .ready-tmux"
-else
-	echo "No .ready-tmux found"
-fi
-# clear
+set -euo pipefail
+
+hooks=(
+    "$PWD/.ready-tmux"
+    "$PWD/.ready-tmux.sh"
+    "$HOME/.ready-tmux"
+    "$HOME/.ready-tmux.sh"
+)
+
+for hook in "${hooks[@]}"; do
+    if [[ -x "$hook" ]]; then
+        "$hook"
+        echo "Ran $hook"
+        exit 0
+    fi
+done
+
+echo "No .ready-tmux hook found"

@@ -1,0 +1,8 @@
+# Atuin is installed/configured as local-only opt-in.
+# Set DE100_ENABLE_ATUIN=1 in ~/.zshrc.local after installing Atuin.
+auto_sync = false
+update_check = false
+search_mode = "fuzzy"
+filter_mode = "global"
+style = "compact"
+enter_accept = true

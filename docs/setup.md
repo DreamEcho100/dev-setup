@@ -9,6 +9,7 @@ This repo separates two jobs:
 
 ```sh
 ansible-playbook dotfiles.yml -K
+ansible-playbook terminal.yml -K
 ansible-playbook neovim.yml -K
 ```
 
@@ -18,8 +19,28 @@ Ubuntu/Linux Bash mirrors:
 dev-env/runs/dotfiles --dry
 dev-env/runs/dotfiles
 
+dev-env/runs/terminal --dry
+dev-env/runs/terminal
+
 dev-env/runs/neovim --dry
 dev-env/runs/neovim
+```
+
+If `sudo` cannot prompt because you are running from a noninteractive shell,
+install only the user-local terminal pieces:
+
+```sh
+dev-env/runs/terminal --skip-apt
+```
+
+Optional terminal stack installs:
+
+```sh
+DE100_INSTALL_ATUIN=true ansible-playbook terminal.yml -K
+DE100_INSTALL_GHOSTTY_SNAP=true ansible-playbook terminal.yml -K
+
+dev-env/runs/terminal --with-atuin
+dev-env/runs/terminal --with-ghostty-snap
 ```
 
 Java and .NET are documented opt-ins because they are large runtime stacks:
@@ -54,6 +75,17 @@ dev-env/runs/neovim --with-dotnet
       +----------+----------+----------+----------+----------+
       | nvim    | build    | CLI deps | language | debug    |
       | stable  | tools    | rg/fd/jq | servers  | adapters |
+      +----------+----------+----------+----------+----------+
+
+                  +---------------------------+
+                  | terminal.yml              |
+                  | dev-env/runs/terminal     |
+                  +-------------+-------------+
+                                |
+                                v
+      +----------+----------+----------+----------+----------+
+      | zsh      | kitty    | ghostty  | starship | tmux     |
+      | antidote | themes   | themes   | prompt   | TPM/persist |
       +----------+----------+----------+----------+----------+
 ```
 
@@ -95,6 +127,31 @@ Remote:     ssh scp docker devpod tmux
 Opt-in:     default-jdk for Java, dotnet-sdk for C#
 ```
 
+## Terminal Stack
+
+The terminal layer manages the shell/workstation experience around Neovim:
+
+- `zsh` with Antidote plugins.
+- Kitty and Ghostty configs.
+- Starship prompt.
+- JetBrainsMono Nerd Font by default.
+- tmux with TPM, resurrect, and continuum.
+- Atuin config as local-only opt-in.
+
+Theme switching is centralized:
+
+```sh
+de100-theme list
+de100-theme current
+de100-theme set tokyo-night
+de100-theme set catppuccin-mocha
+de100-theme set rose-pine-moon
+de100-theme set gruvbox-dark
+```
+
+The default is Tokyo Night. `de100-theme` writes ignored local override/state
+files, so switching themes does not dirty the tracked repo config.
+
 Mason installs editor-facing LSP/DAP/formatter packages where possible. System package managers install compilers, runtimes, and binary dependencies Mason cannot reliably provide.
 
 ## Health Checks
@@ -109,4 +166,11 @@ If health checks fail inside VS Code, first inspect:
 
 ```sh
 env | grep '^XDG_'
+```
+
+Expected after opening a new terminal:
+
+```sh
+echo "$XDG_DATA_HOME"
+# /home/YOU/.local/share
 ```

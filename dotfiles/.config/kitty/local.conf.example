@@ -1,0 +1,8 @@
+# Machine-local Kitty overrides.
+# Copy to local.conf or use:
+#   de100-theme set catppuccin-mocha
+#
+# Examples:
+#   font_family FiraCode Nerd Font Mono
+#   font_size 13.0
+#   include themes/catppuccin-mocha.conf

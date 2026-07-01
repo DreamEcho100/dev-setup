@@ -19,9 +19,45 @@
         if sudo_user | length > 0
         else lookup('env', 'HOME') | default(ansible_env.HOME, true)
       }}
-    xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(real_home + '/.config', true) }}"
+    raw_xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default('', true) }}"
+    raw_xdg_data_home: "{{ lookup('env', 'XDG_DATA_HOME') | default('', true) }}"
+    raw_xdg_state_home: "{{ lookup('env', 'XDG_STATE_HOME') | default('', true) }}"
+    raw_xdg_cache_home: "{{ lookup('env', 'XDG_CACHE_HOME') | default('', true) }}"
+    xdg_config_home: >-
+      {{
+        real_home + '/.config'
+        if raw_xdg_config_home | length == 0
+        or '/snap/code/' in raw_xdg_config_home
+        or raw_xdg_config_home.startswith('/snap/')
+        else raw_xdg_config_home
+      }}
+    xdg_data_home: >-
+      {{
+        real_home + '/.local/share'
+        if raw_xdg_data_home | length == 0
+        or '/snap/code/' in raw_xdg_data_home
+        or raw_xdg_data_home.startswith('/snap/')
+        else raw_xdg_data_home
+      }}
+    xdg_state_home: >-
+      {{
+        real_home + '/.local/state'
+        if raw_xdg_state_home | length == 0
+        or '/snap/code/' in raw_xdg_state_home
+        or raw_xdg_state_home.startswith('/snap/')
+        else raw_xdg_state_home
+      }}
+    xdg_cache_home: >-
+      {{
+        real_home + '/.cache'
+        if raw_xdg_cache_home | length == 0
+        or '/snap/code/' in raw_xdg_cache_home
+        or raw_xdg_cache_home.startswith('/snap/')
+        else raw_xdg_cache_home
+      }}
     dotfiles_dir: "{{ playbook_dir }}/dotfiles"
     force_relink: true
+    backup_root: "{{ xdg_state_home }}/mfansible/backups/dotfiles-{{ ansible_date_time.iso8601_basic_short }}"
 
   tasks:
     - name: Display configuration paths
@@ -30,8 +66,12 @@
           - "Real user: {{ real_user }}"
           - "Real home: {{ real_home }}"
           - "XDG_CONFIG_HOME: {{ xdg_config_home }}"
+          - "XDG_DATA_HOME: {{ xdg_data_home }}"
+          - "XDG_STATE_HOME: {{ xdg_state_home }}"
+          - "XDG_CACHE_HOME: {{ xdg_cache_home }}"
           - "Dotfiles directory: {{ dotfiles_dir }}"
           - "Force relink: {{ force_relink }}"
+          - "Backup root: {{ backup_root }}"
 
     - name: Ensure target directories exist
       ansible.builtin.file:
@@ -41,6 +81,9 @@
         owner: "{{ real_user }}"
       loop:
         - "{{ xdg_config_home }}"
+        - "{{ xdg_data_home }}"
+        - "{{ xdg_state_home }}"
+        - "{{ xdg_cache_home }}"
         - "{{ real_home }}/.local"
 
     - name: Check source directories
@@ -78,6 +121,30 @@
         recurse: false
       register: root_dotfiles
 
+    - name: Backup config targets before relinking
+      ansible.builtin.shell: |
+        set -euo pipefail
+        dest="{{ xdg_config_home }}/{{ item.path | basename }}"
+        src="{{ item.path }}"
+        if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+          exit 0
+        fi
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+          mkdir -p "{{ backup_root }}"
+          mv "$dest" "{{ backup_root }}/config-{{ item.path | basename }}"
+          echo backed_up
+        fi
+      args:
+        executable: /bin/bash
+      loop: "{{ config_dirs.files | default([]) }}"
+      when:
+        - force_relink
+        - not ansible_check_mode
+      changed_when: "'backed_up' in (backup_config_targets.stdout | default(''))"
+      register: backup_config_targets
+      loop_control:
+        label: "{{ item.path | basename }}"
+
     - name: Remove config targets before relinking
       ansible.builtin.file:
         path: "{{ xdg_config_home }}/{{ item.path | basename }}"
@@ -99,6 +166,30 @@
       loop_control:
         label: "{{ item.path | basename }}"
 
+    - name: Backup local targets before relinking
+      ansible.builtin.shell: |
+        set -euo pipefail
+        dest="{{ real_home }}/.local/{{ item.path | basename }}"
+        src="{{ item.path }}"
+        if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+          exit 0
+        fi
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+          mkdir -p "{{ backup_root }}"
+          mv "$dest" "{{ backup_root }}/local-{{ item.path | basename }}"
+          echo backed_up
+        fi
+      args:
+        executable: /bin/bash
+      loop: "{{ local_dirs.files | default([]) }}"
+      when:
+        - force_relink
+        - not ansible_check_mode
+      changed_when: "'backed_up' in (backup_local_targets.stdout | default(''))"
+      register: backup_local_targets
+      loop_control:
+        label: "{{ item.path | basename }}"
+
     - name: Remove local targets before relinking
       ansible.builtin.file:
         path: "{{ real_home }}/.local/{{ item.path | basename }}"
@@ -117,6 +208,30 @@
         owner: "{{ real_user }}"
       loop: "{{ local_dirs.files | default([]) }}"
       when: not ansible_check_mode
+      loop_control:
+        label: "{{ item.path | basename }}"
+
+    - name: Backup root dotfile targets before relinking
+      ansible.builtin.shell: |
+        set -euo pipefail
+        dest="{{ real_home }}/{{ item.path | basename }}"
+        src="{{ item.path }}"
+        if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+          exit 0
+        fi
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+          mkdir -p "{{ backup_root }}"
+          mv "$dest" "{{ backup_root }}/root-{{ item.path | basename }}"
+          echo backed_up
+        fi
+      args:
+        executable: /bin/bash
+      loop: "{{ root_dotfiles.files | default([]) }}"
+      when:
+        - force_relink
+        - not ansible_check_mode
+      changed_when: "'backed_up' in (backup_root_dotfile_targets.stdout | default(''))"
+      register: backup_root_dotfile_targets
       loop_control:
         label: "{{ item.path | basename }}"
 

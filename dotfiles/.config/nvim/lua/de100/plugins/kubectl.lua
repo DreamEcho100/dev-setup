@@ -2,14 +2,19 @@
 -- 📖 Tutorial: docs/neovim-tutorials-from-0-to-hero/12-sessions-workspace.md
 return {
     "ramilito/kubectl.nvim",
+    -- kubectl.nvim downloads a prebuilt Rust helper only from tagged releases.
+    -- Tracking main leaves it one commit past the latest tag and prints a
+    -- startup warning from blink.download/blink.lib.
+    version = "2.*",
+    dependencies = { "saghen/blink.download" },
     config = function()
         require("kubectl").setup({
             auto_refresh = {
                 enabled = true,
-                interval = 3000 -- milliseconds
+                interval = 3000, -- milliseconds
             },
             diff = {
-                bin = "kubediff" -- or any other binary
+                bin = "kubediff", -- or any other binary
             },
             namespace = "All",
             namespace_fallback = {}, -- If you have limited access you can list all the namespaces here
@@ -27,12 +32,12 @@ return {
 
                 -- Might need to tweak these to get it centered when float is smaller
                 col = 10,
-                row = 5
+                row = 5,
             },
             obj_fresh = 0, -- highlight if creation newer than number (in minutes)
             mappings = {
                 -- exit = "<leader>uk",
-            }
+            },
         })
-    end
+    end,
 }

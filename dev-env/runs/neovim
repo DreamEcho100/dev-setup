@@ -158,6 +158,7 @@ if [[ -f /etc/debian_version ]]; then
     
     if is_truthy "$install_dotnet"; then
         install_apt_package dotnet-sdk-8.0
+        execute bash -lc 'dotnet tool install -g roslyn-language-server --prerelease --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json || dotnet tool update -g roslyn-language-server --prerelease --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json'
     fi
 else
     log "This Bash runner is Ubuntu/Linux focused. Use neovim.yml for other OSes."

@@ -10,15 +10,20 @@ This directory documents the dotfiles bootstrap and Neovim configuration for two
 ```text
 mfansible/
 |-- dotfiles.yml                 # Cross-platform-ish dotfile symlink playbook
+|-- terminal.yml                 # zsh, terminal, prompt, font, and tmux playbook
 |-- neovim.yml                   # Cross-platform-ish Neovim/tooling playbook
 |-- dev-env/
 |   |-- run                      # Runs scripts from dev-env/runs
 |   `-- runs/
 |       |-- dotfiles             # Ubuntu/Linux mirror of dotfiles.yml
+|       |-- terminal             # Ubuntu/Linux mirror of terminal.yml
 |       `-- neovim              # Ubuntu/Linux mirror of neovim.yml
 |-- dotfiles/
 |   |-- .config/
+|   |   |-- ghostty/             # Ghostty config and themes
+|   |   |-- kitty/               # Kitty config and themes
 |   |   |-- nvim/                # Neovim config, managed by lazy.nvim
+|   |   |-- starship/            # Starship prompt config
 |   |   `-- tmux/                # tmux config
 |   `-- .local/
 |       `-- scripts/             # User scripts linked into ~/.local/scripts
@@ -44,6 +49,9 @@ mfansible/
           +----------------------+
           |  ~/.config/nvim      |
           |  ~/.config/tmux      |
+          |  ~/.config/kitty     |
+          |  ~/.config/ghostty   |
+          |  ~/.config/starship  |
           |  ~/.local/scripts    |
           +----------+-----------+
                      |
@@ -69,3 +77,6 @@ Read these in order:
 3. `neovim-power-user.md`
 4. `architecture.md`
 5. `tutorials/README.md`
+
+Terminal-first users should also read
+`neovim-tutorials-from-0-to-hero/20-shell-terminal-tmux.md`.

@@ -156,6 +156,20 @@
         - ansible_os_family == "Debian"
         - install_dotnet | bool
 
+    - name: Install Roslyn language server when .NET tooling is requested
+      ansible.builtin.shell: >-
+        dotnet tool install -g roslyn-language-server --prerelease
+        --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json
+        || dotnet tool update -g roslyn-language-server --prerelease
+        --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ lookup('env', 'HOME') }}/.dotnet/tools"
+      changed_when: true
+      when:
+        - install_dotnet | bool
+
     - name: Get latest stable Neovim version
       ansible.builtin.uri:
         url: https://api.github.com/repos/neovim/neovim/releases/latest

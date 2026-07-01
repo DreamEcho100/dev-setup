@@ -130,6 +130,7 @@ If `gopls` looks confused, check:
 
 ```vim
 :LspInfo
+:De100Doctor
 :checkhealth vim.lsp
 ```
 
@@ -323,6 +324,7 @@ Run:
 
 ```vim
 :LspInfo
+:De100Doctor
 ```
 
 Expected root priority:

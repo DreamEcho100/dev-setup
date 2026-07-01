@@ -165,7 +165,7 @@ vim.keymap.set("n", "<leader>fp", function()
     print("File path copied to clipboard: " .. filePath)
 end, {desc = "Copy file path to clipboard"})
 
--- Toggle LSP diagnostics visibility
+-- Toggle noisy inline diagnostic rendering while keeping signs/statusline.
 local isLspDiagnosticsVisible = true
 vim.keymap.set("n", "<leader>lx", function()
     isLspDiagnosticsVisible = not isLspDiagnosticsVisible
@@ -173,7 +173,7 @@ vim.keymap.set("n", "<leader>lx", function()
         virtual_text = isLspDiagnosticsVisible,
         underline = isLspDiagnosticsVisible
     })
-end, {desc = "Toggle LSP diagnostics"})
+end, {desc = "Toggle inline diagnostics"})
 
 -- Lightweight split zoom replacement for vim-maximizer.
 vim.keymap.set("n", "<leader>sm", function()

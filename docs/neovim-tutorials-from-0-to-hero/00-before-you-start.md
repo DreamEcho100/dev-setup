@@ -351,14 +351,15 @@ dotfiles/.config/nvim/
 │           │
 │           ├── blink-cmp.lua   ← Autocompletion engine (modern replacement for
 │           │                      nvim-cmp). Sources: LSP, path, snippets, buffer.
-│           │                      Snippet trigger = ";" (type ;bash for bash snippet)
+│           │                      Custom snippets use explicit ";" triggers
+│           │                      (type ;shebang for a bash snippet)
 │           │                      Ctrl+Space = force show menu
 │           │                      Tab/S-Tab = navigate snippet jump points
 │           │
 │           ├── luasnip.lua     ← Snippet engine. Contains:
 │           │                      - LuaSnip + friendly-snippets (community snippets)
 │           │                      - Custom markdown snippets (code blocks, links)
-│           │                      - All snippets prefixed with ";" trigger
+│           │                      - Filetype inheritance for JS/TS/React/Svelte/etc.
 │           │                      - filetype_extend: tsx gets js+ts snippets, etc.
 │           │
 │           ├── treesitter.lua  ← Syntax highlighting (not regex-based — it's a
@@ -624,7 +625,7 @@ ansible-playbook neovim.yml -K -e neovim_version=v0.10.4
 # Also install Java (needed for jdtls — the Java LSP server):
 ansible-playbook neovim.yml -K -e install_java=true
 
-# Also install .NET SDK (needed for omnisharp — C# LSP server):
+# Also install .NET SDK (needed for roslyn.nvim — C# LSP server):
 ansible-playbook neovim.yml -K -e install_dotnet=true
 
 # Nightly + Java (combine any extras with spaces):
@@ -747,7 +748,7 @@ The current `ensure_installed` list in `mason.lua` includes:
 | `vtsls`                                       | TypeScript / JavaScript                   |
 | `gopls`                                       | Go                                        |
 | `clangd`                                      | C / C++                                   |
-| `rust_analyzer`                               | Rust (often installed via rustup instead) |
+| Rust via `rustaceanvim`                       | Rust, using rust-analyzer from the Rust toolchain |
 | `html`, `cssls`, `jsonls`                     | HTML / CSS / JSON                         |
 | `eslint`                                      | JavaScript/TypeScript linting via LSP     |
 | `tailwindcss`                                 | Tailwind CSS class completions            |
@@ -763,7 +764,7 @@ The current `ensure_installed` list in `mason.lua` includes:
 | `prismals`                                    | Prisma ORM                                |
 | `taplo`                                       | TOML                                      |
 | `texlab`                                      | LaTeX                                     |
-| `omnisharp`                                   | C#                                        |
+| Roslyn via `roslyn.nvim`                      | C# / Razor, requires `-e install_dotnet=true` |
 | `jdtls`                                       | Java (needs `-e install_java=true`)       |
 
 **Formatters and linters (via mason-tool-installer):**
@@ -838,6 +839,7 @@ loading fresh — from an empty snap-sandboxed config directory.
    export XDG_CONFIG_HOME="$HOME/.config"
    export XDG_DATA_HOME="$HOME/.local/share"
    export XDG_STATE_HOME="$HOME/.local/state"
+   export XDG_CACHE_HOME="$HOME/.cache"
    ```
 
 **How to diagnose this right now:** Open Neovim and run:

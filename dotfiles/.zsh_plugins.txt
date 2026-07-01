@@ -1,0 +1,20 @@
+# Optional Antidote bundle, loaded only when:
+#
+#   DE100_ZSH_PLUGIN_MANAGER=antidote
+#
+# The default shell path is Oh My Zsh + Powerlevel10k because it matches the
+# old working setup and is easier to debug while learning zsh/Neovim.
+
+# Oh My Zsh compatibility plugins from the previous setup.
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/colored-man-pages
+ohmyzsh/ohmyzsh path:plugins/colorize
+
+# Keep only one syntax highlighter. Load it before zsh-autocomplete; loading it
+# last is the normal zsh rule, but it prints warnings for autocomplete widgets.
+zdharma-continuum/fast-syntax-highlighting
+
+# Completion and interactive editing. Do not load fzf-tab by default here:
+# zsh-autocomplete and fzf-tab both replace completion widgets and compete.
+marlonrichert/zsh-autocomplete
+zsh-users/zsh-autosuggestions

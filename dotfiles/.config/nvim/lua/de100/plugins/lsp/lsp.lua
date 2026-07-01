@@ -26,25 +26,32 @@ return {
 
                 opts.desc = "Show LSP references"
                 vim.keymap.set("n", "gR", snacks_picker("lsp_references",
-                               vim.lsp.buf.references), opts)
+                                                        vim.lsp.buf.references),
+                               opts)
 
                 opts.desc = "Go to declaration"
                 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 
                 opts.desc = "Show LSP definitions"
                 vim.keymap.set("n", "gd", snacks_picker("lsp_definitions",
-                               vim.lsp.buf.definition), opts)
+                                                        vim.lsp.buf.definition),
+                               opts)
 
                 opts.desc = "Show LSP implementations"
                 vim.keymap.set("n", "gi", snacks_picker("lsp_implementations",
-                               vim.lsp.buf.implementation), opts)
+                                                        vim.lsp.buf
+                                                            .implementation),
+                               opts)
 
                 opts.desc = "Show LSP type definitions"
                 vim.keymap.set("n", "gt", snacks_picker("lsp_type_definitions",
-                               vim.lsp.buf.type_definition), opts)
+                                                        vim.lsp.buf
+                                                            .type_definition),
+                               opts)
 
                 opts.desc = "Code actions"
-                vim.keymap.set({"n", "v"}, "<leader>ca", vim.lsp.buf.code_action, opts)
+                vim.keymap.set({"n", "v"}, "<leader>ca",
+                               vim.lsp.buf.code_action, opts)
 
                 opts.desc = "Smart rename"
                 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
@@ -55,13 +62,15 @@ return {
                 end, opts)
 
                 opts.desc = "Show line diagnostics"
-                vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float, opts)
+                vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float,
+                               opts)
 
                 opts.desc = "Hover documentation"
                 vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
                 opts.desc = "Signature help"
-                vim.keymap.set({"n", "i"}, "<leader>ls", vim.lsp.buf.signature_help, opts)
+                vim.keymap.set({"n", "i"}, "<leader>ls",
+                               vim.lsp.buf.signature_help, opts)
 
                 -- Header ↔ source switch for C/C++ (clangd only)
                 local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -85,7 +94,13 @@ return {
 
         vim.diagnostic.config({
             signs = {text = signs},
-            virtual_text = true,
+            virtual_text = {
+                severity = {min = vim.diagnostic.severity.WARN},
+                spacing = 2,
+                source = "if_many",
+                prefix = "●"
+            },
+            virtual_lines = false,
             underline = true,
             update_in_insert = false,
             severity_sort = true,
@@ -103,14 +118,21 @@ return {
         end, {desc = "Toggle LSP virtual text"})
 
         vim.keymap.set("n", "<leader>li", function()
-            vim.lsp.inlay_hint.enable(
-                not vim.lsp.inlay_hint.is_enabled({bufnr = 0}),
-                {bufnr = 0}
-            )
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({
+                bufnr = 0
+            }), {bufnr = 0})
         end, {desc = "Toggle inlay hints"})
 
         local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
+        local blink_ok, blink_cmp = pcall(require, "blink.cmp")
+        if blink_ok and type(blink_cmp.get_lsp_capabilities) == "function" then
+            capabilities = blink_cmp.get_lsp_capabilities(capabilities)
+        else
+            vim.notify_once(
+                "blink.cmp capabilities unavailable; starting LSP with default Neovim capabilities.",
+                vim.log.levels.WARN
+            )
+        end
         vim.lsp.config("*", {capabilities = capabilities})
 
         vim.lsp.config("lua_ls", {
@@ -130,8 +152,9 @@ return {
 
         vim.lsp.config("emmet_language_server", {
             filetypes = {
-                "astro", "css", "eruby", "html", "htmldjango", "javascriptreact",
-                "less", "pug", "sass", "scss", "svelte", "typescriptreact", "vue"
+                "astro", "css", "eruby", "html", "htmldjango",
+                "javascriptreact", "less", "pug", "sass", "scss", "svelte",
+                "typescriptreact", "vue"
             },
             init_options = {
                 showAbbreviationSuggestions = true,
@@ -180,6 +203,11 @@ return {
         })
 
         vim.lsp.config("gopls", {
+            root_dir = function(bufnr, on_dir)
+                on_dir(vim.fs.root(bufnr, "go.work") or
+                           vim.fs.root(bufnr, "go.mod") or
+                           vim.fs.root(bufnr, ".git"))
+            end,
             settings = {
                 gopls = {
                     analyses = {unusedparams = true},
@@ -198,21 +226,100 @@ return {
             }
         })
 
+        vim.api.nvim_create_user_command("De100Doctor", function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            local filename = vim.api.nvim_buf_get_name(bufnr)
+            local file_dir = filename ~= "" and vim.fs.dirname(filename) or
+                                 vim.fn.getcwd()
+            local go_work_root = vim.fs.root(bufnr, "go.work")
+            local go_mod_root = vim.fs.root(bufnr, "go.mod")
+            local go_cwd = go_work_root or go_mod_root or file_dir
+
+            local lines = {
+                "filetype: " .. vim.bo[bufnr].filetype,
+                "buffer: " .. (filename ~= "" and filename or "[No Name]"),
+                "cwd: " .. vim.fn.getcwd(),
+                "stdpath(data): " .. vim.fn.stdpath("data"),
+                "stdpath(state): " .. vim.fn.stdpath("state"),
+                "stdpath(cache): " .. vim.fn.stdpath("cache")
+            }
+
+            local doctor_blink_ok, doctor_blink = pcall(require, "blink.cmp")
+            if doctor_blink_ok and type(doctor_blink.library_available) ==
+                "function" then
+                local native_ok, native_available =
+                    pcall(doctor_blink.library_available)
+                table.insert(lines, "blink native: " ..
+                                 (native_ok and tostring(native_available) or
+                                     "error"))
+            else
+                table.insert(lines, "blink native: unavailable")
+            end
+
+            local clients = vim.lsp.get_clients({bufnr = bufnr})
+            if #clients == 0 then
+                table.insert(lines, "lsp clients: none")
+            else
+                table.insert(lines, "lsp clients:")
+                for _, client in ipairs(clients) do
+                    table.insert(lines, ("  - %s root=%s"):format(client.name,
+                                                                  client.config
+                                                                      .root_dir or
+                                                                      "nil"))
+                end
+            end
+
+            table.insert(lines, "go.work root: " .. (go_work_root or "nil"))
+            table.insert(lines, "go.mod root: " .. (go_mod_root or "nil"))
+
+            if vim.fn.executable("go") == 1 then
+                local result = vim.system({"go", "env", "GOWORK"},
+                                          {cwd = go_cwd, text = true}):wait(3000)
+                local gowork = result and result.code == 0 and
+                                   vim.trim(result.stdout or "") or "error"
+                table.insert(lines,
+                             "go env GOWORK: " ..
+                                 (gowork ~= "" and gowork or "off"))
+            else
+                table.insert(lines, "go env GOWORK: go not found")
+            end
+
+            vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO,
+                       {title = "De100Doctor"})
+        end, {desc = "Show current buffer Blink/LSP/Go diagnostic state"})
+
+        vim.lsp.config("jdtls", {
+            root_dir = function(bufnr, on_dir)
+                on_dir(vim.fs.root(bufnr, {
+                    "gradlew", "mvnw", "pom.xml", "build.gradle", ".git"
+                }))
+            end,
+            settings = {
+                java = {
+                    signatureHelp = {enabled = true},
+                    completion = {favoriteStaticMembers = {}},
+                    contentProvider = {preferred = "fernflower"},
+                    sources = {
+                        organizeImports = {
+                            starThreshold = 9999,
+                            staticStarThreshold = 9999
+                        }
+                    }
+                }
+            }
+        })
+
         vim.lsp.config("clangd", {
             cmd = {
-                "clangd",
-                "--background-index",
-                "--clang-tidy",
-                "--header-insertion=never",
-                "--completion-style=detailed",
-                "--function-arg-placeholders",
-                "--fallback-style=llvm",
+                "clangd", "--background-index", "--clang-tidy",
+                "--header-insertion=never", "--completion-style=detailed",
+                "--function-arg-placeholders", "--fallback-style=llvm"
             },
             init_options = {
                 usePlaceholders = true,
                 completeUnimported = true,
-                clangdFileStatus = true,
-            },
+                clangdFileStatus = true
+            }
         })
 
         vim.lsp.config("cssls", {
@@ -249,14 +356,23 @@ return {
             "cmake", "cssls", "cssmodules_ls",
             "docker_compose_language_service", "dockerls",
             "emmet_language_server", "eslint", "gdscript", "gopls", "graphql",
-            "html", "jsonls", "lua_ls", "marksman", "ols", "omnisharp",
-            "prismals", "pyright", "ruff", "sqlls", "svelte", "tailwindcss",
-            "taplo", "terraformls", "texlab", "vtsls", "vue_ls", "yamlls",
-            "zls"
+            "html", "jdtls", "jsonls", "lua_ls", "marksman", "ols", "prismals",
+            "pyright", "ruff", "sqlls", "svelte", "tailwindcss", "taplo",
+            "terraformls", "texlab", "vtsls", "vue_ls", "yamlls", "zls"
         }
 
+        local enable_failures = {}
         for _, server in ipairs(servers) do
-            pcall(vim.lsp.enable, server)
+            local ok, err = pcall(vim.lsp.enable, server)
+            if not ok then
+                table.insert(enable_failures, server .. ": " .. tostring(err))
+            end
+        end
+
+        if #enable_failures > 0 then
+            vim.notify_once("LSP enable failures:\n" ..
+                                table.concat(enable_failures, "\n"),
+                            vim.log.levels.WARN)
         end
     end
 }

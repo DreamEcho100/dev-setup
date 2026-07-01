@@ -4,27 +4,57 @@
 # Usage (standalone):  tmux-sessionizer
 # Usage (from Neovim): <C-f>  →  tmux neww tmux-sessionizer
 #
-# Directories to search (edit to taste):
-SEARCH_DIRS=(
-    "$HOME/Desktop/workspaces"
-    "$HOME/projects"
-    "$HOME"
-)
+set -euo pipefail
+
+SEARCH_DIRS=()
+
+add_search_dir() {
+    local dir="$1"
+    [[ -n "$dir" && -d "$dir" ]] && SEARCH_DIRS+=("$dir")
+}
+
+if [[ -n "${TMUX_SESSIONIZER_DIRS:-}" ]]; then
+    IFS=':' read -r -a env_dirs <<<"$TMUX_SESSIONIZER_DIRS"
+    for dir in "${env_dirs[@]}"; do
+        add_search_dir "${dir/#\~/$HOME}"
+    done
+elif [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/sessionizer-dirs" ]]; then
+    while IFS= read -r dir; do
+        [[ -z "$dir" || "$dir" == \#* ]] && continue
+        add_search_dir "${dir/#\~/$HOME}"
+    done <"${XDG_CONFIG_HOME:-$HOME/.config}/tmux/sessionizer-dirs"
+else
+    add_search_dir "$HOME/Desktop/workspaces"
+    add_search_dir "$HOME/projects"
+    add_search_dir "$HOME/personal"
+    add_search_dir "$HOME"
+fi
+
+if [[ ${#SEARCH_DIRS[@]} -eq 0 ]]; then
+    echo "No sessionizer search directories exist." >&2
+    exit 1
+fi
+
+if command -v fd >/dev/null 2>&1; then
+    FIND_CMD=(fd . --type d --max-depth 3 --exclude .git --exclude node_modules --exclude __pycache__ --exclude .cache --exclude vendor --exclude target "${SEARCH_DIRS[@]}")
+elif command -v fdfind >/dev/null 2>&1; then
+    FIND_CMD=(fdfind . --type d --max-depth 3 --exclude .git --exclude node_modules --exclude __pycache__ --exclude .cache --exclude vendor --exclude target "${SEARCH_DIRS[@]}")
+else
+    FIND_CMD=(find "${SEARCH_DIRS[@]}" -maxdepth 3 -mindepth 1 -type d \( -name .git -o -name node_modules -o -name __pycache__ -o -name .cache -o -name vendor -o -name target \) -prune -o -type d -print)
+fi
+
+preview='eza -la --git --color=always {} 2>/dev/null || tree -a -L 2 -C {} 2>/dev/null || ls -la {}'
 
 # Build fzf candidate list: up to 3 levels deep, only real dirs, skip hidden
 selected=$(
-    find "${SEARCH_DIRS[@]}" \
-        -maxdepth 3 -mindepth 1 \
-        -type d \
-        \( -name ".git" -o -name "node_modules" -o -name "__pycache__" \
-           -o -name ".cache" -o -name "vendor" \) -prune \
-        -o -type d -print 2>/dev/null \
-    | fzf \
-        --prompt="  Project: " \
-        --height=40% \
-        --border=rounded \
-        --preview="ls -la {}" \
-        --preview-window=right:40%
+    "${FIND_CMD[@]}" 2>/dev/null |
+        sort -u |
+        fzf \
+            --prompt="  Project: " \
+            --height=40% \
+            --border=rounded \
+            --preview="$preview" \
+            --preview-window=right:40%
 )
 
 # Bail if nothing was selected (user pressed Esc)
@@ -32,7 +62,8 @@ selected=$(
 
 # Derive a clean session name from the directory basename
 # Replace dots/spaces with underscores (tmux dislikes them in names)
-session_name=$(basename "$selected" | tr '. ' '__')
+session_name=$(basename "$selected" | tr '. ' '__' | tr -cd '[:alnum:]_-')
+session_name="${session_name:-project}"
 
 # Create the session detached if it doesn't already exist
 if ! tmux has-session -t="$session_name" 2>/dev/null; then

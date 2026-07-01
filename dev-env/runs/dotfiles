@@ -10,9 +10,12 @@ force_relink="1"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --dry)         dry="1" ;;
-        --no-force)    force_relink="0" ;;
-        *)             echo "Unknown arg: $1"; exit 1 ;;
+    --dry) dry="1" ;;
+    --no-force) force_relink="0" ;;
+    *)
+        echo "Unknown arg: $1"
+        exit 1
+        ;;
     esac
     shift
 done
@@ -45,16 +48,60 @@ else
 fi
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$REAL_HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$REAL_HOME/.local/share}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$REAL_HOME/.local/state}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$REAL_HOME/.cache}"
+
+case "${XDG_CONFIG_HOME:-}" in
+"$REAL_HOME"/snap/code/* | /snap/* | "") XDG_CONFIG_HOME="$REAL_HOME/.config" ;;
+esac
+case "${XDG_DATA_HOME:-}" in
+"$REAL_HOME"/snap/code/* | /snap/* | "") XDG_DATA_HOME="$REAL_HOME/.local/share" ;;
+esac
+case "${XDG_STATE_HOME:-}" in
+"$REAL_HOME"/snap/code/* | /snap/* | "") XDG_STATE_HOME="$REAL_HOME/.local/state" ;;
+esac
+case "${XDG_CACHE_HOME:-}" in
+"$REAL_HOME"/snap/code/* | /snap/* | "") XDG_CACHE_HOME="$REAL_HOME/.cache" ;;
+esac
+
 DOTFILES_DIR="$(cd "$script_dir/../../dotfiles" && pwd)"
+BACKUP_ROOT="$XDG_STATE_HOME/mfansible/backups/dotfiles-$(date +%Y%m%d-%H%M%S)"
 
 log "Real user:        $REAL_USER"
 log "Real user home:   $REAL_HOME"
 log "XDG_CONFIG_HOME:  $XDG_CONFIG_HOME"
+log "XDG_DATA_HOME:    $XDG_DATA_HOME"
+log "XDG_STATE_HOME:   $XDG_STATE_HOME"
+log "XDG_CACHE_HOME:   $XDG_CACHE_HOME"
 log "Dotfiles dir:     $DOTFILES_DIR"
 log "Force relink:     $force_relink"
+log "Backup root:      $BACKUP_ROOT"
 
-# Ensure XDG_CONFIG_HOME exists
+# Ensure XDG paths exist. This prevents Neovim from writing Lazy, Mason,
+# shada, logs, or DAP state into read-only VS Code Snap paths.
 execute mkdir -p "$XDG_CONFIG_HOME"
+execute mkdir -p "$XDG_DATA_HOME"
+execute mkdir -p "$XDG_STATE_HOME"
+execute mkdir -p "$XDG_CACHE_HOME"
+
+backup_target() {
+    local dest="$1"
+    local src="$2"
+    local label="$3"
+
+    if [[ -L "$dest" && "$(readlink "$dest")" == "$src" ]]; then
+        return 0
+    fi
+
+    if [[ -e "$dest" || -L "$dest" ]]; then
+        local backup_name
+        backup_name="$label-$(basename "$dest")"
+        execute mkdir -p "$BACKUP_ROOT"
+        log "📦 Backing up: $dest → $BACKUP_ROOT/$backup_name"
+        execute mv "$dest" "$BACKUP_ROOT/$backup_name"
+    fi
+}
 
 # ───────────────────────────────────────────────────────────
 # Symlink subdirectories of a source dir into a target dir
@@ -64,30 +111,32 @@ execute mkdir -p "$XDG_CONFIG_HOME"
 symlink_dirs() {
     local from="$1"
     local to="$2"
-    
+    local label="${3:-config}"
+
     if [[ ! -d "$from" ]]; then
         log "⚠️  Source directory '$from' not found, skipping"
         return
     fi
-    
+
     execute mkdir -p "$to"
-    
+
     # Iterate immediate subdirs (depth 1)
     while IFS= read -r -d '' src; do
         local name dest
         name="$(basename "$src")"
         dest="$to/$name"
-        
+
         # Skip if symlink already points to the right place
         if [[ -L "$dest" && "$(readlink "$dest")" == "$src" ]]; then
             log "✓ Already linked: $dest → $src"
             continue
         fi
-        
+
         if [[ $force_relink == "1" ]]; then
+            backup_target "$dest" "$src" "$label"
             execute rm -rf "$dest"
         fi
-        
+
         log "🔗 Linking: $dest → $src"
         execute ln -sfn "$src" "$dest"
     done < <(find "$from" -mindepth 1 -maxdepth 1 -type d -print0)
@@ -102,38 +151,39 @@ symlink_files() {
     local from="$1"
     local to="$2"
     local pattern="${3:-.*}"
-    
+
     if [[ ! -d "$from" ]]; then
         log "⚠️  Source directory '$from' not found, skipping"
         return
     fi
-    
+
     execute mkdir -p "$to"
-    
+
     while IFS= read -r -d '' src; do
         local name dest
         name="$(basename "$src")"
         dest="$to/$name"
-        
+
         if [[ -L "$dest" && "$(readlink "$dest")" == "$src" ]]; then
             log "✓ Already linked: $dest → $src"
             continue
         fi
-        
+
         if [[ $force_relink == "1" ]]; then
+            backup_target "$dest" "$src" "root"
             execute rm -f "$dest"
         fi
-        
+
         log "🔗 Linking: $dest → $src"
         execute ln -sfn "$src" "$dest"
     done < <(find "$from" -mindepth 1 -maxdepth 1 -type f -name "$pattern" -print0)
 }
 
 # 📂 Symlink config subdirectories (e.g. nvim, tmux) into ~/.config
-symlink_dirs "$DOTFILES_DIR/.config" "$XDG_CONFIG_HOME"
+symlink_dirs "$DOTFILES_DIR/.config" "$XDG_CONFIG_HOME" "config"
 
 # 📂 Symlink .local subdirectories (if present) into ~/.local
-symlink_dirs "$DOTFILES_DIR/.local" "$REAL_HOME/.local"
+symlink_dirs "$DOTFILES_DIR/.local" "$REAL_HOME/.local" "local"
 
 # 📄 Symlink hidden files at repo root (.bashrc, .zshrc, .gitconfig…) into ~
 symlink_files "$DOTFILES_DIR" "$REAL_HOME" ".*"

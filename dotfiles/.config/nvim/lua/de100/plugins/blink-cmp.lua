@@ -7,9 +7,6 @@
 -- https://www.lazyvim.org/extras/coding/blink
 -- https://github.com/saghen/blink.cmp
 -- Documentation site: https://cmp.saghen.dev/
--- NOTE: Specify the trigger character(s) used for luasnip
-local trigger_text = ";"
-
 return {
     "saghen/blink.cmp",
     enabled = true,
@@ -23,8 +20,7 @@ return {
         "rafamadriz/friendly-snippets"
     },
     build = function()
-        local ok, cmp = pcall(require, "blink.cmp")
-        if ok and type(cmp.build) == "function" then cmp.build():pwait() end
+        require("blink.cmp").build():pwait(60000)
     end,
 
     ---@module 'blink.cmp'
@@ -90,72 +86,13 @@ return {
                 snippets = {
                     enabled = true,
                     max_items = 15,
-                    min_keyword_length = 1,
-                    score_offset = 85,
-                    -- Only show snippets after typing the trigger_text char,
-                    -- e.g. with trigger_text=";", typing ";bash" shows the
-                    -- "bash" snippet.
-                    should_show_items = function()
-                        local col = vim.api.nvim_win_get_cursor(0)[2]
-                        local before_cursor =
-                            vim.api.nvim_get_current_line():sub(1, col)
-                        return before_cursor:match(trigger_text .. "%w*$") ~=
-                                   nil
-                    end,
-                    -- Strip the trigger_text from the final inserted text
-                    -- after accepting the completion.
-                    -- Based on `synic`'s suggestion to avoid reloading the
-                    -- luasnip source on each transform:
-                    -- https://github.com/linkarzu/dotfiles-latest/discussions/7#discussion-7849902
-                    transform_items = function(_, items)
-                        local line = vim.api.nvim_get_current_line()
-                        local col = vim.api.nvim_win_get_cursor(0)[2]
-                        local before_cursor = line:sub(1, col)
-                        local start_pos, end_pos = before_cursor:find(
-                                                       trigger_text .. "[^" ..
-                                                           trigger_text .. "]*$")
-                        if start_pos then
-                            for _, item in ipairs(items) do
-                                if not item.trigger_text_modified then
-                                    ---@diagnostic disable-next-line: inject-field
-                                    item.trigger_text_modified = true
-                                    -- Strip trigger_text prefix from label so
-                                    -- blink's fuzzy filter matches "fn" against
-                                    -- "fn" rather than "fn" against ";fn".
-                                    -- transform_items runs before fuzzy matching.
-                                    if item.label:sub(1, #trigger_text) ==
-                                        trigger_text then
-                                        item.label = item.label:sub(
-                                                         #trigger_text + 1)
-                                        if item.filterText then
-                                            item.filterText =
-                                                item.filterText:sub(
-                                                    #trigger_text + 1)
-                                        end
-                                    end
-                                    item.textEdit = {
-                                        newText = item.insertText or item.label,
-                                        range = {
-                                            start = {
-                                                line = vim.fn.line(".") - 1,
-                                                character = start_pos - 1
-                                            },
-                                            ["end"] = {
-                                                line = vim.fn.line(".") - 1,
-                                                character = end_pos
-                                            }
-                                        }
-                                    }
-                                end
-                            end
-                        end
-                        return items
-                    end
+                    min_keyword_length = 2,
+                    score_offset = 60
                 },
                 -- https://github.com/moyiz/blink-emoji.nvim
                 -- emoji = {
                 --     module = "blink-emoji",
-                --     name = "Emoji", 
+                --     name = "Emoji",
                 --     score_offset = 93,
                 --     min_keyword_length = 2,
                 --     opts = {insert = true},
@@ -217,13 +154,32 @@ return {
         opts.cmdline = {
             enabled = true,
             keymap = {preset = "cmdline"},
-            completion = {menu = {auto_show = true}}
+            completion = {
+                menu = {
+                    auto_show = function()
+                        if vim.fn.getcmdtype() ~= ":" then
+                            return false
+                        end
+
+                        local line = vim.fn.getcmdline()
+                        if line:find("%s") then
+                            return true
+                        end
+
+                        -- Avoid accidental completion acceptances for short
+                        -- commands like :w, :q, and :wq.
+                        return #line >= 3
+                    end
+                },
+                ghost_text = {enabled = true}
+            }
         }
 
         opts.completion = {
-            -- Pre-warm sources when entering insert mode so Ctrl+Space
-            -- has results ready on the very first trigger.
-            trigger = {prefetch_on_insert = true},
+            -- Blink V2 marks prefetch_on_insert as buggy. Keep the menu
+            -- automatic while avoiding eager source requests before typing.
+            trigger = {prefetch_on_insert = false, show_in_snippet = false},
+            list = {selection = {preselect = false, auto_insert = false}},
             -- accept = {
             --   auto_brackets = {
             --     enabled = true,
@@ -235,19 +191,28 @@ return {
             -- },
             -- keyword = { range = "full" },
             menu = {auto_show = true, border = "single"},
-            documentation = {auto_show = true, window = {border = "single"}},
+            documentation = {
+                auto_show = false,
+                auto_show_delay_ms = 700,
+                window = {border = "single"}
+            },
             ghost_text = {enabled = false, show_with_menu = false},
             accept = {auto_brackets = {enabled = true}}
         }
 
         opts.fuzzy = {
-            implementation = "lua"
+            implementation = "prefer_rust_with_warning"
             --   use_typo_resistance = false, -- matches fzf behavior when off
             --   use_frecency = true,
             --   use_proximity = false,
         }
 
         opts.snippets = {preset = "luasnip"}
+        opts.signature = {
+            enabled = true,
+            trigger = {enabled = false},
+            window = {border = "single", show_documentation = false}
+        }
 
         -- opts.sources.providers.snippets.opts = {
         --   use_show_condition = true,
@@ -272,6 +237,8 @@ return {
             ["<S-j>"] = {"scroll_documentation_down", "fallback"},
 
             ["<C-space>"] = {"show", "show_documentation", "hide_documentation"},
+            ["<C-@>"] = {"show", "show_documentation", "hide_documentation"},
+            ["<C-k>"] = {"show_signature", "hide_signature", "fallback"},
             ["<C-e>"] = {"hide", "fallback"}
         }
 

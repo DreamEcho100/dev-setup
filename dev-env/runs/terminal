@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+
+# Terminal workstation setup for Ubuntu/Linux.
+# Installs zsh, terminal UX tools, Oh My Zsh, Powerlevel10k, Antidote, TPM, and fonts.
+# Dotfile activation is handled separately by dev-env/runs/dotfiles.
+
+set -euo pipefail
+
+dry="0"
+install_atuin="0"
+install_ghostty_snap="0"
+install_nerd_font="1"
+skip_apt="0"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --dry | --dry-run)
+        dry="1"
+        ;;
+    --with-atuin)
+        install_atuin="1"
+        ;;
+    --with-ghostty-snap)
+        install_ghostty_snap="1"
+        ;;
+    --no-nerd-font)
+        install_nerd_font="0"
+        ;;
+    --skip-apt)
+        skip_apt="1"
+        ;;
+    *)
+        echo "Unknown arg: $1"
+        exit 1
+        ;;
+    esac
+    shift
+done
+
+log() {
+    if [[ "$dry" == "1" ]]; then
+        echo "[DRY_RUN] $*"
+    else
+        echo "$*"
+    fi
+}
+
+execute() {
+    log "exec: $*"
+    if [[ "$dry" == "1" ]]; then
+        return 0
+    fi
+    "$@"
+}
+
+install_apt_package() {
+    local package="$1"
+
+    if dpkg -s "$package" >/dev/null 2>&1; then
+        log "✓ apt package already installed: $package"
+        return 0
+    fi
+
+    execute sudo apt-get install -y "$package"
+}
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+install_or_update_repo() {
+    local repo="$1"
+    local dest="$2"
+
+    if [[ ! -d "$dest/.git" ]]; then
+        execute git clone --depth 1 "$repo" "$dest"
+    else
+        execute git -C "$dest" pull --ff-only
+    fi
+}
+
+log "------------------- dev-env/terminal -------------------"
+
+if [[ -n "${SUDO_USER:-}" ]]; then
+    REAL_USER="$SUDO_USER"
+    REAL_HOME="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+else
+    REAL_USER="$USER"
+    REAL_HOME="$HOME"
+fi
+
+LOCAL_BIN="$REAL_HOME/.local/bin"
+NERD_FONT_DIR="$REAL_HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+
+log "Real user:             $REAL_USER"
+log "Real user home:        $REAL_HOME"
+log "Local bin:             $LOCAL_BIN"
+log "Install Nerd Font:     $install_nerd_font"
+log "Install Atuin:         $install_atuin"
+log "Install Ghostty snap:  $install_ghostty_snap"
+log "Skip apt:              $skip_apt"
+
+execute mkdir -p "$LOCAL_BIN"
+execute mkdir -p "$REAL_HOME/.local/share"
+execute mkdir -p "$REAL_HOME/.local/state"
+execute mkdir -p "$REAL_HOME/.cache"
+execute mkdir -p "$REAL_HOME/.tmux/plugins"
+
+if [[ "$skip_apt" == "1" ]]; then
+    log "apt package installation skipped by --skip-apt"
+elif command_exists apt-get; then
+    execute sudo apt-get update
+
+    core_packages=(
+        zsh
+        git
+        curl
+        wget
+        unzip
+        ca-certificates
+        fontconfig
+        fzf
+        tmux
+        xclip
+        wl-clipboard
+    )
+
+    optional_packages=(
+        zoxide
+        eza
+        bat
+        direnv
+        fonts-jetbrains-mono
+        fonts-firacode
+        fonts-noto-color-emoji
+    )
+
+    for package in "${core_packages[@]}"; do
+        install_apt_package "$package"
+    done
+
+    for package in "${optional_packages[@]}"; do
+        install_apt_package "$package" || log "⚠ optional apt package skipped: $package"
+    done
+
+    if ! command_exists kitty; then
+        install_apt_package kitty || log "⚠ optional apt package skipped: kitty"
+    else
+        log "✓ kitty already available: $(command -v kitty)"
+    fi
+else
+    log "⚠ apt-get not found; skipping Ubuntu package installation"
+fi
+
+if ! command_exists starship && [[ ! -x "$LOCAL_BIN/starship" ]]; then
+    execute curl -fsSL https://starship.rs/install.sh -o /tmp/de100-starship-install.sh
+    execute sh /tmp/de100-starship-install.sh -y -b "$LOCAL_BIN"
+else
+    log "✓ starship already available"
+fi
+
+install_or_update_repo https://github.com/ohmyzsh/ohmyzsh.git "$REAL_HOME/.oh-my-zsh"
+execute mkdir -p "$REAL_HOME/.oh-my-zsh/custom/plugins"
+execute mkdir -p "$REAL_HOME/.oh-my-zsh/custom/themes"
+install_or_update_repo https://github.com/romkatv/powerlevel10k.git "$REAL_HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+install_or_update_repo https://github.com/marlonrichert/zsh-autocomplete.git "$REAL_HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete"
+install_or_update_repo https://github.com/zsh-users/zsh-autosuggestions.git "$REAL_HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+install_or_update_repo https://github.com/zdharma-continuum/fast-syntax-highlighting.git "$REAL_HOME/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
+install_or_update_repo https://github.com/mattmc3/antidote.git "$REAL_HOME/.antidote"
+install_or_update_repo https://github.com/tmux-plugins/tpm.git "$REAL_HOME/.tmux/plugins/tpm"
+
+if [[ "$install_nerd_font" == "1" ]]; then
+    if fc-match "JetBrainsMono Nerd Font Mono" 2>/dev/null | grep -qi "JetBrains"; then
+        log "✓ JetBrainsMono Nerd Font already available"
+    else
+        execute mkdir -p "$NERD_FONT_DIR"
+        execute curl -fL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip -o /tmp/JetBrainsMono.zip
+        execute unzip -o /tmp/JetBrainsMono.zip -d "$NERD_FONT_DIR"
+        execute fc-cache -f "$REAL_HOME/.local/share/fonts"
+    fi
+fi
+
+if [[ "$install_atuin" == "1" ]]; then
+    if command_exists atuin; then
+        log "✓ atuin already available"
+    elif command_exists cargo; then
+        execute cargo install atuin --locked
+    else
+        log "⚠ cargo not found; cannot install Atuin. Install Rust/Cargo first or use your package manager."
+    fi
+else
+    log "Atuin install skipped. Enable later with --with-atuin and DE100_ENABLE_ATUIN=1 in ~/.zshrc.local."
+fi
+
+if [[ "$install_ghostty_snap" == "1" ]]; then
+    if command_exists ghostty; then
+        log "✓ ghostty already available: $(command -v ghostty)"
+    elif command_exists snap; then
+        execute sudo snap install ghostty --classic
+    else
+        log "⚠ snap not found; install Ghostty manually from https://ghostty.org/docs/install"
+    fi
+else
+    log "Ghostty install skipped. Config is still managed if Ghostty is already installed."
+fi
+
+log "✓ Terminal workstation packages are ready."
+log "  Default shell UX: Oh My Zsh + Powerlevel10k. Antidote remains opt-in with DE100_ZSH_PLUGIN_MANAGER=antidote."
+log "  Next: run ./dev-env/runs/dotfiles to activate .zshenv, .zshrc, Kitty, Ghostty, Starship, Atuin, and tmux configs."
+log "  Then open a new terminal and verify: echo \$XDG_DATA_HOME"

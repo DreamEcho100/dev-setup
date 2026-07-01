@@ -57,7 +57,7 @@ Your Code File
 │  vtsls     (TS/JS)    │    Runs as a separate process and talks to
 │  pyright   (Python)   │    Neovim via the Language Server Protocol
 │  lua_ls    (Lua)      │    (an open standard).
-│  rust_analyzer        │
+│  rustaceanvim + RA    │
 │  ...many more         │
 └───────────────────────┘
       │
@@ -167,17 +167,21 @@ q              → close Mason
 
 This config uses `mason-tool-installer.nvim` to automatically install a curated set of tools
 the first time you open Neovim. You will see a progress notification as Mason downloads them.
-The list is defined in `dotfiles/.config/nvim/lua/de100/plugins/lsp/mason.lua`:
+The list is defined in `dotfiles/.config/nvim/lua/de100/plugins/lsp/mason.lua`.
+Rust is owned by `rustaceanvim`, which starts `rust-analyzer` through the Rust toolchain
+instead of central `mason-lspconfig`.
 
 **Language servers:**
-`gopls`, `vtsls`, `pyright`, `lua_ls`, `rust_analyzer`, `clangd`,
-`jsonls`, `yamlls`, `html`, `cssls`, `tailwindcss`, `eslint`
+`gopls`, `vtsls`, `pyright`, `ruff`, `lua_ls`, `clangd`, `jdtls`, `texlab`,
+`jsonls`, `yamlls`, `html`, `cssls`, `tailwindcss`, `eslint`, `biome`, `zls`, `ols`
 
 **Formatters:**
-`prettier`, `gofmt`, `goimports`, `black`, `stylua`, `rustfmt`
+`prettier`, `prettierd`, `biome`, `goimports`, `gofumpt`, `black`, `isort`,
+`ruff`, `stylua`, `rustfmt`, `clang-format`, `google-java-format`, `latexindent`
 
 **Linters:**
-`golangci-lint`, `ruff`, `selene`
+`golangci-lint`, `ruff`, `pylint`, `shellcheck`, `luacheck`, `clang-tidy`,
+`cpplint`, `markdownlint`, `yamllint`, `ansible-lint`, `codespell`
 
 > 💡 **VSCode equivalent**
 >
@@ -380,8 +384,10 @@ Diagnostics appear in multiple places at once:
   44 │    │  const name = user.name
 ```
 
-The sign column shows severity icons on the left margin. Virtual text shows the message inline
-after the code. Both appear simultaneously.
+The sign column shows severity icons on the left margin. Inline virtual text is intentionally
+calmer in this config: it only shows warning/error-level messages by default. Hints and info
+still exist in the diagnostic float, Snacks picker, Trouble, and lualine counts, but they do
+not crowd the end of every line.
 
 ### Severity levels
 
@@ -455,10 +461,10 @@ codebase for the first time — you can see the full scope of issues across ever
                Inline messages after each problem line. When they are very long or
                very numerous, toggle them off for a cleaner view.
 
-<leader>lx   → toggle ALL diagnostics visibility entirely
-               Hides sign column marks and virtual text. The underlying issues still
-               exist — you have just hidden the indicators temporarily. Useful when
-               onboarding into a messy codebase and the red marks are overwhelming.
+<leader>lx   → toggle inline diagnostics ON/OFF
+               Hides inline text and underlines, while keeping diagnostic data available
+               through signs/statusline/Snacks/Trouble. Useful when onboarding into a
+               messy codebase and the red marks are overwhelming.
 ```
 
 > 💡 **VSCode equivalent**
@@ -690,25 +696,43 @@ When you enter Insert mode and begin typing, blink.cmp:
 1. Detects each keypress and triggers completion queries
 2. Queries all configured **sources** simultaneously:
    - **LSP** (priority 90): the language server's completions for your current code context
-   - **Snippets** (priority 85): triggered by your `;prefix` snippet triggers
+   - **Snippets** (priority 60): LuaSnip and friendly-snippets templates
    - **Path** (priority 25): filesystem paths when you type `./`, `../`, or `/`
    - **Buffer** (priority 15): words that appear anywhere in the current open buffers
 3. Merges results, deduplicates, and sorts by priority + fuzzy match score
-4. Displays the popup with a documentation preview panel on the right
+4. Displays the popup. Documentation stays hidden until you request it.
 
-The `prefetch_on_insert = true` setting in this config pre-warms all sources the instant you
-press `i`, `a`, `o`, or any key entering Insert mode — before you type anything. This means
-the first completion suggestion appears with no latency.
+This config intentionally keeps Blink V2 current, but avoids the V2 `prefetch_on_insert`
+path because the installed V2 schema marks it as buggy/not recommended. The completion
+menu still appears automatically while typing; it just does not query every source before
+you have typed anything.
+
+If you see `Rust fuzzy matcher not available`, the config already has the Blink V2 build
+hook. Run this once after updating the plugin, then restart Neovim:
+
+```vim
+:Lazy build blink.cmp
+:checkhealth blink.cmp
+```
 
 ### Triggering and dismissing the menu
 
 ```
-<C-Space>   → force-show the completion menu
-              If already showing: toggle between menu-only, menu+docs, hidden
-              Cycle: hidden → menu → menu+docs → hidden → ...
+<C-Space>   → show the completion menu; if the menu is open, show/hide docs
+<C-@>       → same as <C-Space> for terminals that encode Ctrl-Space as Ctrl-@
 
 <C-e>       → hide/dismiss the menu without accepting anything
               Use when the popup is blocking your view of the code
+```
+
+Documentation is manual by design:
+
+```
+<S-k>       → show/scroll documentation up when the docs window is visible
+<S-j>       → scroll documentation down
+K           → hover documentation for the symbol under the cursor
+<C-k>       → toggle Blink signature help while typing a function call
+<leader>ls  → use Neovim's built-in LSP signature help
 ```
 
 ### Navigating the completion list
@@ -737,10 +761,15 @@ the paragraph.
 `<C-y>` is consistent, explicit, and works identically across all filetypes. Once you retrain
 the muscle memory, it becomes second nature.
 
-The **preselect** feature highlights the first item in the list automatically. Pressing `<C-y>`
-immediately accepts that first suggestion without needing to press `<C-n>` first. If you want
-the second suggestion, press `<C-n>` once then `<C-y>`. If you want to type the word literally
-without accepting any completion, press `<C-e>` to dismiss.
+This config is manual-first: Blink does **not** preselect and preview the first item.
+That avoids accidental acceptance while you are learning. To accept a completion:
+
+1. Type until the menu appears.
+2. Use `<C-n>`/`<C-p>` or arrow keys to select the item you want.
+3. Press `<C-y>` to accept it.
+
+If you want to type the word literally without accepting any completion, press `<C-e>` to
+dismiss the menu.
 
 ### Scrolling the documentation pane
 
@@ -749,8 +778,8 @@ without accepting any completion, press `<C-e>` to dismiss.
 <S-j>   → scroll the documentation preview window DOWN
 ```
 
-When the completion menu is open and a documentation panel is visible on the right, use
-`<S-k>` and `<S-j>` to read through it without closing the menu or moving to a different item.
+When the completion menu is open and you manually show documentation, use `<S-k>` and
+`<S-j>` to read through it without closing the menu or moving to a different item.
 
 ### Snippet placeholder navigation
 
@@ -779,41 +808,40 @@ After the last placeholder, `<Tab>` exits the snippet and inserts a regular tab.
 │                       └────────────────────────────────────────────┘  │
 └───────────────────────────────────────────────────────────────────────┘
   ● = LSP item    ▶ = snippet    [C-y]=accept   [C-e]=close
-  [C-n/p]=navigate   [S-k/j]=scroll docs   (preselect = first item highlighted)
+  [C-n/p]=navigate   [S-k/j]=scroll docs   (no preselect by default)
 ```
 
 ---
 
-## 8. The ; Snippet System
+## 8. The `;` Snippet System
 
 Snippets are pre-written code templates. You type a short trigger, accept the snippet from the
 completion menu, and the full template expands with your cursor positioned at the first blank
 you need to fill in. Tab moves you through each blank in sequence.
 
-### Why the ; prefix?
+### Why the `;` prefix?
 
-Every snippet trigger in this config starts with `;`. Type `;fn` for a function snippet,
-`;try` for a try/catch, `;useState` for the useState hook pattern. The semicolon prefix is
-deliberate and solves a real problem:
+Custom snippets in this config intentionally start with `;`. Type `;fn` for a function
+snippet, `;try` for a try/catch, or `;useState` for a React state hook pattern.
 
-Without a prefix, if you have a snippet triggered by `fn`, it shows up in the completion menu
-every time you type "fn" — including when you are typing "function", "findIndex", "font", or
-any variable named "fn". The constant snippet suggestion noise becomes disruptive fast. It
-feels like the editor is constantly second-guessing you.
+The semicolon prefix prevents snippet noise. Without a prefix, a trigger like `fn` would
+compete with LSP suggestions every time you typed `function`, `findIndex`, `font`, or a
+variable named `fn`. With `;`, a snippet only appears when you deliberately ask for one.
 
-With `;` as the prefix, snippets appear in the completion menu **only when you type `;`**.
-The semicolon is not a word character in any programming language, so it can only appear as
-the intentional start of a snippet trigger. When you type `;fn`, you are explicitly saying
-"I want a snippet named fn right here." When you type just "fn", no snippets appear.
+- LuaSnip owns snippet expansion.
+- Blink owns snippet display in the completion menu.
+- The snippet files contain the explicit `;` triggers directly.
+- There is no hidden LuaSnip trigger decorator and no Blink trigger rewrite.
+- Blink ranks snippets below LSP suggestions, so regular code completion stays first.
 
 ### How to expand a snippet step by step
 
 ```
 1. Enter Insert mode (press i, a, o, etc.)
-2. Type ;  followed by the trigger without any space: ;fn
+2. Type `;` followed by the trigger without any space, for example `;fn`
 3. The completion popup appears showing the snippet with a ▶ icon
-4. If the snippet is the first item (preselected): press <C-y> to accept
-5. If you need to navigate to it: press <C-n> a few times, then <C-y>
+4. Navigate to it with <C-n>/<C-p> if needed
+5. Press <C-y> to accept
 6. The full template expands, cursor lands at the first placeholder
 7. Type your content for that placeholder
 8. Press <Tab> to advance to the next placeholder
@@ -829,7 +857,7 @@ Before: | (cursor in insert mode, | = cursor position)
 Type:   ;fn
 
 Completion popup shows:
-  ▶ fn  →  function name(params): ReturnType { ... }
+  ▶ ;fn  →  function name(params): ReturnType { ... }
 
 Press <C-y>:
 
@@ -938,7 +966,7 @@ TypeScript inherits JavaScript, TypeScript React inherits TypeScript and JSX, et
 | `;listr`      | `{items.map(item => <li key={item.id}>...</li>)}`   |
 | `;useState`   | `const [state, setState] = useState(initial)`       |
 | `;useEffect`  | `useEffect(() => { }, [deps])`                      |
-| `;useCallback`| `useCallback(() => { }, [deps])`                    |
+| `;useCallback` | `useCallback(() => { }, [deps])`                    |
 | `;useMemo`    | `useMemo(() => value, [deps])`                      |
 | `;useRef`     | `const ref = useRef<Type>(null)`                    |
 | `;useContext` | `const value = useContext(MyContext)`               |
@@ -1471,7 +1499,7 @@ verify the API is working. The `.http` files and the source code evolve together
 | `<leader>df`  | Floating window for current line's diagnostic       |
 | `<leader>D`   | All buffer diagnostics in Snacks picker             |
 | `<leader>lv`  | Toggle virtual text (inline diagnostic messages)    |
-| `<leader>lx`  | Toggle all diagnostics visibility                   |
+| `<leader>lx`  | Toggle inline diagnostics and underlines            |
 | `<leader>li`  | Toggle inlay hints                                  |
 | `<leader>xw`  | Trouble: workspace diagnostics (all files)          |
 | `<leader>xd`  | Trouble: document diagnostics (current file)        |
@@ -1482,7 +1510,8 @@ verify the API is working. The `.http` files and the source code evolve together
 
 | Key          | Action                                               |
 |--------------|------------------------------------------------------|
-| `<C-Space>`  | Show completion menu (or cycle: menu → docs → hide)  |
+| `<C-Space>`  | Show completion menu or toggle completion docs       |
+| `<C-@>`      | Same as `<C-Space>` for terminal compatibility       |
 | `<C-e>`      | Dismiss completion menu without accepting            |
 | `<C-y>`      | Accept selected item (NOT Enter)                     |
 | `<C-p>` / ↑  | Select previous item                                 |

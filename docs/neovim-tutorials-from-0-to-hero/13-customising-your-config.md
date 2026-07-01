@@ -1186,38 +1186,23 @@ Use autocommands when you need more complex logic — for example, setting a key
 
 ## 8. Adding Snippets
 
-### 8.1 The ;prefix System
+### 8.1 The Explicit `;` Prefix System
 
-All snippets in this config are prefixed with `;`. When you type `;fn` in a JavaScript file and the completion popup appears, it shows you the arrow function snippet. When you type `;comp`, you get the React component boilerplate.
+Most custom snippets in this config are prefixed with `;`. When you type `;fn` in a JavaScript file and the completion popup appears, it shows you the arrow function snippet. When you type `;comp`, you get the React component boilerplate.
 
 The semicolon prefix serves a critical purpose: namespace isolation. Without a prefix, a snippet trigger like `fn` would pop up every time you typed the letters "fn" anywhere in a JavaScript file — in variable names, in comments, in strings. That would be maddening.
 
 With `;` as a prefix, snippets only appear when you deliberately trigger them. The `;` character rarely appears in regular code, so false positives are essentially zero.
 
-The prefix is applied automatically by a decorator in `luasnip.lua`:
+The prefix is explicit in snippet files. Write the trigger exactly as you want to type it:
 
 ```lua
-local function auto_semicolon(context)
-    if type(context) == "string" then
-        return {trig = ";" .. context}
-    end
-    return vim.tbl_extend("keep", {trig = ";" .. context.trig}, context)
-end
+s({trig = ";fn", name = "Arrow function"}, { ... })
+-- ^ Explicit semicolon trigger
 ```
 
-So in snippet files, you write the trigger without the semicolon:
-
-```lua
-s({trig = "fn", name = "Arrow function"}, { ... })
--- ^ No semicolon here
-```
-
-And the decorator adds it automatically:
-
-```
-You type: ;fn
-Trigger matches: ;fn  ← decorator added the semicolon
-```
+This is intentionally boring. There is no hidden decorator and no Blink transform rewriting
+snippet labels, so debugging completion behavior is much easier.
 
 ### 8.2 The snippets/ Directory Structure
 
@@ -1373,7 +1358,7 @@ return {
 }
 ```
 
-Since these use the `;` decorator, you'd type `;todo` and it expands. Tab moves you to the text placeholder.
+Since these triggers include `;` directly, you type `;todo` and it expands. Tab moves you to the text placeholder.
 
 ### 8.5 Writing a Complex Snippet: React Component
 
@@ -1435,7 +1420,7 @@ export default function UserCard({ [props] }: UserCardProps) {
 
 1. Open a file with the right filetype (e.g., `test.ts` for TypeScript)
 2. Enter Insert mode
-3. Type the trigger (e.g., `;fn`)
+3. Type the trigger exactly as written in the snippet file (e.g., `;fn`)
 4. The completion popup should show the snippet
 5. Press Tab or Enter to expand
 6. The cursor moves to the first insert node
@@ -1978,7 +1963,7 @@ Practice is how settings become second nature. Work through each exercise before
 
 **Goal:** Add a snippet to `snippets/python.lua` (create the file if it doesn't exist) that expands to a Python dataclass skeleton.
 
-**The snippet trigger:** `dclass` (which will become `;dclass` after the decorator)
+**The snippet trigger:** `;dclass`
 
 **What it should expand to:**
 ```python
@@ -2073,7 +2058,7 @@ You now have the full picture of how this config is structured and how to modify
 2. **Keymaps** live in `core/keymaps.lua` or inside plugin `keys = {}` specs — define how you navigate
 3. **Plugins** live in `plugins/<name>.lua` — one file per plugin, enable/disable cleanly
 4. **Per-language settings** live in `after/ftplugin/<lang>.lua` — override globally for specific languages
-5. **Snippets** live in `snippets/<filetype>.lua` — triggered with `;prefix`
+5. **Snippets** live in `snippets/<filetype>.lua` — custom snippets usually use explicit `;prefix` triggers
 6. **Colorscheme** is the single line in `lua/current-theme.lua`
 
 The which-key group system in `plugins/which-key.lua` is the map of your entire `<leader>` namespace — keep it updated as you add keymaps, and the popup remains a useful discovery tool rather than a confusing wall of unlabeled keys.

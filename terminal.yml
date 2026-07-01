@@ -1,0 +1,260 @@
+# Playbook: install and configure the terminal workstation stack.
+#
+# This complements dotfiles.yml:
+# - terminal.yml installs zsh, tmux, terminal UX tools, fonts, Oh My Zsh,
+#   Powerlevel10k, Antidote, Starship, and TPM.
+# - dotfiles.yml symlinks the repo-managed configs into the user's home directory.
+#
+# Optional installs:
+#   DE100_INSTALL_ATUIN=true ansible-playbook terminal.yml -K
+#   DE100_INSTALL_GHOSTTY_SNAP=true ansible-playbook terminal.yml -K
+
+- name: Install terminal workstation stack
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    sudo_user: "{{ lookup('env', 'SUDO_USER') | default('', true) }}"
+    env_user: "{{ lookup('env', 'USER') | default(ansible_user_id, true) }}"
+    real_user: "{{ sudo_user if sudo_user | length > 0 else env_user }}"
+    real_home: >-
+      {{
+        lookup('pipe', 'getent passwd ' + sudo_user + ' | cut -d: -f6')
+        if sudo_user | length > 0
+        else lookup('env', 'HOME') | default(ansible_env.HOME, true)
+      }}
+    local_bin: "{{ real_home }}/.local/bin"
+    install_atuin: "{{ (lookup('env', 'DE100_INSTALL_ATUIN') | default('false', true)) | bool }}"
+    install_ghostty_snap: "{{ (lookup('env', 'DE100_INSTALL_GHOSTTY_SNAP') | default('false', true)) | bool }}"
+    install_nerd_font: "{{ (lookup('env', 'DE100_INSTALL_NERD_FONT') | default('true', true)) | bool }}"
+    nerd_font_dir: "{{ real_home }}/.local/share/fonts/JetBrainsMonoNerdFont"
+    nerd_font_zip: "/tmp/JetBrainsMono.zip"
+
+    terminal_core_packages:
+      - zsh
+      - git
+      - curl
+      - wget
+      - unzip
+      - ca-certificates
+      - fontconfig
+      - fzf
+      - tmux
+      - xclip
+      - wl-clipboard
+
+    terminal_optional_packages:
+      - zoxide
+      - eza
+      - bat
+      - direnv
+      - kitty
+      - fonts-jetbrains-mono
+      - fonts-firacode
+      - fonts-noto-color-emoji
+
+  tasks:
+    - name: Display terminal stack settings
+      ansible.builtin.debug:
+        msg:
+          - "Real user: {{ real_user }}"
+          - "Real home: {{ real_home }}"
+          - "Local bin: {{ local_bin }}"
+          - "Install Nerd Font: {{ install_nerd_font }}"
+          - "Install Atuin: {{ install_atuin }}"
+          - "Install Ghostty snap: {{ install_ghostty_snap }}"
+
+    - name: Ensure user-local terminal directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ real_user }}"
+      loop:
+        - "{{ local_bin }}"
+        - "{{ real_home }}/.local/share"
+        - "{{ real_home }}/.local/state"
+        - "{{ real_home }}/.cache"
+        - "{{ real_home }}/.tmux/plugins"
+
+    - name: Install core Ubuntu/Debian terminal packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ terminal_core_packages }}"
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Install optional Ubuntu/Debian terminal packages
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ terminal_optional_packages }}"
+      when: ansible_os_family == "Debian"
+      register: terminal_optional_package_results
+      failed_when: false
+
+    - name: Display optional terminal package failures
+      ansible.builtin.debug:
+        msg: "Optional terminal package was not installed: {{ item.item }}"
+      loop: "{{ terminal_optional_package_results.results | default([]) }}"
+      when:
+        - terminal_optional_package_results is defined
+        - item.failed | default(false)
+
+    - name: Check Starship binary
+      ansible.builtin.stat:
+        path: "{{ local_bin }}/starship"
+      register: starship_bin
+
+    - name: Download Starship installer
+      ansible.builtin.get_url:
+        url: https://starship.rs/install.sh
+        dest: /tmp/de100-starship-install.sh
+        mode: "0755"
+      when: not starship_bin.stat.exists
+
+    - name: Install Starship into user-local bin
+      ansible.builtin.command:
+        cmd: "sh /tmp/de100-starship-install.sh -y -b {{ local_bin }}"
+      when: not starship_bin.stat.exists
+      changed_when: true
+
+    - name: Install or update Oh My Zsh
+      ansible.builtin.git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: "{{ real_home }}/.oh-my-zsh"
+        depth: 1
+        update: true
+
+    - name: Ensure Oh My Zsh custom directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ real_user }}"
+      loop:
+        - "{{ real_home }}/.oh-my-zsh/custom/plugins"
+        - "{{ real_home }}/.oh-my-zsh/custom/themes"
+
+    - name: Install or update Powerlevel10k
+      ansible.builtin.git:
+        repo: https://github.com/romkatv/powerlevel10k.git
+        dest: "{{ real_home }}/.oh-my-zsh/custom/themes/powerlevel10k"
+        depth: 1
+        update: true
+
+    - name: Install or update zsh-autocomplete
+      ansible.builtin.git:
+        repo: https://github.com/marlonrichert/zsh-autocomplete.git
+        dest: "{{ real_home }}/.oh-my-zsh/custom/plugins/zsh-autocomplete"
+        depth: 1
+        update: true
+
+    - name: Install or update zsh-autosuggestions
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions.git
+        dest: "{{ real_home }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+        depth: 1
+        update: true
+
+    - name: Install or update fast-syntax-highlighting
+      ansible.builtin.git:
+        repo: https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+        dest: "{{ real_home }}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
+        depth: 1
+        update: true
+
+    - name: Install or update Antidote for opt-in shell mode
+      ansible.builtin.git:
+        repo: https://github.com/mattmc3/antidote.git
+        dest: "{{ real_home }}/.antidote"
+        depth: 1
+        update: true
+
+    - name: Install or update TPM
+      ansible.builtin.git:
+        repo: https://github.com/tmux-plugins/tpm.git
+        dest: "{{ real_home }}/.tmux/plugins/tpm"
+        depth: 1
+        update: true
+
+    - name: Check JetBrainsMono Nerd Font availability
+      ansible.builtin.command:
+        cmd: "fc-match JetBrainsMono Nerd Font Mono"
+      register: jetbrains_nerd_font_check
+      changed_when: false
+      failed_when: false
+
+    - name: Ensure JetBrainsMono Nerd Font directory exists
+      ansible.builtin.file:
+        path: "{{ nerd_font_dir }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ real_user }}"
+      when:
+        - install_nerd_font | bool
+        - "'JetBrains' not in jetbrains_nerd_font_check.stdout"
+
+    - name: Download JetBrainsMono Nerd Font
+      ansible.builtin.get_url:
+        url: https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+        dest: "{{ nerd_font_zip }}"
+        mode: "0644"
+      when:
+        - install_nerd_font | bool
+        - "'JetBrains' not in jetbrains_nerd_font_check.stdout"
+
+    - name: Install JetBrainsMono Nerd Font
+      ansible.builtin.unarchive:
+        src: "{{ nerd_font_zip }}"
+        dest: "{{ nerd_font_dir }}"
+        remote_src: true
+      when:
+        - install_nerd_font | bool
+        - "'JetBrains' not in jetbrains_nerd_font_check.stdout"
+
+    - name: Refresh font cache
+      ansible.builtin.command:
+        cmd: "fc-cache -f {{ real_home }}/.local/share/fonts"
+      when:
+        - install_nerd_font | bool
+        - "'JetBrains' not in jetbrains_nerd_font_check.stdout"
+      changed_when: true
+
+    - name: Check Cargo availability for optional Atuin install
+      ansible.builtin.command:
+        cmd: cargo --version
+      register: cargo_check
+      changed_when: false
+      failed_when: false
+      when: install_atuin | bool
+
+    - name: Install Atuin locally when explicitly requested
+      ansible.builtin.command:
+        cmd: cargo install atuin --locked
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ real_home }}/.cargo/bin"
+      when:
+        - install_atuin | bool
+        - cargo_check.rc | default(1) == 0
+      changed_when: true
+      failed_when: false
+
+    - name: Install Ghostty snap when explicitly requested
+      become: true
+      community.general.snap:
+        name: ghostty
+        classic: true
+      when:
+        - ansible_os_family == "Debian"
+        - install_ghostty_snap | bool
+      failed_when: false
+
+    - name: Terminal stack install complete
+      ansible.builtin.debug:
+        msg:
+          - "Run ./dev-env/runs/dotfiles to activate repo-managed shell, terminal, and tmux configs."
+          - "Default shell UX is Oh My Zsh + Powerlevel10k; Antidote is opt-in with DE100_ZSH_PLUGIN_MANAGER=antidote."
+          - "Open a new terminal and verify XDG_DATA_HOME is {{ real_home }}/.local/share."

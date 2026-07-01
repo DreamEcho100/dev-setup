@@ -45,7 +45,6 @@ return {
                     "marksman",
                     "ansiblels",
                     "ols",
-                    "omnisharp",
                     "prismals",
                     "pyright",
                     "ruff",

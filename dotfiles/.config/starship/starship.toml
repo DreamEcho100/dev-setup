@@ -1,0 +1,86 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+add_newline = true
+scan_timeout = 20
+command_timeout = 800
+palette = "tokyo_night"
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$golang\
+$nodejs\
+$python\
+$rust\
+$cmd_duration\
+$line_break\
+$jobs\
+$status\
+$character"""
+
+[palettes.tokyo_night]
+bg = "#1a1b26"
+fg = "#c0caf5"
+blue = "#7aa2f7"
+cyan = "#7dcfff"
+green = "#9ece6a"
+orange = "#ff9e64"
+purple = "#bb9af7"
+red = "#f7768e"
+yellow = "#e0af68"
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+truncate_to_repo = false
+read_only = " ro"
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = "git:"
+style = "purple"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "yellow"
+conflicted = "="
+ahead = ">"
+behind = "<"
+diverged = "<>"
+up_to_date = ""
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "r"
+deleted = "x"
+
+[cmd_duration]
+min_time = 1000
+format = "took [$duration]($style) "
+style = "orange"
+
+[status]
+disabled = false
+format = "[$status]($style) "
+style = "red"
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"
+
+[golang]
+format = "go [$version](cyan) "
+
+[nodejs]
+format = "node [$version](green) "
+
+[python]
+format = "py [$version](yellow) "
+
+[rust]
+format = "rs [$version](orange) "
+
+[package]
+disabled = true

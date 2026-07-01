@@ -1,1 +1,6 @@
 _ignore
+dotfiles/.config/kitty/local.conf
+dotfiles/.config/ghostty/local.ghostty
+dotfiles/.config/starship/local.toml
+dotfiles/.config/de100/theme/
+dotfiles/.config/go/telemetry/local

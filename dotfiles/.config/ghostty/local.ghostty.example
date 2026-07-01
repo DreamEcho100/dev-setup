@@ -1,0 +1,8 @@
+# Machine-local Ghostty overrides.
+# Copy to local.ghostty or use:
+#   de100-theme set catppuccin-mocha
+#
+# Examples:
+#   font-family = FiraCode Nerd Font Mono
+#   font-size = 13
+#   theme = catppuccin-mocha
