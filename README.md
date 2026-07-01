@@ -2,4 +2,4 @@
 
 ## Example of usage
 
-`ansible-playbook dotfiles.yml -Kvvvv `
+`ansible-playbook dotfiles.yml -Kvvvv`
