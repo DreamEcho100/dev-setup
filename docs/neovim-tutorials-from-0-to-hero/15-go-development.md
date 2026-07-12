@@ -247,21 +247,23 @@ The debugger is Delve through `nvim-dap-go`.
 | Action                | Key             |
 | --------------------- | --------------- |
 | Start/continue        | `F5`            |
-| Step into             | `F1`            |
-| Step over             | `F2`            |
-| Step out              | `F3`            |
-| Toggle breakpoint     | `<leader>daptb` |
-| Debug nearest Go test | `<leader>dgt`   |
-| Debug last Go test    | `<leader>dgT`   |
-| Toggle debug UI       | `F7`            |
+| Stop                  | `Shift+F5`      |
+| Step over             | `F10`           |
+| Step into             | `F11`           |
+| Step out              | `Shift+F11`     |
+| Toggle breakpoint     | `F9` or `<leader>daptb` |
+| Debug nearest Go test | `<leader>dapt`  |
+| Rerun last session    | `<leader>dapl`  |
+| Toggle debug UI       | `F7` or `<leader>dapu` |
+| Inspect DAP setup     | `<leader>daph`  |
 
 Beginner debugging flow:
 
 1. Open a Go test file.
 2. Put cursor inside a test.
 3. Press `<leader>daptb` on a line you want to stop at.
-4. Press `<leader>dgt`.
-5. Use `F2` to step over and `F5` to continue.
+4. Press `<leader>dapt`.
+5. Use `F10` to step over and `F5` to continue.
 
 Shell equivalent:
 
@@ -372,7 +374,7 @@ Do this in order:
 3. Trust format on save.
 4. Use `<leader>ll` only when you want stronger linting.
 5. Add tests and run them with `<leader>tN`.
-6. Debug tests with `<leader>dgt` when prints are not enough.
+6. Debug tests with `<leader>dapt` when prints are not enough.
 7. Move repeatable commands to Overseer tasks.
 
 You become effective in Go by understanding packages, modules, tests, errors,

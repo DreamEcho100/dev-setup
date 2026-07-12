@@ -43,14 +43,17 @@ dev-env/runs/terminal --with-atuin
 dev-env/runs/terminal --with-ghostty-snap
 ```
 
-Java and .NET are documented opt-ins because they are large runtime stacks:
+Java, .NET, and Godot are documented opt-ins because they are large runtime
+stacks:
 
 ```sh
 ansible-playbook neovim.yml -K -e install_java=true
 ansible-playbook neovim.yml -K -e install_dotnet=true
+ansible-playbook neovim.yml -K -e install_godot=true
 
 dev-env/runs/neovim --with-java
 dev-env/runs/neovim --with-dotnet
+dev-env/runs/neovim --with-godot
 ```
 
 ## Bootstrap Flow
@@ -117,14 +120,15 @@ The Neovim config expects broad tooling:
 ```text
 Core:        git curl wget unzip tar gzip jq ripgrep fd lazygit tree-sitter
 Formatting: prettier prettierd biome stylua shfmt shellcheck codespell
-Python:     pyright ruff black isort debugpy pynvim
-Go:         gopls goimports delve
+Python:     pyright ruff black isort pynvim; Mason debugpy adapter
+Go:         gopls goimports; Mason Delve adapter
 Rust:       rust-analyzer rustfmt codelldb cargo
 C/C++:      clangd clang-format clang-tidy lldb cmake make ninja
 Web:        eslint vtsls html css tailwind graphql prisma astro svelte vue angular
 Docs:       markdown tools, mermaid-cli, texlive, latexmk
 Remote:     ssh scp docker devpod tmux
-Opt-in:     default-jdk for Java, dotnet-sdk for C#
+Debug:      js-debug debugpy delve codelldb local-lua-debugger OSV
+Opt-in:     OpenJDK 21 + Java DAP, .NET 10 + netcoredbg, Godot 4 + built-in DAP
 ```
 
 ## Terminal Stack
@@ -159,8 +163,12 @@ Mason installs editor-facing LSP/DAP/formatter packages where possible. System p
 Run after bootstrap:
 
 ```sh
-nvim --headless "+checkhealth lazy mason conform snacks vim.lsp nvim-treesitter provider" "+qa"
+nvim --headless "+checkhealth lazy mason conform snacks vim.lsp nvim-treesitter provider dap" "+qa"
 ```
+
+Inside a supported source buffer, run `:De100DapHealth` to see the exact DAP
+configurations, adapters, executables, project files, and log path selected for
+that filetype.
 
 If health checks fail inside VS Code, first inspect:
 

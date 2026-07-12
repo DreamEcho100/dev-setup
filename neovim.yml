@@ -6,6 +6,7 @@
 # Optional heavyweight runtimes:
 #   ansible-playbook neovim.yml -K -e install_java=true
 #   ansible-playbook neovim.yml -K -e install_dotnet=true
+#   ansible-playbook neovim.yml -K -e install_godot=true
 
 - name: Install Neovim and editor tooling
   hosts: localhost
@@ -17,6 +18,9 @@
     neovim_version: "{{ lookup('env', 'NEOVIM_VERSION') | default('', true) }}"
     install_java: "{{ (lookup('env', 'DE100_INSTALL_JAVA') | default('false', true)) | bool }}"
     install_dotnet: "{{ (lookup('env', 'DE100_INSTALL_DOTNET') | default('false', true)) | bool }}"
+    install_godot: "{{ (lookup('env', 'DE100_INSTALL_GODOT') | default('false', true)) | bool }}"
+    godot_version: "{{ lookup('env', 'DE100_GODOT_VERSION') | default('4.6.3', true) }}"
+    godot_install_dir: "{{ lookup('env', 'HOME') }}/.local/opt/godot-{{ godot_version }}"
 
     debian_core_packages:
       - ninja-build
@@ -73,10 +77,10 @@
       - bear # generates compile_commands.json for non-CMake C/C++ projects
 
     debian_java_packages:
-      - default-jdk
+      - openjdk-21-jdk
 
     debian_dotnet_packages:
-      - dotnet-sdk-8.0
+      - dotnet-sdk-10.0
 
   tasks:
     - name: Add ascii-image-converter apt repository on Debian systems
@@ -92,7 +96,7 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_core_packages }}"
-        state: latest
+        state: present
         update_cache: true
       when: ansible_os_family == "Debian"
 
@@ -106,7 +110,7 @@
       become: true
       ansible.builtin.apt:
         name: docker.io
-        state: latest
+        state: present
       when:
         - ansible_os_family == "Debian"
         - docker_check.rc != 0
@@ -115,7 +119,7 @@
       become: true
       ansible.builtin.apt:
         name: "{{ item }}"
-        state: latest
+        state: present
       loop: "{{ debian_optional_packages }}"
       when: ansible_os_family == "Debian"
       register: optional_package_results
@@ -142,7 +146,7 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_java_packages }}"
-        state: latest
+        state: present
       when:
         - ansible_os_family == "Debian"
         - install_java | bool
@@ -151,10 +155,49 @@
       become: true
       ansible.builtin.apt:
         name: "{{ debian_dotnet_packages }}"
-        state: latest
+        state: present
       when:
         - ansible_os_family == "Debian"
         - install_dotnet | bool
+
+    - name: Reject unsupported automatic Godot platforms
+      ansible.builtin.fail:
+        msg: "Automatic Godot installation currently supports x86_64 Linux only; install Godot manually on {{ ansible_system }}/{{ ansible_architecture }}."
+      when:
+        - install_godot | bool
+        - ansible_system != "Linux" or ansible_architecture != "x86_64"
+
+    - name: Create user-local Godot directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ lookup('env', 'HOME') }}/.local/bin"
+        - "{{ godot_install_dir }}"
+      when: install_godot | bool
+
+    - name: Download official Godot release when explicitly requested
+      ansible.builtin.get_url:
+        url: "https://github.com/godotengine/godot/releases/download/{{ godot_version }}-stable/Godot_v{{ godot_version }}-stable_linux.x86_64.zip"
+        dest: "/tmp/Godot_v{{ godot_version }}-stable_linux.x86_64.zip"
+        mode: "0644"
+      when: install_godot | bool
+
+    - name: Extract official Godot release
+      ansible.builtin.unarchive:
+        src: "/tmp/Godot_v{{ godot_version }}-stable_linux.x86_64.zip"
+        dest: "{{ godot_install_dir }}"
+        remote_src: true
+      when: install_godot | bool
+
+    - name: Link Godot into the user PATH
+      ansible.builtin.file:
+        src: "{{ godot_install_dir }}/Godot_v{{ godot_version }}-stable_linux.x86_64"
+        dest: "{{ lookup('env', 'HOME') }}/.local/bin/godot"
+        state: link
+        force: true
+      when: install_godot | bool
 
     - name: Install Roslyn language server when .NET tooling is requested
       ansible.builtin.shell: >-
@@ -223,7 +266,7 @@
         - "{{ neovim_install_prefix }}/include/nvim"
 
     - name: Build Neovim from source
-      ansible.builtin.make:
+      community.general.make:
         chdir: "{{ neovim_src_dir }}"
         params:
           CMAKE_BUILD_TYPE: RelWithDebInfo
@@ -231,7 +274,7 @@
 
     - name: Install Neovim system-wide
       become: true
-      ansible.builtin.make:
+      community.general.make:
         target: install
         chdir: "{{ neovim_src_dir }}"
         params:
@@ -254,7 +297,7 @@
 
     - name: Install Python editor tools
       ansible.builtin.command:
-        cmd: python3 -m pip install --user --upgrade pynvim debugpy ruff black isort pylint
+        cmd: python3 -m pip install --user --upgrade pynvim ruff black isort pylint
       changed_when: true
       failed_when: false
 

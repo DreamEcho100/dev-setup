@@ -94,7 +94,7 @@ Here's the complete layout of the Neovim config. Every file you'll ever touch li
 │           ├── multicursor.lua       ← Multiple cursors
 │           ├── neogit.lua            ← Magit-like git UI
 │           ├── noice.lua             ← Better UI for messages, cmdline, popups
-│           ├── nvim-dap.lua          ← Debugger (DAP)
+│           ├── dap/                   ← DAP-related Lazy plugin specs
 │           ├── nvim-ufo.lua          ← Code folding
 │           ├── oil.lua               ← File explorer as buffer
 │           ├── qmk.lua               ← QMK keyboard layout editor

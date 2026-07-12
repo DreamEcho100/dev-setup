@@ -326,9 +326,13 @@ dotfiles/.config/nvim/
 │       │                          - <leader>dd = open diagnostic float
 │       │                          - [d / ]d = prev/next diagnostic
 │       │
+│       ├── config/dap/          ← Runtime DAP configuration modules:
+│       │                          adapters, language configurations, health,
+│       │                          trusted project loading, and shared helpers.
+│       │
 │       ├── lazy.lua            ← Bootstraps lazy.nvim (clones it if missing),
 │       │                          then sets up the plugin system by importing
-│       │                          de100.plugins and de100.plugins.lsp.
+│       │                          de100.plugins, plugins.lsp, and plugins.dap.
 │       │                          Also configures auto-update checking (silent).
 │       │
 │       └── plugins/
@@ -415,10 +419,8 @@ dotfiles/.config/nvim/
 │           ├── linting.lua     ← nvim-lint: run linters on BufWrite/BufEnter.
 │           │                      Uses shellcheck, pylint, golangci-lint, etc.
 │           │
-│           ├── nvim-dap.lua    ← Debug Adapter Protocol client. Breakpoints,
-│           │                      step-through, variable inspection, REPL.
-│           │                      Works with debugpy (Python), delve (Go),
-│           │                      codelldb (C/C++/Rust), js-debug-adapter (JS/TS).
+│           ├── dap/             ← Lazy specs for nvim-dap and nvim-jdtls.
+│           │                      Installs plugin integrations and owns load order.
 │           │
 │           ├── trouble.lua     ← Pretty list UI for:
 │           │                      - Diagnostics (errors/warnings across all files)
@@ -702,7 +704,6 @@ npm install -g \
 ```bash
 pip3 install --user \
   pynvim      # Neovim Python provider
-  debugpy     # Python debugger (used by nvim-dap)
   ruff        # Ultra-fast Python linter + formatter
   black       # Python formatter (alternative to ruff format)
   isort       # Python import sorter
@@ -790,7 +791,7 @@ The current `ensure_installed` list in `mason.lua` includes:
 | `ansible-lint`           | Ansible linter                         |
 | `codespell`              | Spell checker                          |
 
-**Debug adapters:**
+**Default debug adapters:**
 
 | Tool                        | Purpose                        |
 | --------------------------- | ------------------------------ |
@@ -798,9 +799,12 @@ The current `ensure_installed` list in `mason.lua` includes:
 | `delve`                     | Go debugger                    |
 | `codelldb`                  | C/C++/Rust debugger            |
 | `js-debug-adapter`          | JavaScript/TypeScript debugger |
-| `java-debug-adapter`        | Java debugger                  |
-| `netcoredbg`                | .NET/C# debugger               |
 | `local-lua-debugger-vscode` | Lua debugger                   |
+
+`one-small-step-for-vimkind` supplies Neovim Lua debugging as a Neovim plugin.
+Java's `java-debug-adapter`/`java-test` packages are added only when Java is
+installed. `netcoredbg` is added only when .NET is installed. Godot supplies
+its own GDScript DAP server instead of a Mason adapter.
 
 ### XDG Paths: The Snap/VSCode Isolation Caveat
 
@@ -881,7 +885,7 @@ sudo npm install -g \
   vscode-langservers-extracted prettier neovim
 
 # Step 4: Install Python tools
-pip3 install --user pynvim debugpy ruff black isort pylint
+pip3 install --user pynvim ruff black isort pylint
 
 # Step 5: Link (or copy) the config
 # If the repo is at ~/mfansible:
@@ -1110,6 +1114,8 @@ telescope: require("telescope.health").check()
 :checkhealth mason          " Mason (node, git, curl)
 :checkhealth treesitter     " Treesitter (compiled parsers)
 :checkhealth lsp            " LSP client
+:checkhealth dap            " DAP client/plugin integration
+:De100DapHealth             " This repo's adapter/configuration report
 ```
 
 Navigate the checkhealth buffer like any file: `j`/`k` to move, `/` to search,

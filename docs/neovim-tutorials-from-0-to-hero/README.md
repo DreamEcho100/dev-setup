@@ -79,8 +79,8 @@ docs/neovim-tutorials-from-0-to-hero/
 ├── 09-search-and-replace.md
 │   └── /, ?, grug-far.nvim, Telescope live_grep, search-replace.nvim
 │
-├── 10-debugging-with-dap.md
-│   └── nvim-dap, breakpoints, watch expressions, REPL
+├── 09-debug-test-build.md
+│   └── nvim-dap, adapters, tests, tasks, launch.json, trusted project config
 │
 ├── 11-terminal-and-tasks.md
 │   └── Toggleterm / snacks terminal, overseer tasks, tmux workflow

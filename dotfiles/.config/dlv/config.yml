@@ -1,0 +1,2 @@
+# Keep Delve from generating its verbose default file inside the linked dotfiles.
+# Add only user-wide CLI defaults here; project path mappings belong in launch.json.

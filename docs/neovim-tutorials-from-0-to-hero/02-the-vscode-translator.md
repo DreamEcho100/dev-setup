@@ -388,31 +388,42 @@ This config uses **nvim-dap** (Debug Adapter Protocol) with **nvim-dap-ui** for 
 
 | Action                      | VSCode                 | Neovim (this config)                   |
 | --------------------------- | ---------------------- | -------------------------------------- |
-| Toggle breakpoint           | `F9`                   | `<leader>daptb`                        |
+| Toggle breakpoint           | `F9`                   | `F9` or `<leader>daptb`                |
 | Set conditional breakpoint  | Right-click breakpoint | `<leader>dapb` (prompts for condition) |
 | Start / Continue debug      | `F5`                   | `F5`                                   |
-| Step over (next line)       | `F10`                  | `F2`                                   |
-| Step into (into function)   | `F11`                  | `F1`                                   |
-| Step out (out of function)  | `Shift+F11`            | `F3`                                   |
-| Toggle debug UI panels      | —                      | `F7`                                   |
+| Stop                        | `Shift+F5`             | `Shift+F5`                             |
+| Step over (next line)       | `F10`                  | `F10`                                  |
+| Step into (into function)   | `F11`                  | `F11`                                  |
+| Step out (out of function)  | `Shift+F11`            | `Shift+F11`                            |
+| Toggle debug UI panels      | Run and Debug panel    | `F7` or `<leader>dapu`                 |
 | Show debug UI automatically | Yes                    | Yes (auto-opens on debug start)        |
 
 ### Supported Languages (Auto-Configured)
 
 This config ships with debug adapters pre-configured for:
 
-| Language              | Adapter              | Notes                                           |
-| --------------------- | -------------------- | ----------------------------------------------- |
-| Go                    | delve (via `dap-go`) | Full support including test debugging           |
-| JavaScript/TypeScript | js-debug-adapter     | Launch file or attach to process                |
-| Python                | debugpy              | Points to `/usr/bin/python3` — adjust as needed |
-| C/C++/Rust            | codelldb             | Requires compiling with debug symbols (`-g`)    |
-| C# / .NET             | netcoredbg           | Requires DLL path                               |
-| React/Browser         | Chrome DevTools      | Attach or launch Chrome                         |
+| Language/runtime      | Adapter                        | Notes                                      |
+| --------------------- | ------------------------------ | ------------------------------------------ |
+| Go                    | Delve via `nvim-dap-go`         | Program and nearest-test debugging         |
+| JavaScript/TypeScript | current `js-debug-adapter`     | Node and Chromium browser sessions         |
+| Python                | debugpy via `nvim-dap-python`  | Uses project virtual environments          |
+| C/C++/Zig/Odin        | CodeLLDB                       | Build with debug symbols                   |
+| Rust                  | CodeLLDB via `rustaceanvim`    | Rust-specific ownership                    |
+| Lua/Neovim Lua        | Local Lua Debugger / OSV       | Launch standalone Lua or attach to Neovim  |
+| Java                  | Java debug/test bundles        | Optional; requires Java 21+ and JDTLS       |
+| C#/.NET               | netcoredbg                     | Optional; requires .NET                    |
+| Godot/GDScript        | Godot built-in DAP server      | Optional; Godot listens on port 6006       |
 
 ### VSCode launch.json Compatibility
 
-The config reads `.vscode/launch.json` from your project root — the same format VSCode uses. So if your project already has a debug configuration for VSCode, it will work in Neovim too. You can also create `.nvim/dap.lua` for Neovim-specific configurations that are more powerful.
+Current nvim-dap discovers `.vscode/launch.json` on demand, so no deprecated
+manual loader is needed. Most portable adapter configurations work in both
+editors, but VS Code extension commands are not DAP features and may not carry
+over. A project `.nvim/dap.lua` is executable code: this config loads it only
+after `<leader>dapP`/`:De100DapLoadProject` shows its path and asks for trust.
+
+Run `<leader>daph` in a source buffer to inspect the selected configurations,
+adapter executables, project files, and DAP log path.
 
 ---
 

@@ -153,12 +153,16 @@ Common issues:
 
 ### Python
 
+For every language below, run `:De100DapHealth` in a source buffer before
+editing debugger config. It reports the filetype-specific configurations and
+the adapter executable Neovim actually selected.
+
 | Layer | Expected tool |
 | --- | --- |
 | LSP | `pyright` for type intelligence, `ruff` for lint/code actions |
 | Format | `ruff_format` + `ruff_organize_imports`, fallback `isort` + `black` |
 | Lint | `ruff`, `pylint` |
-| Debug | `debugpy` |
+| Debug | Mason `debugpy` through `nvim-dap-python`; project virtualenv-aware |
 | Tests | `neotest-python` when available |
 | Snippets | `;fn`, `;afn`, `;dc`, `;try`, `;test` |
 
@@ -169,6 +173,7 @@ Check:
 :ConformInfo
 :!python -m pyright --version
 :!ruff --version
+:De100DapHealth
 ```
 
 Common issues:
@@ -198,6 +203,7 @@ Check:
 :!go env GOWORK
 :!go test ./...
 :!golangci-lint run ./...
+:De100DapHealth
 ```
 
 Common issues:
@@ -215,7 +221,7 @@ Common issues:
 | LSP | `lua_ls` |
 | Format | `stylua` |
 | Lint | `luacheck` |
-| Debug | local Lua debugger adapter installed |
+| Debug | Local Lua Debugger for programs; OSV attach for Neovim Lua |
 | Snippets | `;fn`, `;req`, `;map`, `;au`, `;pcall` |
 
 Check:
@@ -225,6 +231,7 @@ Check:
 :ConformInfo
 :checkhealth vim.lsp
 :lua print(vim.inspect(vim.lsp.get_clients({ bufnr = 0 })))
+:De100DapHealth
 ```
 
 For Neovim config files, `lua_ls` should know about `vim` and the config's Lua directory.
@@ -237,7 +244,7 @@ For Neovim config files, `lua_ls` should know about `vim` and the config's Lua d
 | LSP process | `rust-analyzer` from the Rust toolchain |
 | Crates | `crates.nvim` in `Cargo.toml` |
 | Format | `rustfmt`, with LSP fallback |
-| Debug | `codelldb` |
+| Debug | CodeLLDB owned/configured by `rustaceanvim` |
 | Snippets | `;fn`, `;struct`, `;impl`, `;match`, `;test` |
 
 Check:
@@ -261,7 +268,7 @@ using `rustaceanvim`. Two Rust owners can create confusing duplicate behavior.
 | Format | `clang-format` |
 | Lint | `clang-tidy`, `cpplint` |
 | Build | `cmake-tools.nvim`, Overseer tasks |
-| Debug | `codelldb` |
+| Debug | CodeLLDB launch/attach; compile with debug symbols |
 | Snippets | C `;main`, `;fn`; C++ `;class`, `;rule5`, `;gtest` |
 
 Check:
@@ -282,8 +289,8 @@ If go-to-definition is weak, generate `compile_commands.json` first.
 | LSP owner | `roslyn.nvim` |
 | LSP process | Roslyn language server |
 | Format | LSP fallback |
-| Debug | `netcoredbg` |
-| Prerequisite | `install_dotnet=true` or manual .NET SDK + Roslyn LS install |
+| Debug | `netcoredbg` when the optional .NET stack is installed |
+| Prerequisite | `install_dotnet=true`/`--with-dotnet` or manual .NET 10 SDK + Roslyn LS |
 
 Check:
 
@@ -291,6 +298,7 @@ Check:
 :LspInfo
 :!dotnet --info
 :!which roslyn-language-server
+:De100DapHealth
 ```
 
 This config does not enable OmniSharp as the default C# LSP. Roslyn is the intended modern
@@ -300,11 +308,11 @@ path, but it requires Neovim 0.12+ and the Roslyn server executable.
 
 | Layer | Expected tool |
 | --- | --- |
-| LSP | `jdtls` |
-| Extras | `nvim-jdtls` commands attach when the `jdtls` client is active |
+| LSP owner | `nvim-jdtls`, started per Maven/Gradle/Git project |
+| LSP | `jdtls` with a project-specific state directory |
 | Format | `google-java-format` |
 | Debug/test adapters | `java-debug-adapter`, `java-test` |
-| Prerequisite | `install_java=true` or manual JDK install |
+| Prerequisite | `install_java=true`/`--with-java` or a manual JDK 21+ (`java` and `javac`) |
 
 Check:
 
@@ -312,6 +320,7 @@ Check:
 :LspInfo
 :!java -version
 :!jdtls --version
+:De100DapHealth
 ```
 
 For serious Java debug/test workflows, validate a real Maven/Gradle project. Java is more
@@ -321,18 +330,21 @@ project-shape-sensitive than Go or Python.
 
 | Language | LSP | Format | Notes |
 | --- | --- | --- | --- |
-| Zig | `zls` | `zigfmt` | Requires a working Zig install |
-| Odin | `ols` | external/manual | Tooling is younger than Go/Rust/C++ |
-| GDScript | `gdscript` | LSP fallback | Usually depends on Godot editor/LSP connection |
+| Zig | `zls` | `zigfmt` | CodeLLDB can launch a compiled executable with symbols |
+| Odin | `ols` | external/manual | CodeLLDB can launch a compiled executable with symbols |
+| GDScript | `gdscript` | LSP fallback | Optional Godot runtime owns DAP on localhost port 6006 |
 
 Check:
 
 ```vim
 :LspInfo
 :ConformInfo
+:De100DapHealth
 ```
 
-These ecosystems are less standardized; expect more project-specific setup.
+Use `--with-godot`/`install_godot=true` for the optional Godot runtime. Zig and
+Odin debugging is native executable debugging; it does not imply that every
+language-specific expression feature is available in CodeLLDB.
 
 ### LaTeX, Markdown, Docs
 

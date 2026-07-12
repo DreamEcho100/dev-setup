@@ -371,27 +371,6 @@ return {
                        {title = "De100Doctor"})
         end, {desc = "Show current buffer Blink/LSP/Go diagnostic state"})
 
-        vim.lsp.config("jdtls", {
-            root_dir = function(bufnr, on_dir)
-                on_dir(vim.fs.root(bufnr, {
-                    "gradlew", "mvnw", "pom.xml", "build.gradle", ".git"
-                }))
-            end,
-            settings = {
-                java = {
-                    signatureHelp = {enabled = true},
-                    completion = {favoriteStaticMembers = {}},
-                    contentProvider = {preferred = "fernflower"},
-                    sources = {
-                        organizeImports = {
-                            starThreshold = 9999,
-                            staticStarThreshold = 9999
-                        }
-                    }
-                }
-            }
-        })
-
         vim.lsp.config("clangd", {
             cmd = {
                 "clangd", "--background-index", "--clang-tidy",
@@ -439,7 +418,7 @@ return {
             "cmake", "cssls", "cssmodules_ls",
             "docker_compose_language_service", "dockerls",
             "emmet_language_server", "eslint", "gdscript", "gopls", "graphql",
-            "html", "jdtls", "jsonls", "lua_ls", "marksman", "ols", "prismals",
+            "html", "jsonls", "lua_ls", "marksman", "ols", "prismals",
             "pyright", "ruff", "sqlls", "svelte", "tailwindcss", "taplo",
             "terraformls", "texlab", "vtsls", "vue_ls", "yamlls", "zls"
         }

@@ -186,6 +186,23 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Replaced the defensive LSP diagnostic URI normalizer with a stricter trace-and-drop handler: malformed diagnostics are logged with sender details and dropped instead of being guessed into a file URI.
 - Verified the malformed diagnostic handler path with a synthetic headless Neovim notification.
 
+### Phase 15: 2026 Polyglot DAP Modernization
+
+- Status: verification in progress.
+- Audited the pinned June 2026 `nvim-dap` API, the current Mason adapter receipts, the Microsoft DAP adapter catalog, and each maintained language integration used by this config.
+- Chosen default support: JavaScript/TypeScript and web frameworks, Python, Go, C/C++, Rust, standalone Lua, and Neovim Lua.
+- Chosen optional support: Java, .NET, Godot/GDScript, Zig, and Odin when their runtimes/toolchains are available.
+- Chosen exclusions: archived `chrome-debug-adapter`, stale Bash DAP, and fake debugger entries for data/markup/infrastructure filetypes.
+- Split ownership cleanly: Lazy specs under `lua/de100/plugins/dap/`, repo runtime modules under `lua/de100/config/dap/`, and adapter binaries under Mason.
+- Added VS Code-compatible function keys plus terminal-safe leader fallbacks, DAP UI lifecycle, calm virtual text, health reporting, and explicit trust for project `.nvim/dap.lua`.
+- Added maintained integrations for `vscode-js-debug`, debugpy, Delve, CodeLLDB, Local Lua Debugger, OSV, JDTLS Java debug/test bundles, netcoredbg, and Godot's built-in DAP server.
+- Kept Rust DAP ownership in `rustaceanvim`; made Java project attachment repeatable per `FileType`; runtime-gated Java on a full JDK and .NET on both `dotnet` and `netcoredbg`.
+- Aligned Mason, Ansible, and Bash installation paths; Java 21, .NET 10, and Godot 4.6.3 remain explicit heavyweight opt-ins.
+- Replaced the stale debugger tutorial and updated architecture, setup, VS Code translation, Go, C++, and polyglot docs.
+- Narrowed `lazy-lock.json` to the intentional DAP delta only: three integration pins added and `mason-nvim-dap.nvim` removed.
+- Verification completed so far: Lua parsing/formatting, Ansible syntax, default/all-option runner dry runs, fresh Lazy spec loading, DAP registration assertions, trusted project config merge, Rustaceanvim CodeLLDB detection, and real JavaScript/Python/Go/C/Lua adapter handshakes.
+- Remaining verification: global health/diff checks, optional-runtime limitation report, final Git review, and logical commit split.
+
 ## Implementation Checklist
 
 - [x] Restore accidental artifacts.
@@ -240,6 +257,11 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - [x] Add explicit Kulala parser install command.
 - [x] Fix invalid `LESS` color options for `man`.
 - [x] Trace and drop malformed Neovim LSP diagnostics without guessing file URIs.
+- [ ] Modernize the DAP core, UI, keymaps, health checks, and trusted project loader.
+- [ ] Add maintained default debugger integrations for web, Python, Go, native code, Rust, and Lua.
+- [ ] Add guarded Java, .NET, Godot, Zig, and Odin debugger integrations.
+- [ ] Align Mason, Ansible, and Bash debugger dependencies.
+- [ ] Rewrite debugger tutorials and run end-to-end DAP verification.
 - [ ] Run the full terminal installer from a normal terminal for apt-managed packages.
 - [ ] Run full interactive Neovim health checks from a normal unsandboxed terminal.
 - [ ] Split into logical commits after Git index access is available.

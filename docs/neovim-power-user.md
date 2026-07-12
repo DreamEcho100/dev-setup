@@ -42,7 +42,7 @@ Git                Gitsigns, Fugitive, LazyGit, Diffview
 Language           nvim-lspconfig, Mason, Treesitter
 Completion         Blink, LuaSnip, friendly-snippets
 Format/lint        Conform, nvim-lint
-Debug              nvim-dap, dap-ui, Mason DAP adapters
+Debug              nvim-dap, dap-ui, explicit configs, Mason adapter binaries
 Tasks/tests        Overseer, neotest
 Remote             remote-nvim, conn-manager, SSH, tmux
 Docs/math          render-markdown, VimTeX, Mermaid/LaTeX tooling

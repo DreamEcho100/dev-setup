@@ -9,6 +9,8 @@ prefix="/usr/local"
 neovim_dir="$HOME/personal/neovim"
 install_java="${DE100_INSTALL_JAVA:-0}"
 install_dotnet="${DE100_INSTALL_DOTNET:-0}"
+install_godot="${DE100_INSTALL_GODOT:-0}"
+godot_version="${DE100_GODOT_VERSION:-4.6.3}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -44,6 +46,9 @@ while [[ $# -gt 0 ]]; do
         ;;
         --with-dotnet)
             install_dotnet="1"
+        ;;
+        --with-godot)
+            install_godot="1"
         ;;
         *)
             echo "Unknown arg: $1"
@@ -121,6 +126,7 @@ log "Install prefix: $prefix"
 log "Source dir: $neovim_dir"
 log "Install Java: $install_java"
 log "Install .NET: $install_dotnet"
+log "Install Godot: $install_godot"
 
 if [[ -f /etc/debian_version ]]; then
     log "Adding ascii-image-converter apt repository if supported"
@@ -153,12 +159,26 @@ if [[ -f /etc/debian_version ]]; then
     done
     
     if is_truthy "$install_java"; then
-        install_apt_package default-jdk
+        install_apt_package openjdk-21-jdk
     fi
-    
+
     if is_truthy "$install_dotnet"; then
-        install_apt_package dotnet-sdk-8.0
+        install_apt_package dotnet-sdk-10.0
         execute bash -lc 'dotnet tool install -g roslyn-language-server --prerelease --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json || dotnet tool update -g roslyn-language-server --prerelease --source https://pkgs.dev.azure.com/azure-public/vside/_packaging/vs-impl/nuget/v3/index.json'
+    fi
+
+    if is_truthy "$install_godot"; then
+        if [[ "$(uname -m)" != "x86_64" ]]; then
+            echo "Automatic Godot installation currently supports x86_64 Linux only"
+            exit 1
+        fi
+
+        godot_dir="$HOME/.local/opt/godot-$godot_version"
+        godot_archive="/tmp/Godot_v${godot_version}-stable_linux.x86_64.zip"
+        execute mkdir -p "$HOME/.local/bin" "$godot_dir"
+        execute curl -fL "https://github.com/godotengine/godot/releases/download/${godot_version}-stable/Godot_v${godot_version}-stable_linux.x86_64.zip" -o "$godot_archive"
+        execute unzip -o "$godot_archive" -d "$godot_dir"
+        execute ln -sfn "$godot_dir/Godot_v${godot_version}-stable_linux.x86_64" "$HOME/.local/bin/godot"
     fi
 else
     log "This Bash runner is Ubuntu/Linux focused. Use neovim.yml for other OSes."
@@ -194,7 +214,7 @@ if command -v go >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
 fi
 
 if command -v python3 >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
-    execute python3 -m pip install --user --upgrade pynvim debugpy ruff black isort pylint
+    execute python3 -m pip install --user --upgrade pynvim ruff black isort pylint
 fi
 
 execute "$prefix/bin/nvim" --version

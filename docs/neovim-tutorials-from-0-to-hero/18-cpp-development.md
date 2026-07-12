@@ -830,48 +830,50 @@ Set the Debug build type in Neovim with `<leader>mcmT` → select "Debug".
 | `<F9>`          | Toggle breakpoint                                    |
 | `<F10>`         | Step over (next line, don't enter functions)         |
 | `<F11>`         | Step into (enter function)                           |
-| `<F12>`         | Step out (finish current function, return to caller) |
+| `<S-F11>`       | Step out (finish current function, return to caller) |
 | `<leader>dapr`  | Open DAP REPL (evaluate expressions)                 |
-| `<leader>daplb` | List breakpoints                                     |
-| `<leader>dapca` | Clear all breakpoints                                |
+| `<leader>dapq`  | List breakpoints                                     |
+| `<leader>dapC`  | Clear all breakpoints                                |
 
 ### Setting Up a Debug Configuration
 
 nvim-dap needs to know how to launch your program. Create or edit
-`.nvim-dap.lua` in your project root (or `~/.config/nvim/lua/de100/dap.lua`
-already has defaults):
+`.nvim/dap.lua` in your project root (the global runtime defaults live under
+`~/.config/nvim/lua/de100/config/dap/`):
 
 ```lua
--- .nvim-dap.lua (project-local override)
-local dap = require("dap")
-dap.configurations.cpp = {
-    {
-        name = "Launch myapp",
-        type = "codelldb",
-        request = "launch",
-        program = "${workspaceFolder}/build/myapp",
-        cwd = "${workspaceFolder}",
-        stopOnEntry = false,
-        args = {},              -- command-line args to your program
-    },
-    {
-        name = "Launch with args",
-        type = "codelldb",
-        request = "launch",
-        program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/build/", "file")
-        end,
-        cwd = "${workspaceFolder}",
-        stopOnEntry = false,
-        args = function()
-            local args_str = vim.fn.input("Arguments: ")
-            return vim.split(args_str, " ", { trimempty = true })
-        end,
+-- .nvim/dap.lua (project-local override)
+return {
+    configurations = {
+        cpp = {
+            {
+                name = "Launch myapp",
+                type = "codelldb",
+                request = "launch",
+                program = "${workspaceFolder}/build/myapp",
+                cwd = "${workspaceFolder}",
+                stopOnEntry = false,
+                args = {},
+            },
+        },
+        c = {
+            {
+                name = "Launch myapp",
+                type = "codelldb",
+                request = "launch",
+                program = "${workspaceFolder}/build/myapp",
+                cwd = "${workspaceFolder}",
+                stopOnEntry = false,
+                args = {},
+            },
+        },
     },
 }
--- C uses the same config
-dap.configurations.c = dap.configurations.cpp
 ```
+
+Run `:De100DapLoadProject` and inspect the path before confirming. Project Lua
+is executable code and is never loaded automatically. Prefer
+`.vscode/launch.json` when a declarative configuration is sufficient.
 
 ### A Debugging Session Walkthrough
 
@@ -885,7 +887,7 @@ dap.configurations.c = dap.configurations.cpp
 6. Inspect variables: `<F7>` to open the DAP UI (shows locals, watches,
    call stack, breakpoints)
 7. Hover over any variable to see its value
-8. Navigate: `<F10>` (step over), `<F11>` (step into), `<F12>` (step out)
+8. Navigate: `<F10>` (step over), `<F11>` (step into), `<S-F11>` (step out)
 9. `<F5>` to continue to next breakpoint
 10. `<F5>` again when no more breakpoints → program runs to completion
 

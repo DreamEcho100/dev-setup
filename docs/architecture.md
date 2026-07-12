@@ -134,9 +134,10 @@ F5 / DAP command
       v
  nvim-dap
       │
-      ├─ reads global defaults from nvim-dap.lua
-      ├─ reads .nvim/dap.lua when a project has custom Lua config
-      ├─ reads .vscode/launch.json when present
+      ├─ loads plugin specs from plugins/dap/*.lua
+      ├─ reads global defaults from config/dap/*.lua
+      ├─ discovers .vscode/launch.json on demand
+      └─ loads .nvim/dap.lua only after an explicit trust prompt
       │
       v
  debug adapter
@@ -144,9 +145,19 @@ F5 / DAP command
       ├─ js-debug-adapter      JS/TS/Node/browser
       ├─ debugpy               Python
       ├─ delve                 Go
-      ├─ codelldb              C/C++/Rust
-      └─ netcoredbg            C#/.NET
+      ├─ codelldb              C/C++/Rust/Zig/Odin
+      ├─ local-lua-debugger    standalone Lua
+      ├─ OSV                   Neovim Lua
+      ├─ java-debug-adapter    Java (optional)
+      ├─ netcoredbg            C#/.NET (optional)
+      └─ Godot DAP server      GDScript (optional)
 ```
+
+`mason-tool-installer.nvim` installs adapter binaries. Lazy reads only the specs
+under `lua/de100/plugins/dap/`; those specs load runtime modules from
+`lua/de100/config/dap/`. There is no second adapter-manager translation layer.
+Rust remains owned by `rustaceanvim`, while Java is started per project by
+`nvim-jdtls`.
 
 ## Remote Flow
 

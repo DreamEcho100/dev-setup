@@ -58,7 +58,8 @@ Commit        -> Gitsigns, Fugitive, LazyGit, Diffview
 - `<C-s>` saves.
 - F-key debug controls remain available.
 - Pickers provide command-palette-like discovery.
-- DAP reads VS Code-style `.vscode/launch.json` where possible.
+- DAP discovers VS Code-style `.vscode/launch.json` on demand. Executable
+  `.nvim/dap.lua` config requires an explicit trust prompt.
 - Tasks can map to package scripts and shell commands.
 - AI provider hooks are documented but secrets stay outside the repo.
 - Telescope stays installed only for plugin compatibility. User-facing picker workflows should use Snacks.
