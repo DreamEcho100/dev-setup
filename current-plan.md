@@ -182,6 +182,9 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Added `:De100KulalaParserInstall` for explicit Kulala HTTP parser preparation when working on `.http`/`.rest` request files.
 - Removed the broken live Kulala parser checkout at `~/.local/share/nvim/kulala.nvim/tree-sitter-kulala-http`.
 - Verified fresh `:AutoSession restore` from the Pokedex project and fresh `filetype=http` startup no longer trigger Kulala/Treesitter parser fetch warnings.
+- Fixed `man`/`less` startup by replacing the invalid `LESS="--use-color -Dd+r$Du+b"` default with portable `LESS="-R"`. Man-page colors remain owned by Oh My Zsh `colored-man-pages`.
+- Replaced the defensive LSP diagnostic URI normalizer with a stricter trace-and-drop handler: malformed diagnostics are logged with sender details and dropped instead of being guessed into a file URI.
+- Verified the malformed diagnostic handler path with a synthetic headless Neovim notification.
 
 ## Implementation Checklist
 
@@ -235,6 +238,8 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - [x] Clean stale `tree-sitter-*-tmp` directories from `~/.local/share/nvim`.
 - [x] Stop Kulala from fetching/building its custom parser during startup/session restore.
 - [x] Add explicit Kulala parser install command.
+- [x] Fix invalid `LESS` color options for `man`.
+- [x] Trace and drop malformed Neovim LSP diagnostics without guessing file URIs.
 - [ ] Run the full terminal installer from a normal terminal for apt-managed packages.
 - [ ] Run full interactive Neovim health checks from a normal unsandboxed terminal.
 - [ ] Split into logical commits after Git index access is available.
@@ -263,6 +268,8 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Broad Treesitter parser installation is now explicit. Run `:De100TreesitterInstall` after plugin setup, or install individual parsers with `:TSInstall <language>` when a language has no Treesitter highlighting.
 - Stale `tree-sitter-*-tmp` directories under live Neovim data can preserve failed git clone state until they are deleted from a normal shell.
 - Kulala's enhanced HTTP parser is now explicit. Run `:De100KulalaParserInstall` from a normal terminal session when you want its custom parser installed for `.http`/`.rest` request files.
+- Existing terminal shells keep their old environment until restarted. Run `exec zsh` or open a new terminal to pick up the fixed `LESS=-R` default.
+- The LSP diagnostic URI guard prevents the Neovim crash by dropping malformed diagnostics. Use `:De100LspBadDiagnostics` to identify the sender and then fix the specific server/plugin instead of keeping broad protocol repair logic.
 
 ## Follow-Up Questions
 

@@ -7,6 +7,89 @@ return {
         {"antosha417/nvim-lsp-file-operations", config = true}
     },
     config = function()
+        local uri_scheme_pattern = "^%a[%w+.-]*:"
+        local malformed_diagnostics_log = vim.fs.joinpath(vim.fn.stdpath("state"),
+                                                          "de100",
+                                                          "lsp-malformed-diagnostics.log")
+
+        local function is_valid_diagnostic_uri(uri)
+            return type(uri) == "string" and uri ~= "" and
+                       uri:match(uri_scheme_pattern) ~= nil
+        end
+
+        local function append_malformed_diagnostic_log(uri, ctx, result)
+            local client = ctx and vim.lsp.get_client_by_id(ctx.client_id)
+            local bufnr = ctx and ctx.bufnr
+            local bufname = bufnr and vim.api.nvim_buf_is_valid(bufnr) and
+                                vim.api.nvim_buf_get_name(bufnr) or ""
+            local diagnostics = result and result.diagnostics or {}
+            local first_diagnostic = diagnostics[1]
+
+            vim.fn.mkdir(vim.fs.dirname(malformed_diagnostics_log), "p")
+
+            local fd = io.open(malformed_diagnostics_log, "a")
+            if not fd then return end
+
+            fd:write(("\n[%s] malformed LSP diagnostics\n"):format(
+                         os.date("!%Y-%m-%dT%H:%M:%SZ")))
+            fd:write(("client: %s (%s)\n"):format(
+                         client and client.name or "unknown",
+                         ctx and tostring(ctx.client_id) or "nil"))
+            fd:write(("method: %s\n"):format(ctx and ctx.method or "unknown"))
+            fd:write(("uri: %s\n"):format(vim.inspect(uri)))
+            fd:write(("buffer: %s\n"):format(bufname ~= "" and bufname or
+                                                 "[No Name]"))
+            fd:write(("cwd: %s\n"):format(vim.fn.getcwd()))
+            fd:write(("root: %s\n"):format(client and client.config and
+                                               client.config.root_dir or "nil"))
+            fd:write(("diagnostic_count: %d\n"):format(#diagnostics))
+
+            if first_diagnostic then
+                fd:write(("first_source: %s\n"):format(
+                             tostring(first_diagnostic.source)))
+                fd:write(("first_code: %s\n"):format(
+                             tostring(first_diagnostic.code)))
+                fd:write(("first_message: %s\n"):format(
+                             tostring(first_diagnostic.message)))
+            end
+
+            fd:close()
+        end
+
+        local publish_diagnostics_handler =
+            vim.lsp.handlers["textDocument/publishDiagnostics"] or
+                vim.lsp.diagnostic.on_publish_diagnostics
+
+        vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err,
+                                                                       result,
+                                                                       ctx,
+                                                                       config)
+            if result and not is_valid_diagnostic_uri(result.uri) then
+                append_malformed_diagnostic_log(result.uri, ctx, result)
+                vim.notify_once(
+                    "Dropped malformed LSP diagnostics; run :De100LspBadDiagnostics to inspect the sender.",
+                    vim.log.levels.WARN)
+                return
+            end
+
+            local ok, handler_err =
+                pcall(publish_diagnostics_handler, err, result, ctx, config)
+            if not ok then
+                vim.notify_once("Ignored LSP diagnostics handler error: " ..
+                                    tostring(handler_err), vim.log.levels.WARN)
+            end
+        end
+
+        vim.api.nvim_create_user_command("De100LspBadDiagnostics", function()
+            if vim.fn.filereadable(malformed_diagnostics_log) == 0 then
+                vim.notify("No malformed LSP diagnostics have been logged.",
+                           vim.log.levels.INFO)
+                return
+            end
+
+            vim.cmd.edit(vim.fn.fnameescape(malformed_diagnostics_log))
+        end, {desc = "Open malformed LSP diagnostics trace log"})
+
         local function snacks_picker(method, fallback)
             return function()
                 local ok, snacks = pcall(require, "snacks")

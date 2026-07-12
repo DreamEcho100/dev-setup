@@ -171,6 +171,24 @@ return {
             executable = {command = codelldb_path, args = {"--port", "${port}"}}
         }
 
+        -- VS Code CodeLLDB configurations use `lldb`; reuse the Mason adapter.
+        dap.adapters.lldb = dap.adapters.codelldb
+
+        -- Prefer available source code instead of synthetic runtime disassembly.
+        dap.listeners.on_config["de100.codelldb"] = function(config)
+            if config.type ~= "codelldb" and config.type ~= "lldb" then
+                return config
+            end
+
+            config = vim.deepcopy(config)
+            config._adapterSettings = vim.tbl_deep_extend(
+                "force",
+                config._adapterSettings or {},
+                {showDisassembly = "never"}
+            )
+            return config
+        end
+
         dap.configurations.cpp = {
             {
                 name = "Launch file",

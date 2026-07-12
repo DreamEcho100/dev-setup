@@ -32,7 +32,9 @@ fi
 export EDITOR="${EDITOR:-nvim}"
 export VISUAL="${VISUAL:-nvim}"
 export PAGER="${PAGER:-less}"
-export LESS="${LESS:--R --use-color -Dd+r$Du+b}"
+# Keep less portable. Oh My Zsh's colored-man-pages plugin handles man-page
+# colors; less 590 rejects the old `--use-color -Dd+r$Du+b` default.
+export LESS="${LESS:--R}"
 
 if [[ -r "${XDG_STATE_HOME:-$HOME/.local/state}/de100/theme/starship.toml" ]]; then
   export STARSHIP_CONFIG="${XDG_STATE_HOME:-$HOME/.local/state}/de100/theme/starship.toml"
