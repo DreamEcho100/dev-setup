@@ -17,13 +17,7 @@ return {
     -- NOTE: Disable neovide plugins in the plugin itself, see:
     -- dotfiles/.config/nvim/lua/de100/plugins/disabled.lua (smear-cursor section)
     --
-    -- -- -- Disable '3rd/image.nvim' if running Neovide, or you will get the error:
-    -- -- -- Failed to run `config` for image.nvim
-    -- -- -- .../lazy/image.nvim/lua/image/utils/term.lua:34: Failed to get terminal size
-    -- {
-    --   "3rd/image.nvim",
-    --   cond = function()
-    --     return not (vim.g.neovide == true)
-    --   end,
-    -- },
+    -- image.nvim is no longer dead-commented here — it has a real spec now at
+    -- lua/de100/plugins/image.lua (needed for Molten's inline plot rendering).
+    -- The same Neovide `cond` guard from this old entry carried over there.
 }

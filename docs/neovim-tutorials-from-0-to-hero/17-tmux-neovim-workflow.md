@@ -112,11 +112,11 @@ hand off. The detection is automatic — you don't configure it per-project.
 
 ### Keybinding Summary
 
-| Key | What Happens |
-|-----|-------------|
-| `<C-h>` | Move left — Neovim split or tmux pane |
-| `<C-j>` | Move down — Neovim split or tmux pane |
-| `<C-k>` | Move up — Neovim split or tmux pane |
+| Key     | What Happens                           |
+| ------- | -------------------------------------- |
+| `<C-h>` | Move left — Neovim split or tmux pane  |
+| `<C-j>` | Move down — Neovim split or tmux pane  |
+| `<C-k>` | Move up — Neovim split or tmux pane    |
 | `<C-l>` | Move right — Neovim split or tmux pane |
 
 These four keys are now universal. Forget `<prefix>hjkl` for pane navigation —
@@ -159,6 +159,7 @@ The config uses `xclip` as the common relay — the system clipboard is the
 shared bus between all three.
 
 **In `tmux.conf`:**
+
 ```bash
 bind-key -T copy-mode-vi y     send-keys -X copy-pipe-and-cancel 'xclip -in -selection clipboard'
 bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel 'xclip -in -selection clipboard'
@@ -174,6 +175,7 @@ to the system clipboard.
 ### The Copy Flow in Practice
 
 **tmux → Neovim:**
+
 ```
 1. In a tmux pane (e.g., bash, test output):
    <prefix>[          → enter copy mode
@@ -193,6 +195,7 @@ to the system clipboard.
 ```
 
 **Neovim → tmux:**
+
 ```
 1. In Neovim, yank text normally:
    yy                 → yank line (goes to system clipboard via unnamedplus)
@@ -219,6 +222,7 @@ while clicking/dragging to bypass tmux.
 ### xclip Not Installed?
 
 Run the playbook — `xclip` is included. Or manually:
+
 ```bash
 sudo apt install xclip    # Debian/Ubuntu
 ```
@@ -254,6 +258,7 @@ The `<C-f>` binding in this config reduces that to **one keystroke**:
 ### How It Works
 
 In Neovim's keymaps, `<C-f>` is bound to:
+
 ```lua
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 ```
@@ -313,6 +318,7 @@ fi
 ```
 
 **Walk-through:**
+
 1. `find` searches your project dirs up to 3 levels deep, skipping git/node/cache dirs
 2. `fzf` shows the picker with a file preview on the right
 3. The session name is derived from the directory basename (`my.project` → `my_project`)
@@ -374,6 +380,7 @@ Session: mfansible
 ```
 
 For a Go project:
+
 ```
 ├── Window 1: "editor"   — nvim .
 ├── Window 2: "test"     — go test -v ./... --watch (with gotestsum)
@@ -381,6 +388,7 @@ For a Go project:
 ```
 
 For a C/C++ project:
+
 ```
 ├── Window 1: "editor"   — nvim .
 ├── Window 2: "build"    — cmake --build build/ (or overseer tasks)
@@ -388,6 +396,7 @@ For a C/C++ project:
 ```
 
 For a web frontend:
+
 ```
 ├── Window 1: "editor"   — nvim .
 ├── Window 2: "dev"      — npm run dev
@@ -466,9 +475,9 @@ opening Neovim, auto-session picks up the right session.
 
 ### auto-session Keymaps in This Config
 
-| Key | Action |
-|-----|--------|
-| `<leader>ws` | Save current session manually |
+| Key          | Action                                |
+| ------------ | ------------------------------------- |
+| `<leader>ws` | Save current session manually         |
 | `<leader>wr` | Restore session for current directory |
 
 > **Gotcha:** auto-session does NOT save sessions in certain directories:
@@ -490,6 +499,7 @@ run '~/.tmux/plugins/tpm/tpm'
 ```
 
 With tmux-resurrect:
+
 - `<prefix>Ctrl+s` — save the entire tmux state (sessions, windows, panes, commands)
 - `<prefix>Ctrl+r` — restore after a reboot
 
@@ -497,6 +507,7 @@ With tmux-continuum, saving is automatic. After a reboot, run `tmux new-session`
 (or the sessionizer) and the plugin prompts you to restore.
 
 **Setup:**
+
 ```bash
 # Install TPM first (one-time)
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -553,11 +564,13 @@ tmux switch-client -t "$SESSION" 2>/dev/null || tmux attach-session -t "$SESSION
 ```
 
 Make it executable:
+
 ```bash
 chmod +x ~/Desktop/workspaces/mfansible/.ready-tmux.sh
 ```
 
 Run it:
+
 ```bash
 ~/.ready-tmux.sh
 # or
@@ -629,10 +642,10 @@ tmux switch-client -t "$SESSION" 2>/dev/null || tmux attach-session -t "$SESSION
 
 You have two choices for running shell commands alongside Neovim:
 
-| Option | How | Best For |
-|--------|-----|----------|
-| **Neovim terminal** | `:ToggleTerm` or `<leader>tt` | Quick one-off commands, short output |
-| **tmux pane** | `<prefix>-` or `<prefix>\|` | Long-running processes, servers, build output |
+| Option              | How                           | Best For                                      |
+| ------------------- | ----------------------------- | --------------------------------------------- |
+| **Neovim terminal** | `:ToggleTerm` or `<leader>tt` | Quick one-off commands, short output          |
+| **tmux pane**       | `<prefix>-` or `<prefix>\|`   | Long-running processes, servers, build output |
 
 ### Neovim Terminal (`:ToggleTerm`)
 
@@ -661,6 +674,7 @@ Use a tmux pane for anything that runs in the background:
 ```
 
 Then start your long-running process:
+
 ```bash
 npm run dev
 # or
@@ -711,6 +725,7 @@ The root cause is almost always `$TERM` not being set correctly.
 ### Correct `$TERM` Setup
 
 Our `tmux.conf` sets this correctly:
+
 ```bash
 set -g default-terminal "tmux-256color"
 set -ag terminal-overrides ",xterm-256color:RGB"
@@ -721,6 +736,7 @@ The second line adds the `RGB` capability flag, which tells applications
 (including Neovim) that true 24-bit colour is available.
 
 To verify it's working:
+
 ```bash
 # Inside a tmux pane:
 echo $TERM
@@ -735,6 +751,7 @@ printf "\x1b[38;2;255;100;0mTRUECOLOR\x1b[0m\n"
 ### Terminal Emulator Requirements
 
 True 24-bit colour requires a modern terminal emulator. Supported:
+
 - Alacritty ✓
 - Kitty ✓
 - WezTerm ✓
@@ -743,10 +760,12 @@ True 24-bit colour requires a modern terminal emulator. Supported:
 - Windows Terminal ✓
 
 Not supported (or limited):
+
 - Old `xterm` ✗
 - `rxvt` ✗
 
 If you're on a supported terminal but still seeing issues:
+
 1. Reload tmux config: `<prefix>r`
 2. Restart Neovim
 3. Run `:checkhealth` in Neovim and look for colour-related warnings
@@ -754,6 +773,7 @@ If you're on a supported terminal but still seeing issues:
 ### Italics Not Working?
 
 Some terminal/tmux combinations don't pass italics through. Fix:
+
 ```bash
 # Add to tmux.conf (the override line becomes):
 set -ag terminal-overrides ",xterm-256color:RGB:sitm=\E[3m:ritm=\E[23m"
@@ -782,6 +802,7 @@ characters follow before deciding what to do.
 ### The Fix
 
 Our `tmux.conf` already has:
+
 ```bash
 set -s escape-time 10
 ```
@@ -801,43 +822,43 @@ impactful Neovim-specific tmux setting.
 
 ### All vim-tmux-navigator Keys
 
-| Key | Action |
-|-----|--------|
+| Key     | Action                                    |
+| ------- | ----------------------------------------- |
 | `<C-h>` | Navigate left (Neovim split or tmux pane) |
-| `<C-j>` | Navigate down |
-| `<C-k>` | Navigate up |
-| `<C-l>` | Navigate right |
+| `<C-j>` | Navigate down                             |
+| `<C-k>` | Navigate up                               |
+| `<C-l>` | Navigate right                            |
 
 ### Sessionizer
 
-| Context | Key / Command | Action |
-|---------|--------------|--------|
-| Inside Neovim | `<C-f>` | Open project picker (fzf) |
-| Bare terminal | `tmux-sessionizer` | Open project picker |
-| tmux | `<prefix>$` | Rename current session |
-| tmux | `<prefix>s` | List/switch sessions |
-| tmux | `<prefix>d` | Detach (session stays alive) |
-| tmux | `<prefix>(` / `)` | Switch to previous/next session |
+| Context       | Key / Command      | Action                          |
+| ------------- | ------------------ | ------------------------------- |
+| Inside Neovim | `<C-f>`            | Open project picker (fzf)       |
+| Bare terminal | `tmux-sessionizer` | Open project picker             |
+| tmux          | `<prefix>$`        | Rename current session          |
+| tmux          | `<prefix>s`        | List/switch sessions            |
+| tmux          | `<prefix>d`        | Detach (session stays alive)    |
+| tmux          | `<prefix>(` / `)`  | Switch to previous/next session |
 
 ### Clipboard
 
-| Source | Action | Result |
-|--------|--------|--------|
-| Neovim | `yy` | Line goes to system clipboard (unnamedplus) |
-| Neovim | `"+y<motion>` | Explicit system clipboard yank |
-| tmux copy mode | `v` then `y` | Selection goes to xclip (system clipboard) |
-| Any pane | Middle-click | Paste from PRIMARY selection |
-| Any pane | Ctrl+Shift+V | Paste from CLIPBOARD selection |
-| Neovim | `p` or `"+p` | Paste from system clipboard |
+| Source         | Action        | Result                                      |
+| -------------- | ------------- | ------------------------------------------- |
+| Neovim         | `yy`          | Line goes to system clipboard (unnamedplus) |
+| Neovim         | `"+y<motion>` | Explicit system clipboard yank              |
+| tmux copy mode | `v` then `y`  | Selection goes to xclip (system clipboard)  |
+| Any pane       | Middle-click  | Paste from PRIMARY selection                |
+| Any pane       | Ctrl+Shift+V  | Paste from CLIPBOARD selection              |
+| Neovim         | `p` or `"+p`  | Paste from system clipboard                 |
 
 ### Terminal / Pane Choice
 
-| Use This | When |
-|----------|------|
-| `:ToggleTerm` (`<leader>tt`) | Short commands, one-off output, git ops |
-| tmux pane (`<prefix>-` or `\|`) | Long-running servers, watchers, build output |
+| Use This                           | When                                              |
+| ---------------------------------- | ------------------------------------------------- |
+| `:ToggleTerm` (`<leader>tt`)       | Short commands, one-off output, git ops           |
+| tmux pane (`<prefix>-` or `\|`)    | Long-running servers, watchers, build output      |
 | Separate tmux window (`<prefix>c`) | Completely separate workflows within same project |
-| Separate tmux session (`<C-f>`) | Switching to a different project entirely |
+| Separate tmux session (`<C-f>`)    | Switching to a different project entirely         |
 
 ---
 
@@ -920,14 +941,14 @@ Write a `.ready-tmux.sh` for any project you work on regularly:
 
 ## VSCode Comparison
 
-| VSCode Workflow | This Workflow |
-|----------------|---------------|
-| Multiple VS Code windows for multiple projects | Multiple tmux sessions, one per project |
-| Cmd+` to toggle terminal | `<C-j>` to move to pane below (or `<leader>tt` for toggleterm) |
-| VS Code terminal (always disappears on restart) | tmux pane (survives detach, survives restart with resurrect) |
-| VS Code workspace saved on disk | auto-session saves Neovim state per directory |
-| Cmd+Shift+P → "Switch Project" | `<C-f>` → fzf → instant session switch |
-| Terminal split inside VS Code | tmux pane (has its own scroll, its own copy mode, runs forever) |
+| VSCode Workflow                                 | This Workflow                                                   |
+| ----------------------------------------------- | --------------------------------------------------------------- |
+| Multiple VS Code windows for multiple projects  | Multiple tmux sessions, one per project                         |
+| Cmd+` to toggle terminal                        | `<C-j>` to move to pane below (or `<leader>tt` for toggleterm)  |
+| VS Code terminal (always disappears on restart) | tmux pane (survives detach, survives restart with resurrect)    |
+| VS Code workspace saved on disk                 | auto-session saves Neovim state per directory                   |
+| Cmd+Shift+P → "Switch Project"                  | `<C-f>` → fzf → instant session switch                          |
+| Terminal split inside VS Code                   | tmux pane (has its own scroll, its own copy mode, runs forever) |
 
 ---
 

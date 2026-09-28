@@ -742,31 +742,31 @@ The current `ensure_installed` list in `mason.lua` includes:
 
 **LSP servers (via mason-lspconfig):**
 
-| Server                                        | Language                                  |
-| --------------------------------------------- | ----------------------------------------- |
-| `lua_ls`                                      | Lua                                       |
-| `pyright`, `ruff`                             | Python                                    |
-| `vtsls`                                       | TypeScript / JavaScript                   |
-| `gopls`                                       | Go                                        |
-| `clangd`                                      | C / C++                                   |
+| Server                                        | Language                                          |
+| --------------------------------------------- | ------------------------------------------------- |
+| `lua_ls`                                      | Lua                                               |
+| `pyright`, `ruff`                             | Python                                            |
+| `vtsls`                                       | TypeScript / JavaScript                           |
+| `gopls`                                       | Go                                                |
+| `clangd`                                      | C / C++                                           |
 | Rust via `rustaceanvim`                       | Rust, using rust-analyzer from the Rust toolchain |
-| `html`, `cssls`, `jsonls`                     | HTML / CSS / JSON                         |
-| `eslint`                                      | JavaScript/TypeScript linting via LSP     |
-| `tailwindcss`                                 | Tailwind CSS class completions            |
-| `bashls`                                      | Bash / Shell                              |
-| `yamlls`                                      | YAML                                      |
-| `dockerls`, `docker_compose_language_service` | Docker                                    |
-| `ansiblels`                                   | Ansible                                   |
-| `terraformls`                                 | Terraform                                 |
-| `marksman`                                    | Markdown                                  |
-| `sqlls`                                       | SQL                                       |
-| `astro`, `svelte`, `vue_ls`                   | Astro / Svelte / Vue                      |
-| `graphql`                                     | GraphQL                                   |
-| `prismals`                                    | Prisma ORM                                |
-| `taplo`                                       | TOML                                      |
-| `texlab`                                      | LaTeX                                     |
-| Roslyn via `roslyn.nvim`                      | C# / Razor, requires `-e install_dotnet=true` |
-| `jdtls`                                       | Java (needs `-e install_java=true`)       |
+| `html`, `cssls`, `jsonls`                     | HTML / CSS / JSON                                 |
+| `eslint`                                      | JavaScript/TypeScript linting via LSP             |
+| `tailwindcss`                                 | Tailwind CSS class completions                    |
+| `bashls`                                      | Bash / Shell                                      |
+| `yamlls`                                      | YAML                                              |
+| `dockerls`, `docker_compose_language_service` | Docker                                            |
+| `ansiblels`                                   | Ansible                                           |
+| `terraformls`                                 | Terraform                                         |
+| `marksman`                                    | Markdown                                          |
+| `sqlls`                                       | SQL                                               |
+| `astro`, `svelte`, `vue_ls`                   | Astro / Svelte / Vue                              |
+| `graphql`                                     | GraphQL                                           |
+| `prismals`                                    | Prisma ORM                                        |
+| `taplo`                                       | TOML                                              |
+| `texlab`                                      | LaTeX                                             |
+| Roslyn via `roslyn.nvim`                      | C# / Razor, requires `-e install_dotnet=true`     |
+| `jdtls`                                       | Java (needs `-e install_java=true`)               |
 
 **Formatters and linters (via mason-tool-installer):**
 

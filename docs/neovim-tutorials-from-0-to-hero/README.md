@@ -109,8 +109,11 @@ docs/neovim-tutorials-from-0-to-hero/
 ├── 19-polyglot-lsp-checklist.md
 │   └── Language-by-language LSP/completion/diagnostics audit and troubleshooting
 │
-└── 20-shell-terminal-tmux.md
-    └── zsh, Kitty, Ghostty, Starship, themes, tmux persistence, and VS Code terminal equivalents
+├── 20-shell-terminal-tmux.md
+│   └── zsh, Kitty, Ghostty, Starship, themes, tmux persistence, and VS Code terminal equivalents
+│
+└── 21-python-math-jupyter.md
+    └── Jupyter notebooks in Neovim: jupytext, molten-nvim, image.nvim, quarto/otter, math-in-Markdown
 ```
 
 Each file is self-contained — you can jump to any topic once you've got the
@@ -147,13 +150,13 @@ Before starting, confirm you have these. Check them off as you go:
 
 The five things you must know before anything else:
 
-| What                 | Key                       | Notes                                      |
-| -------------------- | ------------------------- | ------------------------------------------ |
-| **Leader key**       | `Space`                   | Almost every custom keybinding starts here |
+| What                 | Key                       | Notes                                         |
+| -------------------- | ------------------------- | --------------------------------------------- |
+| **Leader key**       | `Space`                   | Almost every custom keybinding starts here    |
 | **Snippet trigger**  | `;`                       | Type `;shebang` in insert mode → bash snippet |
-| **Force completion** | `Ctrl+Space`              | Show the completion menu right now         |
-| **Which-key hint**   | Press `Space`, wait 300ms | A popup shows all available next keys      |
-| **Save file**        | `Ctrl+s`                  | Works in normal, insert, and command mode  |
+| **Force completion** | `Ctrl+Space`              | Show the completion menu right now            |
+| **Which-key hint**   | Press `Space`, wait 300ms | A popup shows all available next keys         |
+| **Save file**        | `Ctrl+s`                  | Works in normal, insert, and command mode     |
 
 And the most important thing you will ever learn in Neovim:
 

@@ -24,16 +24,18 @@ return {
                         vim.cmd.Git('push')
                     end, vim.tbl_extend("force", opts, {desc = "Git push"}))
 
-                    -- NOTE: rebase always
-                    vim.keymap.set("n", "<leader>gpr", function()
-                        vim.cmd.Git({'pull', '--rebase'})
-                    end, vim.tbl_extend("force", opts,
-                                        {desc = "Git pull rebase"}))
-
-                    -- NOTE: easy set up branch that wasn't setup properly
-                    vim.keymap.set("n", "<leader>gup", ":Git push -u origin ",
-                                   vim.tbl_extend("force", opts,
-                                                  {desc = "Git push upstream"}));
+                    -- Removed: rare/manual actions, type the Git command
+                    -- directly instead of keeping a dedicated keymap.
+                    -- -- NOTE: rebase always
+                    -- vim.keymap.set("n", "<leader>gpr", function()
+                    --     vim.cmd.Git({'pull', '--rebase'})
+                    -- end, vim.tbl_extend("force", opts,
+                    --                     {desc = "Git pull rebase"}))
+                    --
+                    -- -- NOTE: easy set up branch that wasn't setup properly
+                    -- vim.keymap.set("n", "<leader>gup", ":Git push -u origin ",
+                    --                vim.tbl_extend("force", opts,
+                    --                               {desc = "Git push upstream"}));
                 end
             })
         end
@@ -96,18 +98,21 @@ return {
                     "Gitsigns select hunk")
             end
         }
-    }, -- Lazy git 
-    {
-        "kdheepak/lazygit.nvim",
-        -- NOTE: Trying out lazygit in Snacks nvim
-        enabled = false,
-        cmd = {
-            "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter",
-            "LazyGitFilterCurrentFile"
-        },
-        -- window border thing
-        dependencies = {"nvim-lua/plenary.nvim"},
-        -- setting up with keys={} allows plugin to load when command runs at the start
-        keys = {{"<leader>lg", "<cmd>LazyGit<cr>", desc = "Open lazy git"}}
-    }
+    } -- Lazy git
+    -- Dead spec, already `enabled = false`: superseded by snacks.nvim's
+    -- active `<leader>lg` lazygit integration (plugins/snacks.lua). Left here
+    -- only as a comment so the alternative isn't forgotten.
+    -- , {
+    --     "kdheepak/lazygit.nvim",
+    --     -- NOTE: Trying out lazygit in Snacks nvim
+    --     enabled = false,
+    --     cmd = {
+    --         "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter",
+    --         "LazyGitFilterCurrentFile"
+    --     },
+    --     -- window border thing
+    --     dependencies = {"nvim-lua/plenary.nvim"},
+    --     -- setting up with keys={} allows plugin to load when command runs at the start
+    --     keys = {{"<leader>lg", "<cmd>LazyGit<cr>", desc = "Open lazy git"}}
+    -- }
 }

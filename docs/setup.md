@@ -126,6 +126,7 @@ Rust:       rust-analyzer rustfmt codelldb cargo
 C/C++:      clangd clang-format clang-tidy lldb cmake make ninja
 Web:        eslint vtsls html css tailwind graphql prisma astro svelte vue angular
 Docs:       markdown tools, mermaid-cli, texlive, latexmk
+Notebooks:  jupytext jupyter_client ipykernel pylatexenc (pip); libmagickwand-dev (apt)
 Remote:     ssh scp docker devpod tmux
 Debug:      js-debug debugpy delve codelldb local-lua-debugger OSV
 Opt-in:     OpenJDK 21 + Java DAP, .NET 10 + netcoredbg, Godot 4 + built-in DAP
@@ -163,12 +164,18 @@ Mason installs editor-facing LSP/DAP/formatter packages where possible. System p
 Run after bootstrap:
 
 ```sh
-nvim --headless "+checkhealth lazy mason conform snacks vim.lsp nvim-treesitter provider dap" "+qa"
+nvim --headless "+checkhealth lazy mason conform snacks vim.lsp nvim-treesitter provider dap image" "+qa"
 ```
 
 Inside a supported source buffer, run `:De100DapHealth` to see the exact DAP
 configurations, adapters, executables, project files, and log path selected for
 that filetype.
+
+After first installing the Jupyter/notebook stack (molten-nvim), run
+`:UpdateRemotePlugins` once and restart Neovim, then check `:MoltenInfo` inside
+a Python buffer to confirm a kernel can be attached. See
+`docs/neovim-tutorials-from-0-to-hero/21-python-math-jupyter.md` for the full
+walkthrough.
 
 If health checks fail inside VS Code, first inspect:
 

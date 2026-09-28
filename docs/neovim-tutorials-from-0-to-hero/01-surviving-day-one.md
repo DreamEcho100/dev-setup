@@ -2189,4 +2189,4 @@ This doesn't mean never use the mouse. It means: every time you catch yourself r
 
 _"The key to Neovim mastery is not learning 500 commands at once. It's learning 5 commands so well that they become reflex, then adding 5 more. Repeat until you're terrifyingly fast."_
 
-Now, next is  [02-the-vscode-translator.md](./02-the-vscode-translator.md)
+Now, next is [02-the-vscode-translator.md](./02-the-vscode-translator.md)

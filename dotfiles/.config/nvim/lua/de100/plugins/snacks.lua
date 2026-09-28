@@ -214,14 +214,15 @@ return {
                 "<leader>pc",
                 function() require("snacks").picker.commands() end,
                 desc = "Commands"
-            }, {
-                "<leader>pr",
+            }, -- Explorer (grouped with mini.files' <leader>ee/ef, not <leader>p)
+            {
+                "<leader>ep",
                 function() require("snacks").picker.explorer() end,
-                desc = "Explorer picker"
+                desc = "Explorer picker (fuzzy, snacks)"
             }, {
-                "<leader>pe",
+                "<leader>er",
                 function() require("snacks").explorer.reveal() end,
-                desc = "Reveal Current File in Explorer"
+                desc = "Reveal current file (snacks explorer)"
             }, {
                 "<leader>pws",
                 function() require("snacks").picker.grep_word() end,

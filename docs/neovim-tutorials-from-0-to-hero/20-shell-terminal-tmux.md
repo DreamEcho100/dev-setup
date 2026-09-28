@@ -6,17 +6,17 @@ one app. A terminal-native setup splits those jobs across focused tools.
 
 ## VS Code Translation
 
-| VS Code feature | Terminal-native equivalent |
-| --- | --- |
-| Integrated terminal | Kitty or Ghostty |
-| Terminal profile | zsh config in `~/.zshrc` |
-| Command palette | shell aliases, `fzf`, `tmux-sessionizer`, Neovim Snacks |
-| Theme picker | `de100-theme set <theme>` |
-| Terminal font setting | Kitty/Ghostty font config |
-| Terminal tabs/splits | tmux sessions, windows, and panes |
-| Restore windows | `tmux-resurrect` and `tmux-continuum` |
-| Tasks | `overseer.nvim`, shell scripts, tmux windows |
-| Remote terminal | SSH plus tmux |
+| VS Code feature       | Terminal-native equivalent                              |
+| --------------------- | ------------------------------------------------------- |
+| Integrated terminal   | Kitty or Ghostty                                        |
+| Terminal profile      | zsh config in `~/.zshrc`                                |
+| Command palette       | shell aliases, `fzf`, `tmux-sessionizer`, Neovim Snacks |
+| Theme picker          | `de100-theme set <theme>`                               |
+| Terminal font setting | Kitty/Ghostty font config                               |
+| Terminal tabs/splits  | tmux sessions, windows, and panes                       |
+| Restore windows       | `tmux-resurrect` and `tmux-continuum`                   |
+| Tasks                 | `overseer.nvim`, shell scripts, tmux windows            |
+| Remote terminal       | SSH plus tmux                                           |
 
 ## Bootstrap
 
@@ -186,16 +186,16 @@ Default prefix remains `Ctrl+b`.
 
 Important bindings:
 
-| Action | Binding |
-| --- | --- |
-| Reload config | `Ctrl+b r` |
-| Split right | `Ctrl+b \|` |
-| Split down | `Ctrl+b -` |
-| New window | `Ctrl+b c` |
+| Action                       | Binding          |
+| ---------------------------- | ---------------- |
+| Reload config                | `Ctrl+b r`       |
+| Split right                  | `Ctrl+b \|`      |
+| Split down                   | `Ctrl+b -`       |
+| New window                   | `Ctrl+b c`       |
 | Move pane left/down/up/right | `Ctrl+b h/j/k/l` |
-| Project picker popup | `Ctrl+b f` |
-| Project picker new window | `Ctrl+b F` |
-| Copy mode | `Ctrl+b [` |
+| Project picker popup         | `Ctrl+b f`       |
+| Project picker new window    | `Ctrl+b F`       |
+| Copy mode                    | `Ctrl+b [`       |
 
 Persistence is enabled through TPM plugins:
 

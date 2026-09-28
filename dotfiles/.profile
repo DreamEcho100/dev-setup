@@ -56,3 +56,6 @@ fi
 if [ -r "$HOME/.profile.local" ]; then
   . "$HOME/.profile.local"
 fi
+
+# Flatpak desktop integration
+export XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"

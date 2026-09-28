@@ -6,6 +6,15 @@
 > covers five specialized git tools — Gitsigns, Diffview, Neogit, LazyGit, and Fugitive —
 > and explains when and why to reach for each one.
 
+> **Keymap update:** `<leader>gdo/gdc/gdh/gdH` (Diffview), `<leader>gn`
+> (Neogit), and `<leader>gpr`/`<leader>gup` (Fugitive) were commented out —
+> each was a bare passthrough to an Ex command the plugin already provides, so
+> the config now calls that command directly (see tutorial 13, section 4.6).
+> Wherever those keys appear below in a worked example, type the equivalent
+> `:Command` instead (`:DiffviewOpen`, `:Neogit`, `:Git pull --rebase`, etc. —
+> see each tool's reference table for the full mapping). `<leader>gP` and
+> `<leader>lg` are unaffected and still work as shown.
+
 ---
 
 ## Table of Contents
@@ -85,14 +94,14 @@ overlap; they cover different parts of the git workflow.
 
 > 💡 **VSCode equivalent overview**
 >
-> | Neovim tool     | VSCode equivalent                                    |
-> |-----------------|------------------------------------------------------|
-> | Gitsigns        | SCM gutter decorations (built-in)                    |
-> | Diffview        | Source Control diff view + Timeline panel            |
-> | Neogit          | Source Control panel (Ctrl+Shift+G)                  |
-> | LazyGit         | GitLens Graph + interactive rebase (paid features)   |
-> | Fugitive        | Terminal git commands, no direct equivalent          |
-> | Snacks `gbr`    | Branch picker in Source Control panel                |
+> | Neovim tool  | VSCode equivalent                                  |
+> | ------------ | -------------------------------------------------- |
+> | Gitsigns     | SCM gutter decorations (built-in)                  |
+> | Diffview     | Source Control diff view + Timeline panel          |
+> | Neogit       | Source Control panel (Ctrl+Shift+G)                |
+> | LazyGit      | GitLens Graph + interactive rebase (paid features) |
+> | Fugitive     | Terminal git commands, no direct equivalent        |
+> | Snacks `gbr` | Branch picker in Source Control panel              |
 
 ---
 
@@ -739,12 +748,14 @@ Both Fugitive and Neogit show a git status view and let you stage/commit. Choose
 your workflow:
 
 **Use Fugitive when:**
+
 - You know the exact git command you want to run (`:Git <whatever>`)
 - You want to run `git log`, `git blame`, or `git reflog` in a navigable buffer
 - You need vimdiff for a specific file (`dv` in Fugitive status)
 - You are comfortable with the classic Vim workflow
 
 **Use Neogit when:**
+
 - You want a structured visual workflow with clear sections
 - You want to see all your hunks expanded and stage them individually
 - You prefer the Magit-style interface for commits and branches
@@ -852,7 +863,7 @@ STEP 3: Write the commit message
 <leader>gn → cc (create commit)
 Write a clear, present-tense commit message:
   feat: add validation for user email field
-  
+
   Validates email format on both client and server side.
   Returns 400 with descriptive error if invalid.
 :w to commit.
@@ -999,101 +1010,115 @@ STEP 5: Verify your work is restored
 
 ### Gitsigns (buffer-local — active in git-tracked files)
 
-| Key            | Action                                                    |
-|----------------|-----------------------------------------------------------|
-| `]h`           | Jump to next hunk                                         |
-| `[h`           | Jump to previous hunk                                     |
-| `<leader>gs`   | Stage hunk under cursor (Normal) or selected lines (Visual)|
-| `<leader>gr`   | Reset hunk to HEAD (discard this hunk only)               |
-| `<leader>gS`   | Stage ENTIRE buffer (all changes in this file)            |
-| `<leader>gR`   | Reset ENTIRE buffer to HEAD (discard ALL changes)         |
-| `<leader>gu`   | Unstage the hunk under cursor                             |
-| `<leader>gp`   | Preview hunk in floating diff popup                       |
-| `<leader>gbl`  | Blame line — detailed popup (author, date, commit, msg)   |
-| `<leader>gB`   | Toggle inline blame for all lines in file                 |
-| `<leader>gdi`  | Diff current buffer vs HEAD                               |
-| `<leader>gD`   | Diff current buffer vs parent commit                      |
-| `ih`           | Text object: inside hunk (use with d, y, v, c operators)  |
+| Key           | Action                                                      |
+| ------------- | ----------------------------------------------------------- |
+| `]h`          | Jump to next hunk                                           |
+| `[h`          | Jump to previous hunk                                       |
+| `<leader>gs`  | Stage hunk under cursor (Normal) or selected lines (Visual) |
+| `<leader>gr`  | Reset hunk to HEAD (discard this hunk only)                 |
+| `<leader>gS`  | Stage ENTIRE buffer (all changes in this file)              |
+| `<leader>gR`  | Reset ENTIRE buffer to HEAD (discard ALL changes)           |
+| `<leader>gu`  | Unstage the hunk under cursor                               |
+| `<leader>gp`  | Preview hunk in floating diff popup                         |
+| `<leader>gbl` | Blame line — detailed popup (author, date, commit, msg)     |
+| `<leader>gB`  | Toggle inline blame for all lines in file                   |
+| `<leader>gdi` | Diff current buffer vs HEAD                                 |
+| `<leader>gD`  | Diff current buffer vs parent commit                        |
+| `ih`          | Text object: inside hunk (use with d, y, v, c operators)    |
 
 ### Diffview
 
-| Key            | Action                                                    |
-|----------------|-----------------------------------------------------------|
-| `<leader>gdo`  | Open Diffview (working tree vs HEAD)                      |
-| `<leader>gdc`  | Close Diffview                                            |
-| `<leader>gdh`  | File history for current file                             |
-| `<leader>gdH`  | Full repository history                                   |
-| `j` / `k`      | Navigate file list (inside Diffview)                      |
-| `]c` / `[c`    | Next / previous change hunk in diff                       |
-| `q`            | Close Diffview                                            |
+> **Note:** the `<leader>gd*` keymaps below are commented out in
+> `plugins/diffview.lua` (see tutorial 13, section 4.6) — every one was a bare
+> passthrough to an Ex command, so this config now calls that command
+> directly instead. Kept here so you can still recognize the command names.
+
+| Key / Command            | Action                               |
+| ------------------------ | ------------------------------------ |
+| `:DiffviewOpen`          | Open Diffview (working tree vs HEAD) |
+| `:DiffviewClose`         | Close Diffview                       |
+| `:DiffviewFileHistory %` | File history for current file        |
+| `:DiffviewFileHistory`   | Full repository history              |
+| `j` / `k`                | Navigate file list (inside Diffview) |
+| `]c` / `[c`              | Next / previous change hunk in diff  |
+| `q`                      | Close Diffview                       |
 
 ### Neogit
 
-| Key            | Action                                                    |
-|----------------|-----------------------------------------------------------|
-| `<leader>gn`   | Open Neogit status                                        |
-| `s`            | Stage file/hunk                                           |
-| `u`            | Unstage file/hunk                                         |
-| `S`            | Stage ALL unstaged changes                                |
-| `U`            | Unstage ALL staged changes                                |
-| `Tab`          | Expand file to show hunks                                 |
-| `cc`           | Create commit (open commit message buffer)                |
-| `ca`           | Amend last commit                                         |
-| `cw`           | Reword last commit message                                |
-| `b c`          | Create new branch                                         |
-| `b b`          | Checkout branch                                           |
-| `p p`          | Push to remote                                            |
-| `F r`          | Pull with rebase                                          |
-| `z z`          | Stash changes                                             |
-| `z p`          | Pop stash                                                 |
-| `q`            | Close Neogit                                              |
+> **Note:** `<leader>gn` is commented out in `plugins/neogit.lua` — it was a
+> bare passthrough to `:Neogit` (already declared in the plugin's `cmd`), so
+> just type `:Neogit` directly.
+
+| Key / Command | Action                                     |
+| ------------- | ------------------------------------------ |
+| `:Neogit`     | Open Neogit status                         |
+| `s`           | Stage file/hunk                            |
+| `u`           | Unstage file/hunk                          |
+| `S`           | Stage ALL unstaged changes                 |
+| `U`           | Unstage ALL staged changes                 |
+| `Tab`         | Expand file to show hunks                  |
+| `cc`          | Create commit (open commit message buffer) |
+| `ca`          | Amend last commit                          |
+| `cw`          | Reword last commit message                 |
+| `b c`         | Create new branch                          |
+| `b b`         | Checkout branch                            |
+| `p p`         | Push to remote                             |
+| `F r`         | Pull with rebase                           |
+| `z z`         | Stash changes                              |
+| `z p`         | Pop stash                                  |
+| `q`           | Close Neogit                               |
 
 ### LazyGit
 
-| Key            | Action                                                    |
-|----------------|-----------------------------------------------------------|
-| `<leader>lg`   | Open LazyGit                                              |
-| `<leader>gl`   | Open LazyGit at log/commits view                          |
-| `1-5`          | Switch between panels (Status, Files, Branches, Commits, Stash)|
-| `<space>`      | Stage/unstage file                                        |
-| `c`            | Commit staged changes                                     |
-| `A`            | Amend HEAD commit                                         |
-| `P`            | Open push menu                                            |
-| `p`            | Open pull menu                                            |
-| `e`            | Start interactive rebase from selected commit             |
-| `n`            | New stash (in stash panel) / New branch (in branch panel) |
-| `g`            | Pop stash                                                 |
-| `?`            | Show help for current panel                               |
-| `q`            | Close LazyGit                                             |
+| Key          | Action                                                          |
+| ------------ | --------------------------------------------------------------- |
+| `<leader>lg` | Open LazyGit                                                    |
+| `<leader>gl` | Open LazyGit at log/commits view                                |
+| `1-5`        | Switch between panels (Status, Files, Branches, Commits, Stash) |
+| `<space>`    | Stage/unstage file                                              |
+| `c`          | Commit staged changes                                           |
+| `A`          | Amend HEAD commit                                               |
+| `P`          | Open push menu                                                  |
+| `p`          | Open pull menu                                                  |
+| `e`          | Start interactive rebase from selected commit                   |
+| `n`          | New stash (in stash panel) / New branch (in branch panel)       |
+| `g`          | Pop stash                                                       |
+| `?`          | Show help for current panel                                     |
+| `q`          | Close LazyGit                                                   |
 
 ### Fugitive
 
-| Key / Command      | Action                                                |
-|--------------------|--------------------------------------------------------|
-| `<leader>gf`       | Open Fugitive status in fullscreen tab                |
-| `<leader>gP`       | Push                                                  |
-| `<leader>gpr`      | Pull with rebase                                      |
-| `<leader>gup`      | Push with set-upstream (for new branches)             |
-| `s` (in status)    | Stage file                                            |
-| `u` (in status)    | Unstage file                                          |
-| `cc` (in status)   | Create commit                                         |
-| `ca` (in status)   | Amend commit                                          |
-| `dv` (in status)   | Open vimdiff for file                                 |
-| `:Git log`         | Git log in navigable buffer                           |
-| `:Git blame`       | Git blame in a split                                  |
-| `:Git diff HEAD~N` | Diff vs N commits ago                                 |
-| `:Git stash`       | Stash changes                                         |
-| `:Git stash pop`   | Pop the stash                                         |
-| `:Git reflog`      | Show reflog                                           |
+> **Note:** `<leader>gpr` and `<leader>gup` are commented out in
+> `plugins/gitstuff.lua` — they're rarer, manual actions, so type the `:Git`
+> command directly instead. `<leader>gP` (push) stays, since it's used often
+> enough to be worth the key.
+
+| Key / Command                  | Action                                    |
+| ------------------------------ | ----------------------------------------- |
+| `<leader>gf`                   | Open Fugitive status in fullscreen tab    |
+| `<leader>gP`                   | Push                                      |
+| `:Git pull --rebase`           | Pull with rebase                          |
+| `:Git push -u origin <branch>` | Push with set-upstream (for new branches) |
+| `s` (in status)                | Stage file                                |
+| `u` (in status)                | Unstage file                              |
+| `cc` (in status)               | Create commit                             |
+| `ca` (in status)               | Amend commit                              |
+| `dv` (in status)               | Open vimdiff for file                     |
+| `:Git log`                     | Git log in navigable buffer               |
+| `:Git blame`                   | Git blame in a split                      |
+| `:Git diff HEAD~N`             | Diff vs N commits ago                     |
+| `:Git stash`                   | Stash changes                             |
+| `:Git stash pop`               | Pop the stash                             |
+| `:Git reflog`                  | Show reflog                               |
 
 ### Branch Management
 
-| Key / Command          | Action                                            |
-|------------------------|---------------------------------------------------|
-| `<leader>gbr`          | Snacks branch picker (fuzzy search + checkout)    |
-| `:Git checkout -b name`| Create and checkout new branch                    |
-| `:Git branch -d name`  | Delete merged branch                              |
-| `:Git branch -D name`  | Force delete branch                               |
+| Key / Command           | Action                                         |
+| ----------------------- | ---------------------------------------------- |
+| `<leader>gbr`           | Snacks branch picker (fuzzy search + checkout) |
+| `:Git checkout -b name` | Create and checkout new branch                 |
+| `:Git branch -d name`   | Delete merged branch                           |
+| `:Git branch -D name`   | Force delete branch                            |
 
 ---
 
@@ -1159,11 +1184,13 @@ These exercises use a real git repository. If you do not have one handy, initial
 6. Verify the "Staged changes" section shows exactly what you want in the commit.
 7. Press `cc` to open the commit message buffer.
 8. Write a commit message following the conventional commit format:
+
    ```
    type: short description
 
    Longer explanation if needed. What changed and why.
    ```
+
 9. Press `:w` to commit. Verify the new commit appears in the "Recent commits" section.
 10. Press `p p` to push (if you have a remote). Or just close with `q`.
 
@@ -1174,29 +1201,37 @@ These exercises use a real git repository. If you do not have one handy, initial
 **Goal:** Practice the 3-pane Diffview conflict resolution workflow.
 
 1. Create a situation with a merge conflict:
+
    ```bash
    :!cd /tmp && git init conflict-test
    :cd /tmp/conflict-test
    :e main.ts
    ```
+
    Write: `const greeting = "hello"` and save, then commit:
    `:!git add main.ts && git commit -m "initial"`
 
 2. Create two branches that both modify the same line:
+
    ```
    :!git checkout -b feature-a
    ```
+
    Change `"hello"` to `"hello world"`, save, commit.
+
    ```
    :!git checkout main
    :!git checkout -b feature-b
    ```
+
    Change `"hello"` to `"hi there"`, save, commit.
 
 3. Merge feature-a into feature-b:
+
    ```
    :!git merge feature-a
    ```
+
    This should create a conflict.
 
 4. Open `<leader>gdo` — Diffview should show the conflicted file.
@@ -1216,6 +1251,7 @@ These exercises use a real git repository. If you do not have one handy, initial
 **Goal:** Use LazyGit to squash multiple commits into one.
 
 1. In a repository, create 3 consecutive commits with trivial content:
+
    ```
    :e scratch.ts → add "const a = 1" → :w → :!git add scratch.ts
    :!git commit -m "wip: first step"
@@ -1226,6 +1262,7 @@ These exercises use a real git repository. If you do not have one handy, initial
    → change to "const a = 1; const b = 2; const c = 3" → :w → :!git add scratch.ts
    :!git commit -m "wip: final step"
    ```
+
 2. Open LazyGit: `<leader>lg`
 3. Navigate to the Commits panel: `4`
 4. Use `j` to navigate to the OLDEST of your 3 wip commits (the bottom one).
@@ -1242,5 +1279,5 @@ These exercises use a real git repository. If you do not have one handy, initial
 
 ---
 
-*Continue to [Chapter 09 — Debug, Test, and Build](./09-debug-test-build.md) to learn how to*
-*run tests, set breakpoints, and execute build tasks without leaving Neovim.*
+_Continue to [Chapter 09 — Debug, Test, and Build](./09-debug-test-build.md) to learn how to_
+_run tests, set breakpoints, and execute build tasks without leaving Neovim._

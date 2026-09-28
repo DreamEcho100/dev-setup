@@ -32,14 +32,17 @@ return {
         cmake_show_console = "always",
         cmake_virtual_text_support = true,
     },
-    keys = {
-        { "<leader>mcmg", "<cmd>CMakeGenerate<CR>",           desc = "CMake: configure" },
-        { "<leader>mcmb", "<cmd>CMakeBuild<CR>",              desc = "CMake: build" },
-        { "<leader>mcmr", "<cmd>CMakeRun<CR>",                desc = "CMake: run target" },
-        { "<leader>mcmt", "<cmd>CMakeTest<CR>",               desc = "CMake: run tests" },
-        { "<leader>mcmc", "<cmd>CMakeClean<CR>",              desc = "CMake: clean" },
-        { "<leader>mcms", "<cmd>CMakeSelectBuildTarget<CR>",  desc = "CMake: select build target" },
-        { "<leader>mcmT", "<cmd>CMakeSelectBuildType<CR>",    desc = "CMake: select build type" },
-        { "<leader>mcmo", "<cmd>CMakeOpen<CR>",               desc = "CMake: open panel" },
-    },
+    -- Keymaps removed: every action below is a 1:1 wrapper around an Ex
+    -- command cmake-tools.nvim already exposes, so just call it directly,
+    -- e.g. `:CMakeBuild`. Kept as a comment for reference:
+    -- keys = {
+    --     { "<leader>mcmg", "<cmd>CMakeGenerate<CR>",           desc = "CMake: configure" },
+    --     { "<leader>mcmb", "<cmd>CMakeBuild<CR>",              desc = "CMake: build" },
+    --     { "<leader>mcmr", "<cmd>CMakeRun<CR>",                desc = "CMake: run target" },
+    --     { "<leader>mcmt", "<cmd>CMakeTest<CR>",               desc = "CMake: run tests" },
+    --     { "<leader>mcmc", "<cmd>CMakeClean<CR>",              desc = "CMake: clean" },
+    --     { "<leader>mcms", "<cmd>CMakeSelectBuildTarget<CR>",  desc = "CMake: select build target" },
+    --     { "<leader>mcmT", "<cmd>CMakeSelectBuildType<CR>",    desc = "CMake: select build type" },
+    --     { "<leader>mcmo", "<cmd>CMakeOpen<CR>",               desc = "CMake: open panel" },
+    -- },
 }

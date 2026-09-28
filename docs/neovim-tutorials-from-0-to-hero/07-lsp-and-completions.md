@@ -187,8 +187,9 @@ instead of central `mason-lspconfig`.
 >
 > Mason is the equivalent of VS Code's Extensions panel (Ctrl+Shift+X), but specifically for
 > backend language intelligence tools. In VS Code you install "Python" and it bundles pyright
-> + black + pylint automatically. In Neovim you install each tool individually through Mason,
-> giving you full visibility and control over exactly what is running.
+>
+> - black + pylint automatically. In Neovim you install each tool individually through Mason,
+>   giving you full visibility and control over exactly what is running.
 
 ---
 
@@ -290,8 +291,8 @@ gi → Snacks picker shows:
 gt   → jump to the TYPE DEFINITION of the variable under the cursor
 ```
 
-The difference from `gd`: `gd` shows you where something is *declared*, `gt` shows you where
-its *type* is defined. They differ when you are on a variable:
+The difference from `gd`: `gd` shows you where something is _declared_, `gt` shows you where
+its _type_ is defined. They differ when you are on a variable:
 
 ```
 # In app.ts:
@@ -311,6 +312,7 @@ K   → show documentation for the symbol under the cursor in a floating popup
 
 Press `K` on any identifier — a function, type, variable, library export — and you get a
 floating window showing:
+
 - The type signature
 - The full JSDoc/docstring/godoc comment
 - Parameter descriptions and return types
@@ -469,14 +471,14 @@ codebase for the first time — you can see the full scope of issues across ever
 
 > 💡 **VSCode equivalent**
 >
-> | Neovim key       | VSCode equivalent                                |
-> |------------------|--------------------------------------------------|
-> | `]d` / `[d`      | F8 / Shift+F8 (Go to Next/Prev Problem)          |
-> | `<leader>df`     | Hover over the red squiggly underline            |
-> | `<leader>D`      | View → Problems (Ctrl+Shift+M)                   |
-> | `<leader>xw`     | Problems panel with "All Files" scope            |
-> | `<leader>lv`     | No equivalent (always on in VSCode)              |
-> | `<leader>lx`     | No equivalent                                    |
+> | Neovim key   | VSCode equivalent                       |
+> | ------------ | --------------------------------------- |
+> | `]d` / `[d`  | F8 / Shift+F8 (Go to Next/Prev Problem) |
+> | `<leader>df` | Hover over the red squiggly underline   |
+> | `<leader>D`  | View → Problems (Ctrl+Shift+M)          |
+> | `<leader>xw` | Problems panel with "All Files" scope   |
+> | `<leader>lv` | No equivalent (always on in VSCode)     |
+> | `<leader>lx` | No equivalent                           |
 
 ---
 
@@ -642,6 +644,7 @@ Renamed 'getUser' to 'fetchUser' in 7 files (23 occurrences)
 ### Why LSP rename is better than Find & Replace
 
 A plain search-and-replace for "getUser" would also match:
+
 - The string literal `"getUser"` in tests or comments
 - A different `getUser` in another module or scope
 - The method name `getUserById` (partial match)
@@ -864,7 +867,7 @@ Press <C-y>:
 function functionName(params) {
          ────────────
          ^ cursor here (highlighted placeholder)
-  
+
 }
 
 Press <Tab>:
@@ -890,271 +893,271 @@ TypeScript inherits JavaScript, TypeScript React inherits TypeScript and JSX, et
 
 #### JavaScript / TypeScript (both filetypes)
 
-| Trigger     | Expands to                                            |
-|-------------|-------------------------------------------------------|
-| `;fn`       | Named function declaration                            |
-| `;afn`      | Async named function                                  |
-| `;fun`      | `function` keyword function                           |
-| `;afun`     | Async `function` keyword function                     |
-| `;cl`       | `console.log()`                                       |
-| `;cle`      | `console.error()`                                     |
-| `;clw`      | `console.warn()`                                      |
-| `;clt`      | `console.table()`                                     |
-| `;clj`      | `console.log(JSON.stringify(value, null, 2))`          |
-| `;imp`      | `import { } from ''`                                  |
-| `;impa`     | `import * as name from ''`                            |
-| `;imd`      | `import name from ''` (default import)                |
-| `;ife`      | Immediately Invoked Function Expression (IIFE)        |
-| `;tern`     | Ternary: `condition ? a : b`                          |
-| `;try`      | `try { } catch (error) { }`                           |
-| `;tryf`     | `try { } catch { } finally { }`                       |
-| `;map`      | `.map(item => )`                                      |
-| `;filter`   | `.filter(item => )`                                   |
-| `;reduce`   | `.reduce((acc, item) => , initial)`                   |
-| `;foreach`  | `.forEach(item => )`                                  |
-| `;find`     | `.find(item => )`                                     |
-| `;prom`     | `new Promise((resolve, reject) => )`                  |
-| `;fetch`    | fetch + .then chain                                   |
-| `;await`    | `const result = await expression`                     |
-| `;obj`      | Object literal with key/value placeholders            |
-| `;spread`   | `{ ...object }`                                       |
-| `;cls`      | Full ES6 class declaration                            |
-| `;timeout`  | `setTimeout(() => { }, delay)`                        |
-| `;interval` | `setInterval(() => { }, delay)`                       |
+| Trigger     | Expands to                                     |
+| ----------- | ---------------------------------------------- |
+| `;fn`       | Named function declaration                     |
+| `;afn`      | Async named function                           |
+| `;fun`      | `function` keyword function                    |
+| `;afun`     | Async `function` keyword function              |
+| `;cl`       | `console.log()`                                |
+| `;cle`      | `console.error()`                              |
+| `;clw`      | `console.warn()`                               |
+| `;clt`      | `console.table()`                              |
+| `;clj`      | `console.log(JSON.stringify(value, null, 2))`  |
+| `;imp`      | `import { } from ''`                           |
+| `;impa`     | `import * as name from ''`                     |
+| `;imd`      | `import name from ''` (default import)         |
+| `;ife`      | Immediately Invoked Function Expression (IIFE) |
+| `;tern`     | Ternary: `condition ? a : b`                   |
+| `;try`      | `try { } catch (error) { }`                    |
+| `;tryf`     | `try { } catch { } finally { }`                |
+| `;map`      | `.map(item => )`                               |
+| `;filter`   | `.filter(item => )`                            |
+| `;reduce`   | `.reduce((acc, item) => , initial)`            |
+| `;foreach`  | `.forEach(item => )`                           |
+| `;find`     | `.find(item => )`                              |
+| `;prom`     | `new Promise((resolve, reject) => )`           |
+| `;fetch`    | fetch + .then chain                            |
+| `;await`    | `const result = await expression`              |
+| `;obj`      | Object literal with key/value placeholders     |
+| `;spread`   | `{ ...object }`                                |
+| `;cls`      | Full ES6 class declaration                     |
+| `;timeout`  | `setTimeout(() => { }, delay)`                 |
+| `;interval` | `setInterval(() => { }, delay)`                |
 
 ---
 
 #### TypeScript only (in addition to JS)
 
-| Trigger      | Expands to                                           |
-|--------------|------------------------------------------------------|
-| `;type`      | `type Name = `                                       |
-| `;inter`     | `interface Name { }`                                 |
-| `;iext`      | `interface Name extends Base { }`                    |
-| `;enum`      | `enum Name { }`                                      |
-| `;cenum`     | `const enum Name { }`                                |
-| `;generic`   | `function name<T>(arg: T): T`                        |
-| `;record`    | `Record<KeyType, ValueType>`                         |
-| `;partial`   | `Partial<Type>`                                      |
-| `;required`  | `Required<Type>`                                     |
-| `;pick`      | `Pick<Type, 'key1' \| 'key2'>`                        |
-| `;omit`      | `Omit<Type, 'key1' \| 'key2'>`                        |
-| `;readonly`  | `Readonly<Type>`                                     |
-| `;as`        | `value as Type`                                      |
-| `;satis`     | `value satisfies Type`                               |
-| `;guard`     | Type guard: `function isName(x: unknown): x is Type` |
-| `;nna`       | Non-null assertion: `value!`                         |
-| `;opt`       | Optional chain: `value?.property`                    |
-| `;null`      | Nullish coalesce: `value ?? fallback`                |
-| `;dec`       | TypeScript decorator                                 |
+| Trigger     | Expands to                                           |
+| ----------- | ---------------------------------------------------- |
+| `;type`     | `type Name = `                                       |
+| `;inter`    | `interface Name { }`                                 |
+| `;iext`     | `interface Name extends Base { }`                    |
+| `;enum`     | `enum Name { }`                                      |
+| `;cenum`    | `const enum Name { }`                                |
+| `;generic`  | `function name<T>(arg: T): T`                        |
+| `;record`   | `Record<KeyType, ValueType>`                         |
+| `;partial`  | `Partial<Type>`                                      |
+| `;required` | `Required<Type>`                                     |
+| `;pick`     | `Pick<Type, 'key1' \| 'key2'>`                       |
+| `;omit`     | `Omit<Type, 'key1' \| 'key2'>`                       |
+| `;readonly` | `Readonly<Type>`                                     |
+| `;as`       | `value as Type`                                      |
+| `;satis`    | `value satisfies Type`                               |
+| `;guard`    | Type guard: `function isName(x: unknown): x is Type` |
+| `;nna`      | Non-null assertion: `value!`                         |
+| `;opt`      | Optional chain: `value?.property`                    |
+| `;null`     | Nullish coalesce: `value ?? fallback`                |
+| `;dec`      | TypeScript decorator                                 |
 
 ---
 
 #### JSX / React (typescriptreact, javascriptreact)
 
-| Trigger       | Expands to                                          |
-|---------------|-----------------------------------------------------|
-| `;el`         | `<Tag>children</Tag>`                               |
-| `;elf`        | `<Tag />` (self-closing)                            |
-| `;frag`       | `<>children</>`                                     |
-| `;comp`       | Full React functional component                     |
-| `;compp`      | React component with Props type defined             |
-| `;hook`       | Custom hook boilerplate (`useMyHook`)               |
-| `;ctx`        | Context + Provider boilerplate                      |
-| `;cond`       | `{condition && <Component/>}`                       |
-| `;ternr`      | `{condition ? <A/> : <B/>}`                         |
-| `;listr`      | `{items.map(item => <li key={item.id}>...</li>)}`   |
-| `;useState`   | `const [state, setState] = useState(initial)`       |
-| `;useEffect`  | `useEffect(() => { }, [deps])`                      |
-| `;useCallback` | `useCallback(() => { }, [deps])`                    |
-| `;useMemo`    | `useMemo(() => value, [deps])`                      |
-| `;useRef`     | `const ref = useRef<Type>(null)`                    |
-| `;useContext` | `const value = useContext(MyContext)`               |
-| `;onclick`    | `onClick={() => handleClick()}`                     |
-| `;onchange`   | `onChange={(e) => setValue(e.target.value)}`        |
-| `;onsubmit`   | `onSubmit={(e) => { e.preventDefault(); ... }}`     |
-| `;handler`    | Full event handler function                         |
-| `;cn`         | `className=""`                                      |
-| `;cns`        | `className={cn()}` (with clsx/tailwind-merge)       |
-| `;style`      | `style={{ }}`                                       |
-| `;suspense`   | `<Suspense fallback={<Loading/>}>...</Suspense>`     |
-| `;lazy`       | `const C = lazy(() => import('./Component'))`       |
-| `;portal`     | `createPortal(children, document.body)`             |
+| Trigger        | Expands to                                        |
+| -------------- | ------------------------------------------------- |
+| `;el`          | `<Tag>children</Tag>`                             |
+| `;elf`         | `<Tag />` (self-closing)                          |
+| `;frag`        | `<>children</>`                                   |
+| `;comp`        | Full React functional component                   |
+| `;compp`       | React component with Props type defined           |
+| `;hook`        | Custom hook boilerplate (`useMyHook`)             |
+| `;ctx`         | Context + Provider boilerplate                    |
+| `;cond`        | `{condition && <Component/>}`                     |
+| `;ternr`       | `{condition ? <A/> : <B/>}`                       |
+| `;listr`       | `{items.map(item => <li key={item.id}>...</li>)}` |
+| `;useState`    | `const [state, setState] = useState(initial)`     |
+| `;useEffect`   | `useEffect(() => { }, [deps])`                    |
+| `;useCallback` | `useCallback(() => { }, [deps])`                  |
+| `;useMemo`     | `useMemo(() => value, [deps])`                    |
+| `;useRef`      | `const ref = useRef<Type>(null)`                  |
+| `;useContext`  | `const value = useContext(MyContext)`             |
+| `;onclick`     | `onClick={() => handleClick()}`                   |
+| `;onchange`    | `onChange={(e) => setValue(e.target.value)}`      |
+| `;onsubmit`    | `onSubmit={(e) => { e.preventDefault(); ... }}`   |
+| `;handler`     | Full event handler function                       |
+| `;cn`          | `className=""`                                    |
+| `;cns`         | `className={cn()}` (with clsx/tailwind-merge)     |
+| `;style`       | `style={{ }}`                                     |
+| `;suspense`    | `<Suspense fallback={<Loading/>}>...</Suspense>`  |
+| `;lazy`        | `const C = lazy(() => import('./Component'))`     |
+| `;portal`      | `createPortal(children, document.body)`           |
 
 ---
 
 #### Go
 
-| Trigger    | Expands to                                            |
-|------------|-------------------------------------------------------|
-| `;fn`      | Named function                                        |
-| `;mfn`     | Method with receiver                                  |
-| `;main`    | `func main() { }`                                     |
-| `;ife`     | `if err != nil { return err }`                        |
-| `;ifew`    | `if err != nil { return fmt.Errorf("op: %w", err) }`  |
-| `;ifen`    | `if err := call; err != nil { return err }`           |
-| `;errorf`  | `fmt.Errorf("msg: %w", err)`                          |
-| `;errors`  | `errors.New("message")`                               |
-| `;struct`  | Struct type declaration                               |
-| `;iface`   | Interface declaration                                 |
-| `;impl`    | Implement interface (stub all methods)                |
-| `;test`    | Test function boilerplate                             |
-| `;bench`   | Benchmark function                                    |
-| `;trun`    | `t.Run("name", func(t *testing.T) { })`               |
-| `;go`      | `go func() { }()` (goroutine)                         |
-| `;ch`      | `ch := make(chan Type)`                               |
-| `;select`  | `select { case v := <-ch: ... }`                      |
-| `;wg`      | WaitGroup with Add/Done/Wait                          |
-| `;fmtp`    | `fmt.Printf("", )`                                    |
-| `;fmtpl`   | `fmt.Println()`                                       |
-| `;fmts`    | `fmt.Sprintf("", )`                                   |
-| `;logf`    | `log.Printf("", )`                                    |
-| `;handler` | HTTP handler function                                 |
-| `;hroute`  | Route registration                                    |
-| `;defer`   | `defer func() { ... }()`                              |
-| `;ctx`     | `ctx := context.Background()`                         |
-| `;ctxt`    | `ctx, cancel := context.WithTimeout(ctx, dur)`        |
-| `;sw`      | `switch { case ...: }`                                |
+| Trigger    | Expands to                                           |
+| ---------- | ---------------------------------------------------- |
+| `;fn`      | Named function                                       |
+| `;mfn`     | Method with receiver                                 |
+| `;main`    | `func main() { }`                                    |
+| `;ife`     | `if err != nil { return err }`                       |
+| `;ifew`    | `if err != nil { return fmt.Errorf("op: %w", err) }` |
+| `;ifen`    | `if err := call; err != nil { return err }`          |
+| `;errorf`  | `fmt.Errorf("msg: %w", err)`                         |
+| `;errors`  | `errors.New("message")`                              |
+| `;struct`  | Struct type declaration                              |
+| `;iface`   | Interface declaration                                |
+| `;impl`    | Implement interface (stub all methods)               |
+| `;test`    | Test function boilerplate                            |
+| `;bench`   | Benchmark function                                   |
+| `;trun`    | `t.Run("name", func(t *testing.T) { })`              |
+| `;go`      | `go func() { }()` (goroutine)                        |
+| `;ch`      | `ch := make(chan Type)`                              |
+| `;select`  | `select { case v := <-ch: ... }`                     |
+| `;wg`      | WaitGroup with Add/Done/Wait                         |
+| `;fmtp`    | `fmt.Printf("", )`                                   |
+| `;fmtpl`   | `fmt.Println()`                                      |
+| `;fmts`    | `fmt.Sprintf("", )`                                  |
+| `;logf`    | `log.Printf("", )`                                   |
+| `;handler` | HTTP handler function                                |
+| `;hroute`  | Route registration                                   |
+| `;defer`   | `defer func() { ... }()`                             |
+| `;ctx`     | `ctx := context.Background()`                        |
+| `;ctxt`    | `ctx, cancel := context.WithTimeout(ctx, dur)`       |
+| `;sw`      | `switch { case ...: }`                               |
 
 ---
 
 #### Python
 
-| Trigger    | Expands to                                            |
-|------------|-------------------------------------------------------|
-| `;fn`      | Regular function definition                           |
-| `;afn`     | Async function definition                             |
-| `;main`    | `if __name__ == "__main__": main()`                   |
-| `;cls`     | Class definition                                      |
-| `;clsi`    | Class with `__init__`                                 |
-| `;dc`      | Dataclass with fields                                 |
-| `;prop`    | `@property` with getter and setter                    |
-| `;try`     | `try: ... except Exception as e:`                     |
-| `;tryf`    | `try: ... except: ... finally:`                       |
-| `;with`    | `with open(path, 'r') as f:`                          |
-| `;lc`      | List comprehension                                    |
-| `;dc2`     | Dict comprehension                                    |
-| `;gc`      | Generator expression                                  |
-| `;afor`    | `async for item in iterable:`                         |
-| `;awith`   | `async with context as var:`                          |
-| `;test`    | `def test_name(self):`                                |
-| `;fix`     | `# type: ignore`                                      |
-| `;topt`    | `Optional[Type]`                                      |
-| `;tunion`  | `Union[TypeA, TypeB]`                                 |
+| Trigger   | Expands to                          |
+| --------- | ----------------------------------- |
+| `;fn`     | Regular function definition         |
+| `;afn`    | Async function definition           |
+| `;main`   | `if __name__ == "__main__": main()` |
+| `;cls`    | Class definition                    |
+| `;clsi`   | Class with `__init__`               |
+| `;dc`     | Dataclass with fields               |
+| `;prop`   | `@property` with getter and setter  |
+| `;try`    | `try: ... except Exception as e:`   |
+| `;tryf`   | `try: ... except: ... finally:`     |
+| `;with`   | `with open(path, 'r') as f:`        |
+| `;lc`     | List comprehension                  |
+| `;dc2`    | Dict comprehension                  |
+| `;gc`     | Generator expression                |
+| `;afor`   | `async for item in iterable:`       |
+| `;awith`  | `async with context as var:`        |
+| `;test`   | `def test_name(self):`              |
+| `;fix`    | `# type: ignore`                    |
+| `;topt`   | `Optional[Type]`                    |
+| `;tunion` | `Union[TypeA, TypeB]`               |
 
 ---
 
 #### Lua
 
-| Trigger    | Expands to                                            |
-|------------|-------------------------------------------------------|
-| `;fn`      | `local function name() end`                           |
-| `;fnm`     | `M.name = function() end`                             |
-| `;loc`     | `local name = value`                                  |
-| `;req`     | `local name = require("module")`                      |
-| `;mod`     | Full module with `local M = {}` ... `return M`        |
-| `;ife`     | `if condition then ... end`                           |
-| `;ifn`     | `if not condition then ... end`                       |
-| `;for`     | `for i = 1, n do ... end`                             |
-| `;fori`    | `for i, v in ipairs(t) do ... end`                    |
-| `;forp`    | `for k, v in pairs(t) do ... end`                     |
-| `;map`     | `vim.tbl_map(fn, table)`                              |
-| `;au`      | `vim.api.nvim_create_autocmd("event", { ... })`       |
-| `;aug`     | Augroup boilerplate                                   |
-| `;notify`  | `vim.notify("msg", vim.log.levels.INFO)`              |
-| `;tbl`     | Table literal with entries                            |
-| `;pcall`   | `local ok, result = pcall(fn, args)`                  |
+| Trigger   | Expands to                                      |
+| --------- | ----------------------------------------------- |
+| `;fn`     | `local function name() end`                     |
+| `;fnm`    | `M.name = function() end`                       |
+| `;loc`    | `local name = value`                            |
+| `;req`    | `local name = require("module")`                |
+| `;mod`    | Full module with `local M = {}` ... `return M`  |
+| `;ife`    | `if condition then ... end`                     |
+| `;ifn`    | `if not condition then ... end`                 |
+| `;for`    | `for i = 1, n do ... end`                       |
+| `;fori`   | `for i, v in ipairs(t) do ... end`              |
+| `;forp`   | `for k, v in pairs(t) do ... end`               |
+| `;map`    | `vim.tbl_map(fn, table)`                        |
+| `;au`     | `vim.api.nvim_create_autocmd("event", { ... })` |
+| `;aug`    | Augroup boilerplate                             |
+| `;notify` | `vim.notify("msg", vim.log.levels.INFO)`        |
+| `;tbl`    | Table literal with entries                      |
+| `;pcall`  | `local ok, result = pcall(fn, args)`            |
 
 ---
 
 #### Rust
 
-| Trigger    | Expands to                                            |
-|------------|-------------------------------------------------------|
-| `;fn`      | `fn name() { }`                                       |
-| `;pfn`     | `pub fn name() { }`                                   |
-| `;afn`     | `async fn name() { }`                                 |
-| `;main`    | `fn main() { }`                                       |
-| `;struct`  | Struct definition                                     |
-| `;pstruct` | `pub struct` definition                               |
-| `;enum`    | Enum definition                                       |
-| `;penum`   | `pub enum` definition                                 |
-| `;impl`    | `impl StructName { }`                                 |
-| `;trait`   | Trait definition                                      |
-| `;implfor` | `impl TraitName for StructName { }`                   |
-| `;res`     | `Result<T, E>`                                        |
-| `;opt`     | `Option<T>`                                           |
-| `;qm`      | `?` operator on an expression                         |
-| `;ok`      | `Ok(value)`                                           |
-| `;err`     | `Err(error)`                                          |
-| `;some`    | `Some(value)`                                         |
-| `;match`   | Full match expression with arms                       |
-| `;iflet`   | `if let Some(val) = option { }`                       |
-| `;wlet`    | `while let Some(v) = iter.next() { }`                 |
-| `;pl`      | `println!("{}", value)`                               |
-| `;ep`      | `eprintln!("{}", value)`                              |
-| `;dbg`     | `dbg!(&value)`                                        |
-| `;vec`     | `vec![...]`                                           |
-| `;derive`  | `#[derive(Debug, Clone, PartialEq)]`                  |
-| `;test`    | Test function with assert_eq!                         |
-| `;testmod` | `#[cfg(test)] mod tests { }` block                    |
-| `;assert`  | `assert_eq!(actual, expected)`                        |
-| `;spawn`   | `tokio::spawn(async move { })`                        |
-| `;amain`   | `#[tokio::main] async fn main() { }`                  |
+| Trigger    | Expands to                            |
+| ---------- | ------------------------------------- |
+| `;fn`      | `fn name() { }`                       |
+| `;pfn`     | `pub fn name() { }`                   |
+| `;afn`     | `async fn name() { }`                 |
+| `;main`    | `fn main() { }`                       |
+| `;struct`  | Struct definition                     |
+| `;pstruct` | `pub struct` definition               |
+| `;enum`    | Enum definition                       |
+| `;penum`   | `pub enum` definition                 |
+| `;impl`    | `impl StructName { }`                 |
+| `;trait`   | Trait definition                      |
+| `;implfor` | `impl TraitName for StructName { }`   |
+| `;res`     | `Result<T, E>`                        |
+| `;opt`     | `Option<T>`                           |
+| `;qm`      | `?` operator on an expression         |
+| `;ok`      | `Ok(value)`                           |
+| `;err`     | `Err(error)`                          |
+| `;some`    | `Some(value)`                         |
+| `;match`   | Full match expression with arms       |
+| `;iflet`   | `if let Some(val) = option { }`       |
+| `;wlet`    | `while let Some(v) = iter.next() { }` |
+| `;pl`      | `println!("{}", value)`               |
+| `;ep`      | `eprintln!("{}", value)`              |
+| `;dbg`     | `dbg!(&value)`                        |
+| `;vec`     | `vec![...]`                           |
+| `;derive`  | `#[derive(Debug, Clone, PartialEq)]`  |
+| `;test`    | Test function with assert_eq!         |
+| `;testmod` | `#[cfg(test)] mod tests { }` block    |
+| `;assert`  | `assert_eq!(actual, expected)`        |
+| `;spawn`   | `tokio::spawn(async move { })`        |
+| `;amain`   | `#[tokio::main] async fn main() { }`  |
 
 ---
 
 #### Bash
 
-| Trigger    | Expands to                                            |
-|------------|-------------------------------------------------------|
-| `;shebang` | `#!/usr/bin/env bash` + `set -euo pipefail`           |
-| `;fn`      | Bash function definition                              |
-| `;if`      | `if [ condition ]; then ... fi`                       |
-| `;ife`     | `if ... then ... else ... fi`                         |
-| `;for`     | `for item in list; do ... done`                       |
-| `;while`   | `while [ condition ]; do ... done`                    |
-| `;case`    | `case $var in pattern) ;; esac`                       |
-| `;log`     | `echo "[INFO] message"`                               |
-| `;die`     | `echo "[ERROR] message" >&2; exit 1`                  |
-| `;check`   | Check that a command exists before calling it         |
-| `;args`    | Argument parsing boilerplate                          |
-| `;trap`    | `trap 'cleanup' EXIT INT TERM`                        |
-| `;tmpdir`  | `mktemp -d` with cleanup trap                         |
-| `;readonly`| `readonly VARNAME="value"`                            |
+| Trigger     | Expands to                                    |
+| ----------- | --------------------------------------------- |
+| `;shebang`  | `#!/usr/bin/env bash` + `set -euo pipefail`   |
+| `;fn`       | Bash function definition                      |
+| `;if`       | `if [ condition ]; then ... fi`               |
+| `;ife`      | `if ... then ... else ... fi`                 |
+| `;for`      | `for item in list; do ... done`               |
+| `;while`    | `while [ condition ]; do ... done`            |
+| `;case`     | `case $var in pattern) ;; esac`               |
+| `;log`      | `echo "[INFO] message"`                       |
+| `;die`      | `echo "[ERROR] message" >&2; exit 1`          |
+| `;check`    | Check that a command exists before calling it |
+| `;args`     | Argument parsing boilerplate                  |
+| `;trap`     | `trap 'cleanup' EXIT INT TERM`                |
+| `;tmpdir`   | `mktemp -d` with cleanup trap                 |
+| `;readonly` | `readonly VARNAME="value"`                    |
 
 ---
 
 #### C / C++
 
-| Trigger   | Expands to                                             |
-|-----------|--------------------------------------------------------|
-| `;main`   | `int main(int argc, char *argv[]) { return 0; }`       |
-| `;fn`     | Function with return type, parameters, body            |
-| `;guard`  | `#ifndef FILE_H #define FILE_H ... #endif`             |
-| `;inc`    | `#include "header.h"`                                  |
-| `;incs`   | `#include <stdlib.h>`                                  |
-| `;printf` | `printf("format\n", args);`                            |
-| `;scanf`  | `scanf("format", &var);`                               |
-| `;struct` | `typedef struct { } Name;`                             |
-| `;malloc` | `Type *ptr = malloc(sizeof(Type));`                    |
-| `;free`   | `free(ptr); ptr = NULL;`                               |
-| `;for`    | `for (int i = 0; i < n; i++) { }`                      |
-| `;switch` | `switch (var) { case VAL: break; default: }`           |
+| Trigger   | Expands to                                       |
+| --------- | ------------------------------------------------ |
+| `;main`   | `int main(int argc, char *argv[]) { return 0; }` |
+| `;fn`     | Function with return type, parameters, body      |
+| `;guard`  | `#ifndef FILE_H #define FILE_H ... #endif`       |
+| `;inc`    | `#include "header.h"`                            |
+| `;incs`   | `#include <stdlib.h>`                            |
+| `;printf` | `printf("format\n", args);`                      |
+| `;scanf`  | `scanf("format", &var);`                         |
+| `;struct` | `typedef struct { } Name;`                       |
+| `;malloc` | `Type *ptr = malloc(sizeof(Type));`              |
+| `;free`   | `free(ptr); ptr = NULL;`                         |
+| `;for`    | `for (int i = 0; i < n; i++) { }`                |
+| `;switch` | `switch (var) { case VAL: break; default: }`     |
 
 ---
 
 #### All filetypes (available everywhere)
 
-| Trigger   | Expands to                                             |
-|-----------|--------------------------------------------------------|
-| `;todo`   | `TODO: description` (highlighted by todo-comments)     |
-| `;fixme`  | `FIXME: description`                                   |
-| `;note`   | `NOTE: description`                                    |
-| `;hack`   | `HACK: description`                                    |
-| `;bug`    | `BUG: description`                                     |
-| `;perf`   | `PERF: description` (performance improvement note)     |
-| `;warn`   | `WARN: description`                                    |
+| Trigger  | Expands to                                         |
+| -------- | -------------------------------------------------- |
+| `;todo`  | `TODO: description` (highlighted by todo-comments) |
+| `;fixme` | `FIXME: description`                               |
+| `;note`  | `NOTE: description`                                |
+| `;hack`  | `HACK: description`                                |
+| `;bug`   | `BUG: description`                                 |
+| `;perf`  | `PERF: description` (performance improvement note) |
+| `;warn`  | `WARN: description`                                |
 
 ---
 
@@ -1351,6 +1354,7 @@ Authorization: Bearer {{token}}
 ```
 
 **Syntax rules:**
+
 - `### Comment` starts a new request block (the comment is shown in the response header)
 - `METHOD url` is the request line (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
 - Headers follow immediately, one per line, in `Key: Value` format
@@ -1477,83 +1481,83 @@ verify the API is working. The `.http` files and the source code evolve together
 
 ### LSP Navigation
 
-| Key           | Action                                         | VSCode              |
-|---------------|------------------------------------------------|---------------------|
-| `gd`          | Go to definition                               | F12                 |
-| `gD`          | Go to declaration                              | (context menu)      |
-| `gR`          | Show all references (Snacks picker)            | Shift+F12           |
-| `gi`          | Show implementations (Snacks picker)           | Ctrl+F12            |
-| `gt`          | Go to type definition                          | (context menu)      |
-| `K`           | Hover documentation                            | Mouse hover         |
-| `<leader>ca`  | Code actions (Normal + Visual)                 | Ctrl+.              |
-| `<leader>rn`  | Rename symbol across project                   | F2                  |
-| `<leader>rN`  | Rename current file                            | Explorer context    |
-| `<leader>ls`  | Signature help                                 | Ctrl+Shift+Space    |
+| Key          | Action                               | VSCode           |
+| ------------ | ------------------------------------ | ---------------- |
+| `gd`         | Go to definition                     | F12              |
+| `gD`         | Go to declaration                    | (context menu)   |
+| `gR`         | Show all references (Snacks picker)  | Shift+F12        |
+| `gi`         | Show implementations (Snacks picker) | Ctrl+F12         |
+| `gt`         | Go to type definition                | (context menu)   |
+| `K`          | Hover documentation                  | Mouse hover      |
+| `<leader>ca` | Code actions (Normal + Visual)       | Ctrl+.           |
+| `<leader>rn` | Rename symbol across project         | F2               |
+| `<leader>rN` | Rename current file                  | Explorer context |
+| `<leader>ls` | Signature help                       | Ctrl+Shift+Space |
 
 ### Diagnostics
 
-| Key           | Action                                              |
-|---------------|------------------------------------------------------|
-| `[d`          | Go to previous diagnostic                           |
-| `]d`          | Go to next diagnostic                               |
-| `<leader>df`  | Floating window for current line's diagnostic       |
-| `<leader>D`   | All buffer diagnostics in Snacks picker             |
-| `<leader>lv`  | Toggle virtual text (inline diagnostic messages)    |
-| `<leader>lx`  | Toggle inline diagnostics and underlines            |
-| `<leader>li`  | Toggle inlay hints                                  |
-| `<leader>xw`  | Trouble: workspace diagnostics (all files)          |
-| `<leader>xd`  | Trouble: document diagnostics (current file)        |
-| `<leader>xq`  | Trouble: quickfix list                              |
-| `<leader>xt`  | Trouble: TODOs and FIXMEs                           |
+| Key          | Action                                           |
+| ------------ | ------------------------------------------------ |
+| `[d`         | Go to previous diagnostic                        |
+| `]d`         | Go to next diagnostic                            |
+| `<leader>df` | Floating window for current line's diagnostic    |
+| `<leader>D`  | All buffer diagnostics in Snacks picker          |
+| `<leader>lv` | Toggle virtual text (inline diagnostic messages) |
+| `<leader>lx` | Toggle inline diagnostics and underlines         |
+| `<leader>li` | Toggle inlay hints                               |
+| `<leader>xw` | Trouble: workspace diagnostics (all files)       |
+| `<leader>xd` | Trouble: document diagnostics (current file)     |
+| `<leader>xq` | Trouble: quickfix list                           |
+| `<leader>xt` | Trouble: TODOs and FIXMEs                        |
 
 ### blink.cmp Completion
 
-| Key          | Action                                               |
-|--------------|------------------------------------------------------|
-| `<C-Space>`  | Show completion menu or toggle completion docs       |
-| `<C-@>`      | Same as `<C-Space>` for terminal compatibility       |
-| `<C-e>`      | Dismiss completion menu without accepting            |
-| `<C-y>`      | Accept selected item (NOT Enter)                     |
-| `<C-p>` / ↑  | Select previous item                                 |
-| `<C-n>` / ↓  | Select next item                                     |
-| `<S-k>`      | Scroll documentation pane up                         |
-| `<S-j>`      | Scroll documentation pane down                       |
-| `<Tab>`      | Next snippet placeholder                             |
-| `<S-Tab>`    | Previous snippet placeholder                         |
+| Key         | Action                                         |
+| ----------- | ---------------------------------------------- |
+| `<C-Space>` | Show completion menu or toggle completion docs |
+| `<C-@>`     | Same as `<C-Space>` for terminal compatibility |
+| `<C-e>`     | Dismiss completion menu without accepting      |
+| `<C-y>`     | Accept selected item (NOT Enter)               |
+| `<C-p>` / ↑ | Select previous item                           |
+| `<C-n>` / ↓ | Select next item                               |
+| `<S-k>`     | Scroll documentation pane up                   |
+| `<S-j>`     | Scroll documentation pane down                 |
+| `<Tab>`     | Next snippet placeholder                       |
+| `<S-Tab>`   | Previous snippet placeholder                   |
 
 ### Mason
 
-| Command                  | Action                                      |
-|--------------------------|----------------------------------------------|
-| `:Mason`                 | Open Mason UI                               |
-| `:MasonInstall <name>`   | Install a specific package                  |
-| `:MasonUninstall <name>` | Remove a package                            |
-| `:MasonUpdate`           | Update all installed packages               |
-| `i` (in Mason UI)        | Install package under cursor                |
-| `X` (in Mason UI)        | Uninstall package under cursor              |
-| `U` (in Mason UI)        | Update all packages                         |
+| Command                  | Action                         |
+| ------------------------ | ------------------------------ |
+| `:Mason`                 | Open Mason UI                  |
+| `:MasonInstall <name>`   | Install a specific package     |
+| `:MasonUninstall <name>` | Remove a package               |
+| `:MasonUpdate`           | Update all installed packages  |
+| `i` (in Mason UI)        | Install package under cursor   |
+| `X` (in Mason UI)        | Uninstall package under cursor |
+| `U` (in Mason UI)        | Update all packages            |
 
 ### Aerial
 
-| Key           | Action                                              |
-|---------------|------------------------------------------------------|
-| `<leader>lo`  | Toggle aerial symbols outline panel                 |
-| `[a`          | Jump to previous symbol in file                     |
-| `]a`          | Jump to next symbol in file                         |
-| `Enter`       | Jump to symbol (inside aerial panel)                |
-| `q`           | Close aerial panel                                  |
+| Key          | Action                               |
+| ------------ | ------------------------------------ |
+| `<leader>lo` | Toggle aerial symbols outline panel  |
+| `[a`         | Jump to previous symbol in file      |
+| `]a`         | Jump to next symbol in file          |
+| `Enter`      | Jump to symbol (inside aerial panel) |
+| `q`          | Close aerial panel                   |
 
 ### kulala.nvim
 
-| Key           | Action                                              |
-|---------------|------------------------------------------------------|
-| `<leader>Hr`  | Run request under cursor                            |
-| `<leader>Ha`  | Run all requests in the file                        |
-| `<leader>Hp`  | Replay the last request                             |
-| `<leader>Hi`  | Inspect current request (preview before sending)    |
-| `<leader>Hc`  | Copy request as cURL command                        |
-| `]r`          | Jump to next request block                          |
-| `[r`          | Jump to previous request block                      |
+| Key          | Action                                           |
+| ------------ | ------------------------------------------------ |
+| `<leader>Hr` | Run request under cursor                         |
+| `<leader>Ha` | Run all requests in the file                     |
+| `<leader>Hp` | Replay the last request                          |
+| `<leader>Hi` | Inspect current request (preview before sending) |
+| `<leader>Hc` | Copy request as cURL command                     |
+| `]r`         | Jump to next request block                       |
+| `[r`         | Jump to previous request block                   |
 
 ---
 
@@ -1592,9 +1596,9 @@ your language server is connected.
 
 1. Find (or create) a file with at least 3 diagnostics. If needed, in TypeScript:
    ```typescript
-   const x: string = 42           // error: type mismatch
-   let unused = "never used"       // warning: declared but never read
-   import something from 'nowhere' // error: module not found
+   const x: string = 42; // error: type mismatch
+   let unused = "never used"; // warning: declared but never read
+   import something from "nowhere"; // error: module not found
    ```
 2. Run `]d` repeatedly to cycle through all diagnostics. Count how many there are.
 3. On each diagnostic, press `<leader>df` and read the full message, error code, and source.
@@ -1661,6 +1665,7 @@ Open files in the languages you use most (TypeScript, Go, Python) and practice:
 
 1. Create a file `test-api.http` in your project or `/tmp/`.
 2. Write 4 request blocks using the JSONPlaceholder API (no auth needed):
+
    ```http
    ### Get all todos
    GET https://jsonplaceholder.typicode.com/todos?_limit=5
@@ -1688,6 +1693,7 @@ Open files in the languages you use most (TypeScript, Go, Python) and practice:
      "userId": 1
    }
    ```
+
 3. Create a `.env` file in the same directory: `todoId=1`
 4. Navigate between requests with `]r` and `[r`.
 5. Run the first request with `<leader>Hr`. Read the response in the split buffer.
@@ -1701,5 +1707,5 @@ Open files in the languages you use most (TypeScript, Go, Python) and practice:
 
 ---
 
-*Continue to [Chapter 08 — Git Workflow](./08-git-workflow.md) to learn how Gitsigns,*
-*Diffview, Neogit, LazyGit, and Fugitive work together for a complete in-editor git workflow.*
+_Continue to [Chapter 08 — Git Workflow](./08-git-workflow.md) to learn how Gitsigns,_
+_Diffview, Neogit, LazyGit, and Fugitive work together for a complete in-editor git workflow._

@@ -365,13 +365,13 @@ end
 
 The controls for ghost text:
 
-| Key        | Action                                           |
-|------------|--------------------------------------------------|
-| `Tab`      | Accept the entire suggestion                     |
-| `Ctrl+]`   | Dismiss the current suggestion                   |
-| `Alt+]`    | Next suggestion (if multiple are available)      |
-| `Alt+[`    | Previous suggestion                              |
-| `Ctrl+Alt+]` | Accept word by word (partial accept)           |
+| Key          | Action                                      |
+| ------------ | ------------------------------------------- |
+| `Tab`        | Accept the entire suggestion                |
+| `Ctrl+]`     | Dismiss the current suggestion              |
+| `Alt+]`      | Next suggestion (if multiple are available) |
+| `Alt+[`      | Previous suggestion                         |
+| `Ctrl+Alt+]` | Accept word by word (partial accept)        |
 
 Note that `Tab` for accepting suggestions can conflict with other Tab uses in
 insert mode — particularly if you have a completion plugin that also uses Tab.
@@ -449,16 +449,16 @@ suggestions.
 The core behavior is essentially identical — ghost text, Tab to accept, same
 underlying AI model. The differences are:
 
-| Aspect | VSCode | Neovim (copilot.lua) |
-|--------|--------|----------------------|
-| Setup | Extension install, browser auth | Plugin install, `:Copilot setup` |
-| Auth persistence | Extension handles it | Stored in `~/.config/github-copilot/` |
-| Ghost text | Yes | Yes |
-| Panel | Yes (separate view) | Yes (`:Copilot panel`) |
-| Completion menu integration | Yes (inline only) | Yes (via copilot-cmp) |
-| Multiple suggestions | Yes (Alt+] / Alt+[) | Yes (same keybinds) |
-| Startup cost | Extension host process | Node.js copilot agent |
-| Can disable per project | Workspace settings | Env var or `:Copilot disable` |
+| Aspect                      | VSCode                          | Neovim (copilot.lua)                  |
+| --------------------------- | ------------------------------- | ------------------------------------- |
+| Setup                       | Extension install, browser auth | Plugin install, `:Copilot setup`      |
+| Auth persistence            | Extension handles it            | Stored in `~/.config/github-copilot/` |
+| Ghost text                  | Yes                             | Yes                                   |
+| Panel                       | Yes (separate view)             | Yes (`:Copilot panel`)                |
+| Completion menu integration | Yes (inline only)               | Yes (via copilot-cmp)                 |
+| Multiple suggestions        | Yes (Alt+] / Alt+[)             | Yes (same keybinds)                   |
+| Startup cost                | Extension host process          | Node.js copilot agent                 |
+| Can disable per project     | Workspace settings              | Env var or `:Copilot disable`         |
 
 The biggest practical difference is that in VSCode, Copilot is always running
 in the background once installed. In Neovim with this config, it only runs when
@@ -469,6 +469,7 @@ or learning exercises where you want to work things out yourself.
 ### Troubleshooting Copilot
 
 **Suggestions aren't appearing:**
+
 1. Run `:Copilot status` — is it showing Ready?
 2. Are you in a filetype Copilot supports? (It works for most, but has a list)
 3. Is `auto_trigger = true` in your config? If not, press `Alt+\` to request
@@ -697,14 +698,14 @@ powerful feature that has no equivalent in VSCode's extension model.
 
 Inside a chat buffer, CodeCompanion supports slash commands that add context:
 
-| Command | What It Does |
-|---------|-------------|
-| `/buffer` | Include a specific buffer's contents |
-| `/file` | Include a file from the filesystem |
-| `/symbols` | Include LSP symbol information |
-| `/terminal` | Include the last terminal output |
-| `/help` | Show available commands |
-| `/clear` | Start a new conversation |
+| Command     | What It Does                         |
+| ----------- | ------------------------------------ |
+| `/buffer`   | Include a specific buffer's contents |
+| `/file`     | Include a file from the filesystem   |
+| `/symbols`  | Include LSP symbol information       |
+| `/terminal` | Include the last terminal output     |
+| `/help`     | Show available commands              |
+| `/clear`    | Start a new conversation             |
 
 Example: you're debugging a test failure. You want to include both the test
 file and the implementation file in your question:
@@ -750,17 +751,17 @@ will, but it often catches things you missed in your own review blindness.
 CodeCompanion is closest to GitHub Copilot Chat in VSCode, but with more
 flexibility:
 
-| Feature | VSCode Copilot Chat | CodeCompanion |
-|---------|---------------------|---------------|
-| Chat interface | Side panel | Neovim buffer (native) |
-| AI backend | GitHub Copilot (GPT-4) only | Copilot, Claude, OpenAI, Ollama, etc. |
-| Action palette | Yes | Yes |
-| Context inclusion | @file, @workspace | /file, /buffer, /symbols |
-| Inline changes | Yes (inline chat) | Yes |
-| Streaming responses | Yes | Yes |
-| Multiple backends at once | No | Yes (different per operation type) |
-| Works offline | No | Yes (with Ollama) |
-| Per-project config | Workspace settings | Lua config, env vars |
+| Feature                   | VSCode Copilot Chat         | CodeCompanion                         |
+| ------------------------- | --------------------------- | ------------------------------------- |
+| Chat interface            | Side panel                  | Neovim buffer (native)                |
+| AI backend                | GitHub Copilot (GPT-4) only | Copilot, Claude, OpenAI, Ollama, etc. |
+| Action palette            | Yes                         | Yes                                   |
+| Context inclusion         | @file, @workspace           | /file, /buffer, /symbols              |
+| Inline changes            | Yes (inline chat)           | Yes                                   |
+| Streaming responses       | Yes                         | Yes                                   |
+| Multiple backends at once | No                          | Yes (different per operation type)    |
+| Works offline             | No                          | Yes (with Ollama)                     |
+| Per-project config        | Workspace settings          | Lua config, env vars                  |
 
 The headline difference is backends. VSCode Copilot Chat is locked to GitHub's
 infrastructure. CodeCompanion lets you use whichever LLM you have access to —
@@ -988,15 +989,15 @@ edit, computes a diff, and shows you the result in a side-by-side panel:
 
 The key interactions in the diff panel:
 
-| Key | Action |
-|-----|--------|
-| `a` or `A` | Accept all changes |
-| `r` or `R` | Reject all changes |
-| `Tab` | Jump to next diff hunk |
-| `Shift+Tab` | Jump to previous diff hunk |
-| `a` on a hunk | Accept just this hunk |
-| `r` on a hunk | Reject just this hunk |
-| `q` | Close the panel without accepting |
+| Key           | Action                            |
+| ------------- | --------------------------------- |
+| `a` or `A`    | Accept all changes                |
+| `r` or `R`    | Reject all changes                |
+| `Tab`         | Jump to next diff hunk            |
+| `Shift+Tab`   | Jump to previous diff hunk        |
+| `a` on a hunk | Accept just this hunk             |
+| `r` on a hunk | Reject just this hunk             |
+| `q`           | Close the panel without accepting |
 
 The hunk-by-hunk accept/reject is the most powerful feature. If the AI made
 three changes and two are good but one is wrong, you can accept the two good
@@ -1038,14 +1039,14 @@ Cursor is an editor (not a plugin) built on VSCode's codebase with deep AI
 integration as its primary selling point. The Avante workflow is a Neovim
 implementation of Cursor's core interaction pattern.
 
-| Feature | Cursor | Avante |
-|---------|--------|--------|
-| Inline edit with diff | Yes | Yes |
-| Accept/reject hunks | Yes | Yes |
-| Provider flexibility | Limited | Claude, GPT-4, Gemini, etc. |
-| Works in existing editor | N/A (is the editor) | Yes (Neovim plugin) |
-| Compile required | No | Yes (Rust components) |
-| Keyboard-centric workflow | Partial | Full (Neovim) |
+| Feature                   | Cursor              | Avante                      |
+| ------------------------- | ------------------- | --------------------------- |
+| Inline edit with diff     | Yes                 | Yes                         |
+| Accept/reject hunks       | Yes                 | Yes                         |
+| Provider flexibility      | Limited             | Claude, GPT-4, Gemini, etc. |
+| Works in existing editor  | N/A (is the editor) | Yes (Neovim plugin)         |
+| Compile required          | No                  | Yes (Rust components)       |
+| Keyboard-centric workflow | Partial             | Full (Neovim)               |
 
 The philosophical difference: Cursor assumes AI assistance is the default mode
 of operation — the entire editor is designed around it. Avante assumes Neovim
@@ -1108,30 +1109,30 @@ reviewing and applying structured transformations.
 
 **Situation: I want to refactor this function but don't want to break anything**
 → Use **Avante**. Ask for the refactor, review the diff hunk by hunk, accept
-  what looks right.
+what looks right.
 
 **Situation: I want to generate a full test file for this module**
 → Use **CodeCompanion**. "Generate tests" action with the module file as context.
-  You'll probably iterate a few times in the chat.
+You'll probably iterate a few times in the chat.
 
 **Situation: I'm writing boilerplate (CRUD endpoints, form validation, etc.)**
 → Use **Copilot**. It's very good at boilerplate patterns.
 
 **Situation: I want to convert this synchronous code to async**
 → Use **Avante**. This is exactly the structured refactor scenario where diffs
-  are valuable.
+are valuable.
 
 **Situation: I'm stuck on a weird error and need to explain it**
 → Use **CodeCompanion**. Paste the error (or use `:CodeCompanionActions` →
-  "Explain LSP diagnostics"), and have a conversation about it.
+"Explain LSP diagnostics"), and have a conversation about it.
 
 **Situation: I'm in a flow state and want minimal distraction**
 → Use **Copilot only** (or disable all three). Ghost text is the least
-  disruptive because it doesn't require explicit commands or panels.
+disruptive because it doesn't require explicit commands or panels.
 
 **Situation: I'm working with proprietary code and can't send it to cloud APIs**
 → Use **CodeCompanion with Ollama** backend. Fully local, no data leaves your
-  machine.
+machine.
 
 ### Do They Conflict?
 
@@ -1151,21 +1152,21 @@ keybindings for any of the three, check for collisions with `:verbose map
 
 ### Feature Comparison Table
 
-| Feature | Copilot | CodeCompanion | Avante |
-|---------|---------|---------------|--------|
-| Inline ghost text | Yes | No | No |
-| Chat interface | No | Yes | Partial |
-| Action palette | No | Yes | No |
-| Diff preview before applying | No | No | Yes |
-| Hunk-level accept/reject | No | No | Yes |
-| Multiple AI backends | No | Yes | Yes |
-| Local AI (Ollama) | No | Yes | Yes |
-| Works without internet | No | With Ollama | With local |
-| Subscription required | Yes (Copilot) | Depends on backend | Depends |
-| Compile required | No | No | Yes (Rust) |
-| Startup cost | Medium (Node.js) | Low | Low (VeryLazy) |
-| Best for | Autocomplete | Chat + exploration | Structured refactors |
-| VSCode equivalent | Copilot inline | Copilot Chat | Cursor |
+| Feature                      | Copilot          | CodeCompanion      | Avante               |
+| ---------------------------- | ---------------- | ------------------ | -------------------- |
+| Inline ghost text            | Yes              | No                 | No                   |
+| Chat interface               | No               | Yes                | Partial              |
+| Action palette               | No               | Yes                | No                   |
+| Diff preview before applying | No               | No                 | Yes                  |
+| Hunk-level accept/reject     | No               | No                 | Yes                  |
+| Multiple AI backends         | No               | Yes                | Yes                  |
+| Local AI (Ollama)            | No               | Yes                | Yes                  |
+| Works without internet       | No               | With Ollama        | With local           |
+| Subscription required        | Yes (Copilot)    | Depends on backend | Depends              |
+| Compile required             | No               | No                 | Yes (Rust)           |
+| Startup cost                 | Medium (Node.js) | Low                | Low (VeryLazy)       |
+| Best for                     | Autocomplete     | Chat + exploration | Structured refactors |
+| VSCode equivalent            | Copilot inline   | Copilot Chat       | Cursor               |
 
 ---
 
@@ -1548,6 +1549,7 @@ rather than one tool exclusively. The most common combination that makes sense:
 **Copilot (inline) + CodeCompanion (chat, Claude or Ollama backend)**
 
 This gives you:
+
 - Ghost text autocomplete for the flow state / repetitive code scenarios
 - A flexible chat interface with the best available AI for complex questions
 - No redundancy (Copilot handles inline, CodeCompanion handles chat)
@@ -2061,6 +2063,7 @@ When Copilot suggests a completion, press `Ctrl+]` to dismiss it. Then press
 `Alt+\` to manually request a suggestion. Is it the same? Different?
 
 **Reflection questions:**
+
 - When was Copilot's suggestion accurate enough to accept immediately?
 - When did you need to dismiss and rethink?
 - Did the ghost text ever appear in a way that broke your concentration?
@@ -2124,7 +2127,7 @@ Use the `/file` slash command to include it:
 ```
 /file dotfiles/.config/nvim/lua/de100/plugins/blink-cmp.lua
 
-How does blink-cmp work alongside the copilot.lua plugin? Is there any 
+How does blink-cmp work alongside the copilot.lua plugin? Is there any
 connection between them?
 ```
 
@@ -2169,6 +2172,7 @@ Review what CodeCompanion produces. Does it cover edge cases? Are the tests
 idiomatic for the language?
 
 **Reflection questions:**
+
 - How does the `/file` slash command change the quality of the AI's response?
 - What makes visual selection important for targeted questions?
 - What did the AI get wrong or miss in the generated tests?
@@ -2232,9 +2236,9 @@ Write a simple but improvable function:
 
 ```javascript
 function getUserData(userId) {
-    var result = fetch('/api/users/' + userId)
-    var data = result.json()
-    return data
+  var result = fetch("/api/users/" + userId);
+  var data = result.json();
+  return data;
 }
 ```
 
@@ -2319,6 +2323,7 @@ lets you have a nuanced conversation about the tradeoffs. Neither tool is
 objectively better — they're different interaction modes for different needs.
 
 **Reflection questions:**
+
 - When was the diff preview genuinely useful compared to just applying the change?
 - Did you reject any hunks? What made them wrong?
 - How did the second `:AvanteEdit` compare to the first in terms of quality?
@@ -2409,5 +2414,5 @@ Ollama:
 
 ---
 
-*Next chapter: 12 · Debugging — DAP (Debug Adapter Protocol), breakpoints,
-stepping through code, and the REPL-in-your-editor workflow.*
+_Next chapter: 12 · Debugging — DAP (Debug Adapter Protocol), breakpoints,
+stepping through code, and the REPL-in-your-editor workflow._

@@ -55,21 +55,21 @@ Let that diagram sink in. Each branch has one or two tools that own it. You do n
 
 Here is the same information as a quick reference table:
 
-| Scenario | Command | Plugin |
-|---|---|---|
-| Quick search forward in file | `/pattern` | built-in |
-| Quick search backward in file | `?pattern` | built-in |
-| Search word under cursor forward | `*` | built-in |
-| Search word under cursor backward | `#` | built-in |
-| In-file find + replace | `:%s/old/new/g` | built-in |
-| Project-wide live grep | `<leader>pg` | Snacks.nvim |
-| Project-wide grep word under cursor | `<leader>pws` | Snacks.nvim |
-| Project-wide visual find + replace | `<leader>ps` | grug-far.nvim |
-| Project-wide replace word under cursor | `<leader>pS` | grug-far.nvim |
-| Browse all TODO comments | `<leader>pt` | todo-comments + Trouble |
-| Browse priority TODOs (FIXME/HACK) | `<leader>pT` | todo-comments + Trouble |
-| Jump to next TODO | `]t` | todo-comments |
-| Jump to previous TODO | `[t` | todo-comments |
+| Scenario                               | Command         | Plugin                  |
+| -------------------------------------- | --------------- | ----------------------- |
+| Quick search forward in file           | `/pattern`      | built-in                |
+| Quick search backward in file          | `?pattern`      | built-in                |
+| Search word under cursor forward       | `*`             | built-in                |
+| Search word under cursor backward      | `#`             | built-in                |
+| In-file find + replace                 | `:%s/old/new/g` | built-in                |
+| Project-wide live grep                 | `<leader>pg`    | Snacks.nvim             |
+| Project-wide grep word under cursor    | `<leader>pws`   | Snacks.nvim             |
+| Project-wide visual find + replace     | `<leader>ps`    | grug-far.nvim           |
+| Project-wide replace word under cursor | `<leader>pS`    | grug-far.nvim           |
+| Browse all TODO comments               | `<leader>pt`    | todo-comments + Trouble |
+| Browse priority TODOs (FIXME/HACK)     | `<leader>pT`    | todo-comments + Trouble |
+| Jump to next TODO                      | `]t`            | todo-comments           |
+| Jump to previous TODO                  | `[t`            | todo-comments           |
 
 Now let's go through each category in depth.
 
@@ -85,7 +85,7 @@ The `/` key puts you in search mode, going forward through the file:
 Normal mode → type / → type your pattern → press Enter
 ```
 
-The `?` key does the same thing but searches *backward* (upward in the file):
+The `?` key does the same thing but searches _backward_ (upward in the file):
 
 ```
 Normal mode → type ? → type your pattern → press Enter
@@ -314,6 +314,7 @@ Without a range, `:s` only substitutes on the current line.
 ```
 
 The visual selection range `'<,'>` is created automatically when you:
+
 1. Select some lines in Visual mode (V for linewise, v for characterwise)
 2. Press `:` — Neovim automatically fills in `'<,'>`
 
@@ -375,15 +376,15 @@ replace with newVariableName (y/n/a/q/l/^E/^Y)?
 
 Your options:
 
-| Key | Action |
-|---|---|
-| `y` | Yes — replace this match |
-| `n` | No — skip this match |
-| `a` | All — replace this and all remaining matches (no more prompts) |
-| `q` | Quit — stop here, don't replace anything more |
-| `l` | Last — replace this match, then quit |
-| `Ctrl-E` | Scroll screen up (to see context) |
-| `Ctrl-Y` | Scroll screen down (to see context) |
+| Key      | Action                                                         |
+| -------- | -------------------------------------------------------------- |
+| `y`      | Yes — replace this match                                       |
+| `n`      | No — skip this match                                           |
+| `a`      | All — replace this and all remaining matches (no more prompts) |
+| `q`      | Quit — stop here, don't replace anything more                  |
+| `l`      | Last — replace this match, then quit                           |
+| `Ctrl-E` | Scroll screen up (to see context)                              |
+| `Ctrl-Y` | Scroll screen down (to see context)                            |
 
 The `a` option is particularly useful: you start with `c` to check the first few matches and make sure the pattern is correct, then press `a` to replace everything else without reviewing each one.
 
@@ -439,6 +440,7 @@ Groups are defined with `\(` and `\)` (note the backslashes — this is Vim rege
 ```
 
 Let's read that substitution:
+
 - `\(\w\+\)` — group 1: one or more word characters
 - `, ` — literal comma and space
 - `\(\w\+\)` — group 2: one or more word characters
@@ -520,6 +522,7 @@ The solution: `\v` at the start of a pattern puts it in "very magic" mode, where
 ```
 
 In `\v` mode:
+
 - `(` and `)` are grouping (no backslash needed)
 - `+` is "one or more" (no backslash needed)
 - `?` is "optional" (no backslash needed)
@@ -582,12 +585,14 @@ When you press `<leader>ps`, a new panel opens that looks something like this:
 **Replace field:** Type the replacement text. Leave it empty to do a search-only operation (like grep). Fill it in to preview replacements. Backreferences work here: `$1`, `$2` for groups (because ripgrep uses PCRE syntax, not Vim regex).
 
 **Paths field:** Restrict the search to specific files or directories. Examples:
+
 - `src/` — only search in the `src` directory
 - `*.lua` — only `.lua` files
 - `src/ --type lua` — only `.lua` files inside `src/`
 - Leave blank to search the entire project
 
 **Flags field:** ripgrep flags passed directly. Common ones:
+
 - `--multiline` — allow patterns to span multiple lines
 - `--type lua` — restrict to lua files (cleaner than path glob)
 - `--type-not test` — exclude test files
@@ -684,6 +689,7 @@ When a search returns results, the grug-far panel shows something like:
 ```
 
 Before executing the replace, you can:
+
 - Scroll through the results carefully
 - Press `Enter` on any result to jump to that location and inspect it in context
 - Come back to grug-far and adjust the pattern if needed
@@ -728,6 +734,7 @@ When you press `<leader>pg`:
 ```
 
 The top bar is your input. As you type, results update in real time below. Results show:
+
 - File path
 - Line number
 - The matching line content (with your query highlighted)
@@ -751,6 +758,7 @@ Put your cursor on a function name, variable, or any identifier. Press `<leader>
 Snacks instantly searches for that exact word (with word boundaries, so `foo` won't match `foobar`) across your entire project. The results appear immediately.
 
 This is the "who uses this function?" shortcut. Much faster than:
+
 1. Copying the word
 2. Opening a search panel
 3. Pasting
@@ -795,9 +803,9 @@ Think of Snacks grep as "search and navigate" and grug-far as "search and transf
 
 ### 6.2 File Finding vs. Content Searching
 
-`<leader>ff` searches file *names* (and paths), not file *contents*. Type `Button` and you'll see `src/components/Button.tsx`, `src/stories/Button.stories.ts`, etc.
+`<leader>ff` searches file _names_ (and paths), not file _contents_. Type `Button` and you'll see `src/components/Button.tsx`, `src/stories/Button.stories.ts`, etc.
 
-`<leader>fg` and `<leader>fz` search file *contents*. The difference between the two:
+`<leader>fg` and `<leader>fz` search file _contents_. The difference between the two:
 
 - `<leader>fg` (live grep): exact substring/regex matching — what you type must literally appear in the file
 - `<leader>fz` (fuzzy grep): fuzzy matching — the characters you type can be spread out across the line, in order but not necessarily contiguous
@@ -863,6 +871,7 @@ The quickfix list is one of Neovim's oldest and most powerful features. It's a l
 The quickfix list lives independently of what buffer you're editing. You can populate it, then work through it at your own pace, jumping to each entry.
 
 Tools that populate the quickfix list:
+
 - `:vimgrep` (built-in grep)
 - `:grep` (external grep, uses ripgrep if configured)
 - Many LSP operations (go to all references, find all errors, etc.)
@@ -918,6 +927,7 @@ The `**/*` glob means "all files, recursively." The `**/*.lua` means "all `.lua`
 **Note:** `:vimgrep` is slower than ripgrep because it uses Neovim's built-in regex engine to read every file. For large projects, use `:grep` instead (which uses the external program defined in `grepprg`, usually ripgrep) or use Snacks grep for searching and then use `:cdo` on the resulting quickfix list.
 
 Using ripgrep as the grep program:
+
 ```vim
 " In your config (already set up if using a modern config):
 vim.opt.grepprg = "rg --vimgrep --smart-case"
@@ -940,6 +950,7 @@ vim.opt.grepformat = "%f:%l:%c:%m"
 ```
 
 The quickfix window is a regular Neovim buffer. In it:
+
 - Press `Enter` on an entry to jump to that location
 - Press `q` to close it
 - Each entry shows file, line number, and the matching text
@@ -949,6 +960,7 @@ The quickfix window is a regular Neovim buffer. In it:
 You can delete entries from the quickfix list that you don't want to process. With the quickfix window open, move your cursor to an entry and press `dd` — this removes it from the list (without affecting the actual file).
 
 This is useful when:
+
 - The grep found occurrences in generated/vendored files you want to skip
 - A few results are false positives and you only want to replace the rest
 - You've already handled some entries manually and want to work through the rest
@@ -971,9 +983,9 @@ You can delete a range too: `5,10dd` removes entries 5 through 10.
 
 This is the killer feature of the quickfix list for search-and-replace workflows.
 
-**`:cfdo {command}`** — run `{command}` once per *file* in the quickfix list.
+**`:cfdo {command}`** — run `{command}` once per _file_ in the quickfix list.
 
-**`:cdo {command}`** — run `{command}` once per *entry* in the quickfix list.
+**`:cdo {command}`** — run `{command}` once per _entry_ in the quickfix list.
 
 The practical difference:
 
@@ -1050,9 +1062,9 @@ Imagine you have 50 TypeScript files that all import from a moved module:
 
 ```typescript
 // Old:
-import { helper } from '../../shared/utils'
+import { helper } from "../../shared/utils";
 // New:
-import { helper } from '@shared/utils'
+import { helper } from "@shared/utils";
 ```
 
 ```vim
@@ -1179,6 +1191,7 @@ Opens a Trouble window at the bottom of your screen listing every `TODO`, `FIXME
 Same thing but filtered to show only `FIXME` and `HACK` entries. These are the ones that represent known problems or code debt — the things you want to clean up before shipping.
 
 In the Trouble window:
+
 - Navigate with `↑`/`↓` or `j`/`k`
 - Press `Enter` to jump to that location in the code
 - Press `q` or `<leader>xx` to close Trouble
@@ -1187,17 +1200,18 @@ In the Trouble window:
 
 Each keyword has a specific intended meaning. Using them consistently makes the codebase more readable and makes filtering (`<leader>pT` for priority) meaningful:
 
-| Keyword | Color | Meaning | When to Use |
-|---|---|---|---|
-| `TODO` | cyan/yellow | Work to do later | Feature not yet implemented, planned improvement |
-| `FIXME` | red | Broken/wrong | Actual bug, incorrect behavior, crash potential |
-| `HACK` | orange | Workaround | Works but not the right approach, tech debt |
-| `WARN` | orange | Danger | Side effects, gotchas, "don't touch this without reading X" |
-| `NOTE` | blue | Information | Non-obvious context, links to docs, decisions |
-| `PERF` | purple | Performance | Slow code that could be optimized |
-| `TEST` | green | Missing tests | Code that needs test coverage |
+| Keyword | Color       | Meaning          | When to Use                                                 |
+| ------- | ----------- | ---------------- | ----------------------------------------------------------- |
+| `TODO`  | cyan/yellow | Work to do later | Feature not yet implemented, planned improvement            |
+| `FIXME` | red         | Broken/wrong     | Actual bug, incorrect behavior, crash potential             |
+| `HACK`  | orange      | Workaround       | Works but not the right approach, tech debt                 |
+| `WARN`  | orange      | Danger           | Side effects, gotchas, "don't touch this without reading X" |
+| `NOTE`  | blue        | Information      | Non-obvious context, links to docs, decisions               |
+| `PERF`  | purple      | Performance      | Slow code that could be optimized                           |
+| `TEST`  | green       | Missing tests    | Code that needs test coverage                               |
 
 The distinction between `FIXME` and `HACK` is important:
+
 - `FIXME` = "this is broken, it needs to be fixed"
 - `HACK` = "this works, but it's not the right way to do it"
 
@@ -1269,10 +1283,12 @@ With `\v` (very magic mode):
 ```
 
 In `\v` mode, the rule is:
+
 - `(` and `)` → grouping (special)
 - `\(` and `\)` → literal parentheses
 
 In normal mode (without `\v`), the rule is:
+
 - `(` and `)` → literal parentheses
 - `\(` and `\)` → grouping (special)
 
@@ -1360,7 +1376,7 @@ The killer combo: search for what you want to change, then use `cgn` to change i
 5. Press `n` to jump to the next match
 6. Press `.` to repeat the change
 
-This is different from `:%s/oldName/newName/gc` in an important way: you can *skip* individual matches simply by pressing `n` again instead of `.`. You're using the undo-able `cgn` + `.` repeat pattern, which gives you fine-grained control without a confirmation prompt per match.
+This is different from `:%s/oldName/newName/gc` in an important way: you can _skip_ individual matches simply by pressing `n` again instead of `.`. You're using the undo-able `cgn` + `.` repeat pattern, which gives you fine-grained control without a confirmation prompt per match.
 
 Here's a visual walkthrough:
 
@@ -1379,6 +1395,7 @@ n              │          │  jump to fourth
 ```
 
 This is particularly useful when:
+
 - Most occurrences need to change but a few don't
 - You want to see each match in context before deciding
 - The pattern is complex enough that you want visual confirmation
@@ -1547,43 +1564,50 @@ The `:global` command deserves its own spotlight because it's a force multiplier
 :[range]g[lobal]/{pattern}/{command}
 ```
 
-It runs `{command}` on every line matching `{pattern}`. The command can be *any* Ex command — delete, substitute, normal mode command, yank, etc.
+It runs `{command}` on every line matching `{pattern}`. The command can be _any_ Ex command — delete, substitute, normal mode command, yank, etc.
 
 **Delete matching lines:**
+
 ```vim
 :g/TODO/d          ← delete every line with "TODO"
 ```
 
 **Yank all matching lines to a register:**
+
 ```vim
 :g/TODO/y A        ← append every TODO line to register a
 " Then paste them all: "ap
 ```
 
 **Run a normal mode command on matching lines:**
+
 ```vim
 :g/function/normal >>    ← indent every line containing "function"
 :g/^$/d                  ← delete all blank lines
 ```
 
 **Chain with substitute for conditional replacement:**
+
 ```vim
 :g/^export/s/function/const/
 " Only replaces "function" with "const" on lines that start with "export"
 ```
 
 **The inverted form `:v` (or `:g!`) runs on non-matching lines:**
+
 ```vim
 :v/^import/d             ← keep only lines starting with "import"
 :g!/NOTE/d               ← delete every line that does NOT contain "NOTE"
 ```
 
 This becomes extremely powerful when combined with visual selection:
+
 1. Select a block of code
 2. Press `:` (auto-fills `'<,'>`)
 3. Add `g/pattern/command`
 
 For example: in a selected block, delete all comment lines:
+
 ```vim
 :'<,'>g/^\s*--/d         ← delete all Lua comment lines in selection
 ```
@@ -1592,45 +1616,45 @@ For example: in a selected block, delete all comment lines:
 
 ## 10. Reference Table: All Search-Related Keybindings
 
-| Keybinding | Mode | Action | Plugin/Source |
-|---|---|---|---|
-| `/pattern` | Normal | Search forward | built-in |
-| `?pattern` | Normal | Search backward | built-in |
-| `n` | Normal | Next match (centered) | config: `nzzzv` |
-| `N` | Normal | Previous match (centered) | config: `Nzzzv` |
-| `*` | Normal | Search word under cursor, forward (exact) | built-in |
-| `#` | Normal | Search word under cursor, backward (exact) | built-in |
-| `g*` | Normal | Search word under cursor, forward (partial) | built-in |
-| `g#` | Normal | Search word under cursor, backward (partial) | built-in |
-| `<leader>nh` | Normal | Clear search highlights | config |
-| `gn` | Normal | Select next search match (text object) | built-in |
-| `cgn` | Normal | Change next search match | built-in |
-| `:%s/old/new/g` | Command | Replace all in file | built-in |
-| `:%s/old/new/gc` | Command | Replace with confirmation | built-in |
-| `:%s/old/new/gn` | Command | Count matches without replacing | built-in |
-| `:'<,'>s/old/new/g` | Command | Replace in visual selection | built-in |
-| `:vimgrep /pat/ glob` | Command | Search files → quickfix | built-in |
-| `:grep pat glob` | Command | External grep → quickfix | built-in (ripgrep) |
-| `:copen` | Command | Open quickfix window | built-in |
-| `:cclose` | Command | Close quickfix window | built-in |
-| `:cn` | Command | Next quickfix entry | built-in |
-| `:cp` | Command | Previous quickfix entry | built-in |
-| `:cfdo cmd` | Command | Run cmd on each file in quickfix | built-in |
-| `:cdo cmd` | Command | Run cmd on each entry in quickfix | built-in |
-| `:cfirst` | Command | Jump to first quickfix entry | built-in |
-| `:clast` | Command | Jump to last quickfix entry | built-in |
-| `<leader>pg` | Normal | Live grep project | snacks.nvim |
-| `<leader>pws` | Normal | Grep word under cursor | snacks.nvim |
-| `<leader>ps` | Normal | Open grug-far (project replace) | grug-far.nvim |
-| `<leader>pS` | Normal | Open grug-far with word under cursor | grug-far.nvim |
-| `<leader>ff` | Normal | Find files (fuzzy) | fff.nvim |
-| `<leader>fg` | Normal | Live grep (fff) | fff.nvim |
-| `<leader>fz` | Normal | Fuzzy grep | fff.nvim |
-| `<leader>fc` | Normal | Search current word (fff) | fff.nvim |
-| `<leader>pt` | Normal | Open Trouble: all TODOs | todo-comments + Trouble |
-| `<leader>pT` | Normal | Open Trouble: priority TODOs | todo-comments + Trouble |
-| `]t` | Normal | Jump to next TODO comment | todo-comments |
-| `[t` | Normal | Jump to previous TODO comment | todo-comments |
+| Keybinding            | Mode    | Action                                       | Plugin/Source           |
+| --------------------- | ------- | -------------------------------------------- | ----------------------- |
+| `/pattern`            | Normal  | Search forward                               | built-in                |
+| `?pattern`            | Normal  | Search backward                              | built-in                |
+| `n`                   | Normal  | Next match (centered)                        | config: `nzzzv`         |
+| `N`                   | Normal  | Previous match (centered)                    | config: `Nzzzv`         |
+| `*`                   | Normal  | Search word under cursor, forward (exact)    | built-in                |
+| `#`                   | Normal  | Search word under cursor, backward (exact)   | built-in                |
+| `g*`                  | Normal  | Search word under cursor, forward (partial)  | built-in                |
+| `g#`                  | Normal  | Search word under cursor, backward (partial) | built-in                |
+| `<leader>nh`          | Normal  | Clear search highlights                      | config                  |
+| `gn`                  | Normal  | Select next search match (text object)       | built-in                |
+| `cgn`                 | Normal  | Change next search match                     | built-in                |
+| `:%s/old/new/g`       | Command | Replace all in file                          | built-in                |
+| `:%s/old/new/gc`      | Command | Replace with confirmation                    | built-in                |
+| `:%s/old/new/gn`      | Command | Count matches without replacing              | built-in                |
+| `:'<,'>s/old/new/g`   | Command | Replace in visual selection                  | built-in                |
+| `:vimgrep /pat/ glob` | Command | Search files → quickfix                      | built-in                |
+| `:grep pat glob`      | Command | External grep → quickfix                     | built-in (ripgrep)      |
+| `:copen`              | Command | Open quickfix window                         | built-in                |
+| `:cclose`             | Command | Close quickfix window                        | built-in                |
+| `:cn`                 | Command | Next quickfix entry                          | built-in                |
+| `:cp`                 | Command | Previous quickfix entry                      | built-in                |
+| `:cfdo cmd`           | Command | Run cmd on each file in quickfix             | built-in                |
+| `:cdo cmd`            | Command | Run cmd on each entry in quickfix            | built-in                |
+| `:cfirst`             | Command | Jump to first quickfix entry                 | built-in                |
+| `:clast`              | Command | Jump to last quickfix entry                  | built-in                |
+| `<leader>pg`          | Normal  | Live grep project                            | snacks.nvim             |
+| `<leader>pws`         | Normal  | Grep word under cursor                       | snacks.nvim             |
+| `<leader>ps`          | Normal  | Open grug-far (project replace)              | grug-far.nvim           |
+| `<leader>pS`          | Normal  | Open grug-far with word under cursor         | grug-far.nvim           |
+| `<leader>ff`          | Normal  | Find files (fuzzy)                           | fff.nvim                |
+| `<leader>fg`          | Normal  | Live grep (fff)                              | fff.nvim                |
+| `<leader>fz`          | Normal  | Fuzzy grep                                   | fff.nvim                |
+| `<leader>fc`          | Normal  | Search current word (fff)                    | fff.nvim                |
+| `<leader>pt`          | Normal  | Open Trouble: all TODOs                      | todo-comments + Trouble |
+| `<leader>pT`          | Normal  | Open Trouble: priority TODOs                 | todo-comments + Trouble |
+| `]t`                  | Normal  | Jump to next TODO comment                    | todo-comments           |
+| `[t`                  | Normal  | Jump to previous TODO comment                | todo-comments           |
 
 ---
 
@@ -1708,12 +1732,15 @@ Press `Escape` then `:w` to save.
 **Tasks:**
 
 1. Run this command to count how many occurrences exist before doing anything:
+
    ```vim
    :%s/processData/handleInput/gn
    ```
+
    It should report "7 matches on 7 lines" (or similar) without changing anything.
 
 2. Now do the replacement with confirmation:
+
    ```vim
    :%s/processData/handleInput/gc
    ```
@@ -1728,9 +1755,11 @@ Press `Escape` then `:w` to save.
 8. Undo everything with `u` until you're back to all `processData`.
 
 9. Now try the replacement again, but use the `\v` very magic mode:
+
    ```vim
    :%s/\vprocessData(\w*)/handleInput\1/gc
    ```
+
    This pattern captures any suffix after `processData` (like if it was `processDataAsync`).
    The `\1` in the replacement preserves whatever was captured.
 
@@ -1755,6 +1784,7 @@ Press `Escape` then `:w` to save.
 **Tasks:**
 
 1. Open any `.lua` file in your Neovim config:
+
    ```vim
    :e ~/.config/nvim/lua/de100/plugins/trouble.lua
    ```
@@ -1775,6 +1805,7 @@ Press `Escape` then `:w` to save.
 6. Now close grug-far (press `q` in normal mode, or `:q`).
 
 7. Open a temporary directory and create multiple files for a safe practice environment:
+
    ```vim
    :!mkdir -p /tmp/grug_test
    :!echo "let userToken = 'abc'" > /tmp/grug_test/auth.js
@@ -1784,6 +1815,7 @@ Press `Escape` then `:w` to save.
    ```
 
 8. Change to that directory:
+
    ```vim
    :cd /tmp/grug_test
    ```
@@ -1824,20 +1856,24 @@ Press `Escape` then `:w` to save.
 **Tasks:**
 
 1. First, configure ripgrep as the grep program for this session (skip if already in your config):
+
    ```vim
    :set grepprg=rg\ --vimgrep\ --smart-case
    :set grepformat=%f:%l:%c:%m
    ```
 
 2. Search for `foo` across all JavaScript files:
+
    ```vim
    :grep foo *.js
    ```
 
 3. Open the quickfix window to see all results:
+
    ```vim
    :copen
    ```
+
    You should see entries from all three files.
 
 4. Navigate through the entries:
@@ -1846,33 +1882,42 @@ Press `Escape` then `:w` to save.
    - Use `:cn` and `:cp` to jump forward/back without leaving quickfix
 
 5. Close the quickfix window:
+
    ```vim
    :cclose
    ```
 
 6. Now do the actual replacement across all files in the quickfix list:
+
    ```vim
    :cfdo %s/\bfoo\b/bar/g | update
    ```
+
    The `\b` word boundaries (or use `\<foo\>` in Vim regex) ensure we match only the whole word `foo`, not substrings.
 
 7. After the command runs, open the quickfix window again:
+
    ```vim
    :copen
    ```
+
    The entries are still there (quickfix doesn't update until you re-run the search).
 
 8. Re-run the grep to verify the replacement worked:
+
    ```vim
    :grep foo *.js
    ```
+
    You should get zero results (or only results in comments if you have any).
 
 9. Now verify the replacement:
+
    ```vim
    :grep bar *.js
    :copen
    ```
+
    You should see all the original `foo` locations now showing `bar`.
 
 10. **Bonus:** Practice `:cdo` (per-entry, not per-file):
@@ -1952,9 +1997,11 @@ Press `Escape` and `:w` to save.
 2. Press `]t` to jump to the first TODO comment. Notice where it lands.
 
 3. Read the TODO. Now "fix" it by replacing the TODO with a NOTE that explains why you're deferring it:
+
    ```
    -- NOTE: input validation deferred to v2 spec (see issue #42)
    ```
+
    (In a real scenario you'd actually add validation code. Here we're practicing the navigation.)
 
 4. Press `]t` again to jump to the next TODO/comment. Keep going:
@@ -1971,9 +2018,11 @@ Press `Escape` and `:w` to save.
 7. Press `[t` to go backward through todos.
 
 8. Now open the Trouble TODO list to see the project overview:
+
    ```
    <leader>pt
    ```
+
    You should see a list of all remaining TODOs in the file (whatever you left in after your edits).
 
 9. Navigate the Trouble list with `j`/`k`, press `Enter` to jump to any entry.
@@ -1981,9 +2030,11 @@ Press `Escape` and `:w` to save.
 10. Close Trouble with `q`.
 
 11. Open the priority-only list:
+
     ```
     <leader>pT
     ```
+
     This should show only FIXMEs and HACKs — the ones that represent actual problems, not just future improvements.
 
 12. Make sure all FIXMEs are resolved (or converted to something lower-priority).
@@ -1997,17 +2048,20 @@ Press `Escape` and `:w` to save.
 You have now covered the full search and replace landscape in Neovim. Here's what you have in your toolkit:
 
 **For finding things:**
+
 - `/` and `?` for quick in-file search with regex support
 - `*` and `#` for instant "search this word" without typing
 - `<leader>pg` and `<leader>pws` for project-wide grep
 - `<leader>ff` for fuzzy file-name finding
 
 **For replacing things:**
+
 - `:%s/old/new/gc` for in-file replacement with confirmation
 - `<leader>ps` and `<leader>pS` for visual project-wide replacement with preview (grug-far)
 - `:cfdo %s/old/new/g | update` for batched replacement across many files
 
 **For tracking work:**
+
 - `]t` / `[t` for jumping between TODO comments
 - `<leader>pt` / `<leader>pT` for project-level TODO overview
 
@@ -2017,4 +2071,4 @@ Each of these tools does one job very well. Learning when to reach for which one
 
 ---
 
-*Next chapter: [06 · LSP, Diagnostics, and Code Intelligence →](./06-lsp-diagnostics.md)*
+_Next chapter: [06 · LSP, Diagnostics, and Code Intelligence →](./06-lsp-diagnostics.md)_

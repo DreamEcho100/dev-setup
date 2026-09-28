@@ -5,11 +5,15 @@ return {
         cmd = "GrugFar",
         opts = {headerMaxWidth = 80, startInInsertMode = true},
         keys = {
+            -- Keymap removed: 1:1 wrapper around `:GrugFar` with no prefill,
+            -- call it directly. (The prefill version below, <leader>pS, stays
+            -- since it does real work, not a bare passthrough.)
+            -- {
+            --     "<leader>ps",
+            --     "<cmd>GrugFar<CR>",
+            --     desc = "Search and replace project"
+            -- },
             {
-                "<leader>ps",
-                "<cmd>GrugFar<CR>",
-                desc = "Search and replace project"
-            }, {
                 "<leader>pS",
                 function()
                     require("grug-far").open({

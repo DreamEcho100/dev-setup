@@ -13,7 +13,9 @@ return {
         "folke/snacks.nvim" -- optional
     },
     cmd = "Neogit",
-    keys = {{"<leader>gn", "<cmd>Neogit<cr>", desc = "Show Neogit UI"}}
+    -- Keymap removed: 1:1 wrapper around `:Neogit`, already declared in `cmd`
+    -- above — just call it directly.
+    -- keys = {{"<leader>gn", "<cmd>Neogit<cr>", desc = "Show Neogit UI"}}
     -- opts = {
     --   integrations = {
     --     diffview = true,

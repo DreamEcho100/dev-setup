@@ -20,7 +20,7 @@ Neovim is different in a way that seems small at first but is actually enormous.
 - You can build your own keymaps that call Lua functions with complex logic.
 - You can write your own mini-plugins directly in your config without publishing anything.
 
-VSCode's extension system is powerful, but the *settings* layer is deliberately dumb. Neovim collapses that distinction. Your config *is* an extension, permanently loaded.
+VSCode's extension system is powerful, but the _settings_ layer is deliberately dumb. Neovim collapses that distinction. Your config _is_ an extension, permanently loaded.
 
 This also means the config in this repo is not sacred. It's not a product somebody sells you. It's a starting point, written by a real person, with real opinions, and you are expected to disagree with some of those opinions and change them. The directory structure has been deliberately designed to make those changes surgical — one file per plugin, a core directory for foundational settings, clear separation of concerns.
 
@@ -194,7 +194,7 @@ The order matters for a few practical reasons:
 1. Options are set before plugins load. This means if a plugin reads a vim option during setup, it gets the right value.
 2. Keymaps are set before plugins load. Plugin keymaps defined in `keys = {}` specs are registered lazily by lazy.nvim and don't conflict.
 3. `current-theme.lua` runs last, after all colorscheme plugins have been set up. If it ran before `de100.lazy`, the colorscheme plugin wouldn't be installed yet.
-4. `after/ftplugin/` files run *after* all of the above, triggered by filetype detection events. This is intentional — they override global settings with buffer-local ones.
+4. `after/ftplugin/` files run _after_ all of the above, triggered by filetype detection events. This is intentional — they override global settings with buffer-local ones.
 
 ### 2.3 VSCode Comparison
 
@@ -297,7 +297,7 @@ function() vim.cmd.write() end
 
 ### 3.3 The noremap and silent Explained
 
-**noremap = true** means your keymap can't be accidentally re-mapped by something else. Without it, if rhs is another key sequence, and *that* key sequence is also mapped to something, both mappings chain. That's almost never what you want. Always set `noremap = true` unless you explicitly need chaining.
+**noremap = true** means your keymap can't be accidentally re-mapped by something else. Without it, if rhs is another key sequence, and _that_ key sequence is also mapped to something, both mappings chain. That's almost never what you want. Always set `noremap = true` unless you explicitly need chaining.
 
 **silent = true** means when the keymap runs a command, the command string doesn't appear in the command line at the bottom of the screen. Without it, pressing `<Tab>` (mapped to `:bnext<CR>`) would flash `:bnext` in the command line for a fraction of a second. With `silent = true`, it's clean.
 
@@ -523,7 +523,7 @@ return {
 
 To change `<leader>ha` to `<leader>hA`, you edit the `keys` table directly in `lua/de100/plugins/harpoon.lua`. There's no need to override anywhere else.
 
-The `keys` table also tells lazy.nvim when to load the plugin. Until one of those key sequences is pressed, the plugin is *not loaded*. This is lazy loading — the plugin only initializes when you actually invoke it for the first time.
+The `keys` table also tells lazy.nvim when to load the plugin. Until one of those key sequences is pressed, the plugin is _not loaded_. This is lazy loading — the plugin only initializes when you actually invoke it for the first time.
 
 ### 4.4 Conflict Checking
 
@@ -551,6 +551,16 @@ The `:checkhealth` command also surfaces some keymap issues:
 
 which-key does its own conflict detection and reports it in `:checkhealth`.
 
+**Real example found in this config:** `plugins/snacks.lua` once registered
+`<leader>pr` twice in the same `keys` table — once for "Recent files" and once
+for "Explorer picker" — with the second silently shadowing the first. Around
+the same time, `plugins/markdown-preview.lua` bound `<leader>mp` to
+`:MarkdownPreviewToggle`, colliding with the global format keymap already
+using that key in `formatting.lua`. Both were only caught by actually reading
+every plugin spec's `keys` table side by side — exactly what `:Hawtkeys` and
+`:checkhealth which-key` are for. Run them periodically, especially after
+adding a new plugin.
+
 ### 4.5 When to Use vim.keymap.del()
 
 Sometimes you want to completely remove a keymap rather than replace it. `vim.keymap.del()` does this:
@@ -574,6 +584,48 @@ end
 ```
 
 The `pcall` wraps the delete in a protected call — if the keymap doesn't exist (maybe it's not created on every Neovim version), `pcall` swallows the error instead of crashing.
+
+### 4.6 The Ex-Command Test — When to Skip `keys` Entirely
+
+Not every plugin action deserves a dedicated keymap. Before adding one, ask:
+does this plugin already expose a `:PluginCommand` for the same action, and is
+the action rare or occasional rather than something you do dozens of times a
+session? If so, skip the keymap and just type the command.
+
+**Worked example: cmake-tools.nvim.** The plugin ships `:CMakeGenerate`,
+`:CMakeBuild`, `:CMakeRun`, `:CMakeTest`, `:CMakeClean`,
+`:CMakeSelectBuildTarget`, `:CMakeSelectBuildType`, and `:CMakeOpen` as real Ex
+commands. A previous version of `plugins/cmake-tools.lua` bound all eight to
+`<leader>mcm*` keys — but every single one was a bare `<cmd>CMake*<CR>`
+passthrough. There was nothing the keymap did that typing the command
+couldn't, and it cost a whole `<leader>mcm` which-key group for actions used
+maybe a few times per build, not per edit. Those keymaps are now commented out
+in place (not deleted — see the file for the exact reasoning per key); you
+build with `:CMakeBuild` instead.
+
+The same test was applied across this config and the same treatment (keymap
+commented out, Ex command used directly) was given to:
+
+- `clangd_extensions.nvim` — `:ClangdAST` / `:ClangdTypeHierarchy` /
+  `:ClangdSymbolInfo` / `:ClangdMemoryUsage` (exploratory, not everyday)
+- `diffview.nvim` — `:DiffviewOpen` / `:DiffviewClose` / `:DiffviewFileHistory`
+- `neogit` — `:Neogit`
+- `trouble.nvim` — `:Trouble diagnostics/quickfix/loclist/todo toggle`
+- `markdown-preview.nvim` — `:MarkdownPreviewToggle`
+- `undotree` — `:UndotreeToggle`
+- `showkeys` — `:ShowkeysToggle`
+- `vim-dadbod-ui` — `:DBUIToggle`
+- `overseer.nvim` (partially) — kept `<leader>tt` (Toggle, high-frequency),
+  dropped `<leader>tr`/`<leader>ta` for `:OverseerRun`/`:OverseerQuickAction`
+- `nvim-dap` (partially) — kept the F-key debug loop plus the leader-key
+  fallbacks that have no F-key twin or aren't Shift-key reliant, dropped the
+  leader-key duplicates of plain (non-Shift) F-keys
+
+The test does **not** apply to plugins whose API is Lua-function-only with no
+Ex command at all (`neotest`, `kulala.nvim`), or to high-frequency actions
+that genuinely need a fast key (gitsigns hunk stage/reset, LSP code actions).
+Skipping a keymap only makes sense when a working `:Command` already exists
+**and** the action is rare enough that typing it is no real cost.
 
 ---
 
@@ -675,6 +727,7 @@ return {
 ```
 
 **Use `config`** when you need to do more than just call setup:
+
 - Run code after setup (like setting keymaps)
 - Conditionally modify the opts table
 - Set up multiple components of the plugin
@@ -812,6 +865,7 @@ After adding a new plugin file, open Neovim and run:
 ```
 
 This command:
+
 1. Reads all plugin specs
 2. Installs any missing plugins
 3. Updates plugins that need updating
@@ -967,7 +1021,7 @@ When Neovim opens a file and detects its filetype, it automatically sources the 
 - Open `main.go` → `after/ftplugin/go.lua` is sourced
 - Open `script.py` → `after/ftplugin/python.lua` is sourced
 
-The `after/` prefix means these files are sourced *after* any filetype plugins from plugins (including plugins installed by lazy.nvim). This is important: your settings get the last word, overriding any defaults set by plugins.
+The `after/` prefix means these files are sourced _after_ any filetype plugins from plugins (including plugins installed by lazy.nvim). This is important: your settings get the last word, overriding any defaults set by plugins.
 
 This is similar to VSCode's per-language settings syntax:
 
@@ -1107,16 +1161,19 @@ formatoptions   string   Controls auto-formatting behavior
 ```
 
 The `formatoptions` string is especially powerful. The default includes `c`, `r`, `o` which means:
+
 - `c`: auto-wrap comments
 - `r`: auto-insert comment leader on Enter
 - `o`: auto-insert comment leader on `o`/`O`
 
 The global options.lua already removes these:
+
 ```lua
 opt.formatoptions:remove({'c', 'r', 'o'})
 ```
 
 But you might want to add them back for specific languages:
+
 ```lua
 -- In after/ftplugin/markdown.lua
 -- Add "t" (auto-wrap text) for prose writing
@@ -1133,16 +1190,19 @@ Neovim detects filetypes through these mechanisms, in priority order:
 4. Manual override with `:set ft=` or `vim.bo.filetype =`
 
 To check the current filetype:
+
 ```vim
 :set ft?
 ```
 
 To force a filetype for the current buffer:
+
 ```vim
 :set ft=javascript
 ```
 
 To make it permanent for a specific file pattern, add to options.lua:
+
 ```lua
 vim.filetype.add({
     extension = {
@@ -1429,6 +1489,7 @@ export default function UserCard({ [props] }: UserCardProps) {
 9. Continue until all nodes are filled
 
 If the snippet doesn't appear in the completion popup:
+
 - Check that the filetype is correct: `:set ft?`
 - Check that the trigger is right (remember the `;` prefix)
 - Check for Lua errors: `:messages`
@@ -1510,6 +1571,7 @@ Save the file, restart Neovim (or source the file with `:luafile ~/.config/nvim/
 Why is this a separate file rather than a setting in `options.lua`? Because options.lua runs early, before plugins are loaded. Colorscheme plugins aren't available yet. `current-theme.lua` runs last in `init.lua`, after `require("de100.lazy")` has loaded all plugins. So the colorscheme plugin is guaranteed to be available when this file runs.
 
 The loading chain in `init.lua`:
+
 ```lua
 require("de100.core")    -- options + keymaps (no plugin needed here)
 require("de100.lazy")    -- installs and loads plugins including colorschemes
@@ -1517,6 +1579,7 @@ require("current-theme") -- safe to set colorscheme NOW
 ```
 
 Notice `options.lua` also sets a fallback:
+
 ```lua
 vim.cmd('colorscheme default')
 ```
@@ -1597,6 +1660,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 The `ColorScheme` autocommand fires whenever a colorscheme is activated, including at startup when `current-theme.lua` runs. Your overrides apply on top of the theme.
 
 `vim.api.nvim_set_hl(0, name, attrs)`:
+
 - `0` means the global namespace
 - `name` is the highlight group name (get them with `:Telescope highlights`)
 - `attrs` is a table with `fg`, `bg`, `bold`, `italic`, `underline`, `link`, etc.
@@ -1782,8 +1846,9 @@ Groups nest. If you have:
 ```
 
 And keymaps like:
+
 - `<leader>gs` — git status
-- `<leader>gc` — git commit  
+- `<leader>gc` — git commit
 - `<leader>gd` — git diff
 
 They all appear under the "git" header when you press `<leader>g`.
@@ -1814,35 +1879,43 @@ After adding the group, define the actual keymaps in `keymaps.lua` (or wherever 
 Here's every group in the current config with a brief description of what lives under each:
 
 ```
-Prefix      Group             What's There
-──────────  ────────────────  ────────────────────────────────────────────
-<leader>b   buffers           bdelete, bnext, bprev, new buffer
-<leader>c   code              LSP code actions, whitespace cleanup
-<leader>d   diagnostics/debug DAP debugger, diagnostic open/close
-<leader>e   explorer          mini.files, oil, file tree toggles
-<leader>f   file              copy file path, format, save without autoformat
-<leader>g   git               gitsigns, neogit, diffview, worktree
-<leader>h   harpoon           add, navigate, menu
-<leader>H   http/rest         kulala HTTP client
-<leader>l   lsp/lint          lint run, diagnostics toggle
-<leader>m   make/format       format buffer, tasks
-<leader>p   pick/search       telescope pickers (files, grep, buffers, etc.)
-<leader>r   rename/refactor   LSP rename, refactor operations
-<leader>s   splits/session    split management, auto-session
-<leader>t   tabs/tests/tasks  tab management, neotest, task runner
-<leader>u   ui/toggles        various UI toggles
-<leader>v   view/help         view help, documentation
-<leader>w   workspace/session LSP workspace, session management
-<leader>x   trouble/lists     trouble.nvim diagnostics list, location list
-<leader>y   yank              yanky history, clipboard operations
-<leader>k   keys/show         hawtkeys, showkeys, which-key
+Prefix        Group             What's There
+────────────  ────────────────  ────────────────────────────────────────────
+<leader>b     buffers           bdelete, bnext, bprev, new buffer
+<leader>c     code              LSP code actions, whitespace cleanup
+<leader>d     diagnostics/debug diagnostic open/close
+<leader>dap   debug/dap         nvim-dap leader-key fallbacks (see 4.6)
+<leader>e     explorer          mini.files, oil, file tree toggles
+<leader>f     file              copy file path, format, save without autoformat
+<leader>g     git               gitsigns, fugitive, neogit, diffview
+<leader>h     harpoon           add, navigate, menu
+<leader>H     http/rest         kulala HTTP client
+<leader>j     jupyter/notebook  molten cell run/nav (see tutorial 21)
+<leader>l     lsp/lint          lint run, diagnostics toggle
+<leader>lspc  lsp/clangd        clangd_extensions (source/header switch)
+<leader>m     make/cmake/format format buffer, tasks
+<leader>p     pick/search       snacks pickers (files, grep, buffers, etc.)
+<leader>r     rename/refactor   LSP rename, refactor operations
+<leader>s     splits/session    split management, search & replace
+<leader>t     tabs/tests/tasks  tab management, neotest, task runner
+<leader>u     ui/toggles        various UI toggles
+<leader>v     view/help         view help, documentation
+<leader>w     workspace/session LSP workspace, session management
+<leader>y     yank              yanky history, clipboard operations
 ```
+
+Note: `mcm` (cmake), `x` (trouble/lists), and `k` (keys/show) used to be
+separate groups here. Their member keymaps were commented out per the
+Ex-command test in 4.6 (call `:CMake*`, `:Trouble ...`, `:ShowkeysToggle`
+directly instead), so those groups have no members left and were removed from
+`which-key.lua`.
 
 ### 11.4 Naming Conventions
 
 The groups in this config follow a consistent pattern: the group label describes what the key category does, often with a `/` joining two related themes when there's overlap. For example, `"lsp/lint"` under `<leader>l` because both LSP commands and lint commands start with `l` and are conceptually related.
 
 When you add your own group, use the same format:
+
 - Short (1-2 words)
 - Lowercase
 - Slash-separated for dual-purpose groups
@@ -1895,6 +1968,7 @@ Open any plugin file in `lua/de100/plugins/` and you'll notice the first or seco
 This is a deliberate navigation aid. When you're editing code and encounter a plugin you don't understand, the comment tells you exactly which tutorial covers it. You can follow the path to the tutorial file in this repo, read it, and come back to the plugin file with context.
 
 For example:
+
 - `which-key.lua` points to `02-the-vscode-translator.md`
 - `luasnip.lua` points to `07-lsp-and-completions.md`
 - `telescope.lua` points to `05-search-and-replace.md`
@@ -1930,6 +2004,7 @@ Practice is how settings become second nature. Work through each exercise before
 **Where to add it:** `lua/de100/core/keymaps.lua`
 
 **Hints:**
+
 - Use `vim.fn.stdpath("config")` to get the config path instead of hardcoding `~/.config/nvim`
 - Use `vim.cmd("vsplit " .. path)` to open in a vertical split
 - Add a `desc` so it shows in which-key
@@ -1945,11 +2020,13 @@ Practice is how settings become second nature. Work through each exercise before
 **Goal:** Create `after/ftplugin/python.lua` with Python-correct settings.
 
 **Python conventions:**
+
 - 4-space indentation (PEP 8)
 - Maximum line length 88 (Black formatter default) or 79 (PEP 8 strict)
 - Spaces, not tabs
 
 **Requirements:**
+
 1. Set tabstop, shiftwidth, softtabstop to 4
 2. Set expandtab to true (Python requires spaces)
 3. Set colorcolumn to "88"
@@ -1966,6 +2043,7 @@ Practice is how settings become second nature. Work through each exercise before
 **The snippet trigger:** `;dclass`
 
 **What it should expand to:**
+
 ```python
 from dataclasses import dataclass
 
@@ -1975,12 +2053,14 @@ class ClassName:
 ```
 
 **Requirements:**
+
 1. The class name should be an insert node (i(1))
 2. The field name should be an insert node (i(2))
 3. The field type should be an insert node (i(3))
 4. The default value should be an insert node (i(4))
 
 **Hints:**
+
 - Use `t({"line1", "line2"})` for multi-line text nodes
 - Use `\t` for tab characters in the strings
 - Don't forget to return the table from the file
@@ -1994,12 +2074,14 @@ class ClassName:
 **Goal:** Identify a plugin in the config you don't use and disable it properly.
 
 **Steps:**
+
 1. Browse the plugins directory: `ls ~/.config/nvim/lua/de100/plugins/`
 2. Pick a plugin that seems unnecessary for your workflow (suggestions: `qmk.lua` if you don't use QMK keyboards, `kubectl.lua` if you don't work with Kubernetes, `kulala.lua` if you don't make HTTP requests)
 3. Add `enabled = false` to the plugin spec in that file
 4. Run `:Lazy sync` and verify the plugin is no longer in the list
 
 **Bonus:** Add a comment explaining why you disabled it:
+
 ```lua
 return {
     "some/plugin",
@@ -2019,6 +2101,7 @@ return {
 **Steps:**
 
 1. Add to `which-key.lua` spec:
+
    ```lua
    {"<leader>n", group = "notes"},
    ```
@@ -2043,6 +2126,7 @@ return {
 3. Create `~/notes/` and `~/notes/daily/` directories so the keymaps work.
 
 **Verification:**
+
 - Press `<leader>n` and pause: which-key should show the "notes" group header
 - `<leader>ni` opens `~/notes/index.md`
 - `<leader>nd` opens today's dated note in `~/notes/daily/YYYY-MM-DD.md`

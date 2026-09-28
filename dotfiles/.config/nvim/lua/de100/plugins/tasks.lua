@@ -9,9 +9,13 @@ return {
     },
     opts = { templates = { "builtin" } },
     keys = {
-        { "<leader>tr", "<cmd>OverseerRun<CR>", desc = "Run task" },
+        -- Removed: <leader>tr and <leader>ta are 1:1 wrappers around
+        -- :OverseerRun / :OverseerQuickAction, both already declared in `cmd`
+        -- above — call them directly. Kept <leader>tt (Toggle) since it's the
+        -- high-frequency "check task status" action.
+        -- { "<leader>tr", "<cmd>OverseerRun<CR>", desc = "Run task" },
         { "<leader>tt", "<cmd>OverseerToggle<CR>", desc = "Toggle tasks" },
-        { "<leader>ta", "<cmd>OverseerQuickAction<CR>", desc = "Task action" },
+        -- { "<leader>ta", "<cmd>OverseerQuickAction<CR>", desc = "Task action" },
     },
     config = function(_, opts)
         local overseer = require("overseer")

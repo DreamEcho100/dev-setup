@@ -60,14 +60,17 @@ return {
             end,
             desc = "Debug: Toggle UI",
         },
-        {
-            "<leader>dapc",
-            function()
-                require("dap").continue()
-            end,
-            desc = "Debug: Start/continue",
-        },
-        { "<leader>dapn", "<cmd>DapNew<cr>", desc = "Debug: New session" },
+        -- Removed: duplicate of <F5> above, same action, no Shift-key
+        -- reliability issue for this one — call <F5> instead.
+        -- {
+        --     "<leader>dapc",
+        --     function()
+        --         require("dap").continue()
+        --     end,
+        --     desc = "Debug: Start/continue",
+        -- },
+        -- Removed: 1:1 wrapper around `:DapNew`, already an Ex command.
+        -- { "<leader>dapn", "<cmd>DapNew<cr>", desc = "Debug: New session" },
         {
             "<leader>dapx",
             function()
@@ -82,20 +85,22 @@ return {
             end,
             desc = "Debug: Run last",
         },
-        {
-            "<leader>dapo",
-            function()
-                require("dap").step_over()
-            end,
-            desc = "Debug: Step over",
-        },
-        {
-            "<leader>dapi",
-            function()
-                require("dap").step_into()
-            end,
-            desc = "Debug: Step into",
-        },
+        -- Removed: duplicate of <F10> above, works fine without Shift.
+        -- {
+        --     "<leader>dapo",
+        --     function()
+        --         require("dap").step_over()
+        --     end,
+        --     desc = "Debug: Step over",
+        -- },
+        -- Removed: duplicate of <F11> above, works fine without Shift.
+        -- {
+        --     "<leader>dapi",
+        --     function()
+        --         require("dap").step_into()
+        --     end,
+        --     desc = "Debug: Step into",
+        -- },
         {
             "<leader>dapO",
             function()
@@ -117,13 +122,14 @@ return {
             end,
             desc = "Debug: Nearest test",
         },
-        {
-            "<leader>daptb",
-            function()
-                require("dap").toggle_breakpoint()
-            end,
-            desc = "Debug: Toggle breakpoint",
-        },
+        -- Removed: duplicate of <F9> above, works fine without Shift.
+        -- {
+        --     "<leader>daptb",
+        --     function()
+        --         require("dap").toggle_breakpoint()
+        --     end,
+        --     desc = "Debug: Toggle breakpoint",
+        -- },
         {
             "<leader>dapb",
             function()
@@ -153,13 +159,14 @@ return {
             mode = { "n", "v" },
             desc = "Debug: Evaluate",
         },
-        {
-            "<leader>dapu",
-            function()
-                require("dapui").toggle()
-            end,
-            desc = "Debug: Toggle UI",
-        },
+        -- Removed: duplicate of <F7> above, works fine without Shift.
+        -- {
+        --     "<leader>dapu",
+        --     function()
+        --         require("dapui").toggle()
+        --     end,
+        --     desc = "Debug: Toggle UI",
+        -- },
         {
             "<leader>dapq",
             function()
@@ -174,7 +181,8 @@ return {
             end,
             desc = "Debug: Clear breakpoints",
         },
-        { "<leader>daph", "<cmd>De100DapHealth<cr>", desc = "Debug: Health" },
+        -- Removed: 1:1 wrapper around `:De100DapHealth`, already an Ex command.
+        -- { "<leader>daph", "<cmd>De100DapHealth<cr>", desc = "Debug: Health" },
         {
             "<leader>dapP",
             function()

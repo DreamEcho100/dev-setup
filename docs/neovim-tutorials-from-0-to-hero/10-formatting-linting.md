@@ -342,6 +342,12 @@ Several things here worth understanding carefully:
   (it always formats the whole file). conform handles this gracefully; if the
   formatter doesn't support ranges, it falls back to whole-file formatting.
 
+> **Note:** `markdown-preview.nvim` used to bind this exact same key
+> (`<leader>mp`) to `:MarkdownPreviewToggle`, silently colliding with this
+> global format keymap. That competing binding has been commented out (see
+> `plugins/markdown-preview.lua`) specifically to resolve the conflict —
+> markdown preview is now opened by typing `:MarkdownPreviewToggle` directly.
+
 **`async = false`** means the format call blocks. The function doesn't return until
 formatting completes or the timeout expires. This is intentional for the manual
 trigger — you want to see the formatted result before your next keystroke.

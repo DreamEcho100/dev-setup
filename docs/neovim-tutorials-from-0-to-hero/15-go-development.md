@@ -244,18 +244,18 @@ Typical workflow:
 
 The debugger is Delve through `nvim-dap-go`.
 
-| Action                | Key             |
-| --------------------- | --------------- |
-| Start/continue        | `F5`            |
-| Stop                  | `Shift+F5`      |
-| Step over             | `F10`           |
-| Step into             | `F11`           |
-| Step out              | `Shift+F11`     |
+| Action                | Key                     |
+| --------------------- | ----------------------- |
+| Start/continue        | `F5`                    |
+| Stop                  | `Shift+F5`              |
+| Step over             | `F10`                   |
+| Step into             | `F11`                   |
+| Step out              | `Shift+F11`             |
 | Toggle breakpoint     | `F9` or `<leader>daptb` |
-| Debug nearest Go test | `<leader>dapt`  |
-| Rerun last session    | `<leader>dapl`  |
-| Toggle debug UI       | `F7` or `<leader>dapu` |
-| Inspect DAP setup     | `<leader>daph`  |
+| Debug nearest Go test | `<leader>dapt`          |
+| Rerun last session    | `<leader>dapl`          |
+| Toggle debug UI       | `F7` or `<leader>dapu`  |
+| Inspect DAP setup     | `<leader>daph`          |
 
 Beginner debugging flow:
 

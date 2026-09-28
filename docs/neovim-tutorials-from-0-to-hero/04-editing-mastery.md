@@ -28,7 +28,7 @@
 
 ## 1. The Vim Language — The Big Idea
 
-Before we dive into specific keys, you need to understand *why* Vim editing feels so different from every other editor. It is not just that Vim has more shortcuts. It is that Vim editing is a **composable language**.
+Before we dive into specific keys, you need to understand _why_ Vim editing feels so different from every other editor. It is not just that Vim has more shortcuts. It is that Vim editing is a **composable language**.
 
 In VSCode, editing is a fixed menu of commands:
 
@@ -75,7 +75,7 @@ The rest of this tutorial will teach you the vocabulary — operators, text obje
 
 ## 2. Operators — The Verbs
 
-Operators are things you *do* to text. They always require a motion or text object to define what they act on. Most operators also work in visual mode, where the selection defines the target.
+Operators are things you _do_ to text. They always require a motion or text object to define what they act on. Most operators also work in visual mode, where the selection defines the target.
 
 ### Core Operators
 
@@ -176,7 +176,7 @@ This is a powerful escape hatch — you can run any Unix command on a selection 
 
 ## 3. Text Objects — The Nouns
 
-Text objects are Vim's secret weapon. They define *what* an operator acts on — not just "from here to there" (a motion), but "this semantic unit of text" regardless of where the cursor is inside it.
+Text objects are Vim's secret weapon. They define _what_ an operator acts on — not just "from here to there" (a motion), but "this semantic unit of text" regardless of where the cursor is inside it.
 
 ### Inner vs Around (i vs a)
 
@@ -303,7 +303,7 @@ Your config includes `mini.ai` which extends text objects with `in` (next) and `
   dil"  = delete inside LAST (previous) double quotes
 ```
 
-This is enormous. Without `mini.ai`, text objects only work when the cursor is already inside the delimiter. With `mini.ai`, you can target the *nearest* delimiter in either direction. Very useful when your cursor is between two quoted strings and you want to change the one to the right without moving there first.
+This is enormous. Without `mini.ai`, text objects only work when the cursor is already inside the delimiter. With `mini.ai`, you can target the _nearest_ delimiter in either direction. Very useful when your cursor is between two quoted strings and you want to change the one to the right without moving there first.
 
 ```
   const a = "first string", b = "second string";
@@ -319,7 +319,7 @@ This is enormous. Without `mini.ai`, text objects only work when the cursor is a
 
 ## 4. mini.surround — Wrap Everything
 
-mini.surround adds operations for the *surroundings* of text — the quotes, parens, braces, brackets, and HTML tags that wrap expressions.
+mini.surround adds operations for the _surroundings_ of text — the quotes, parens, braces, brackets, and HTML tags that wrap expressions.
 
 ### The mini.surround Keys (This Config)
 
@@ -451,6 +451,7 @@ Sometimes you want to navigate to a surrounding without changing it:
 ### VSCode Equivalent
 
 The closest VSCode has is:
+
 - Emmet's "Wrap with Abbreviation" (`Ctrl+Shift+P` → search "Emmet: Wrap") — but only works for HTML/JSX
 - The Vim extension's `ys`/`ds`/`cs` commands if you are using vim-surround
 
@@ -574,7 +575,7 @@ Or use a named register:
   "ap     = paste from register 'a' (untouched by the deletes)
 ```
 
-### The Black Hole Register — "_
+### The Black Hole Register — "\_
 
 Your config maps `x` (delete character) to `"_x` — it sends the deleted character to the black hole register, so single character deletions do not pollute your clipboard.
 
@@ -765,7 +766,7 @@ All of these can be repeated with `.`.
 
 Expert Vim users design their changes to be repeatable. The "dot formula":
 
-1. Make a change that is *general enough* to work at the next occurrence
+1. Make a change that is _general enough_ to work at the next occurrence
 2. Navigate to the next occurrence (using a motion, not undo)
 3. Press `.`
 
@@ -914,6 +915,7 @@ Result:
 **Recursive macros** (advanced): clear register first with `qaq` (record nothing), then record a macro that calls itself: `qaYou can 0...@aq`. The macro plays until it hits an error (like reaching the end of the file).
 
 **Edit a macro**: macros are stored in registers. To edit macro 'a':
+
 ```
   "ap     = paste the macro contents as text
             (edit the text)
@@ -1006,7 +1008,7 @@ The key advantage of Neovim's multicursor over VSCode's: every Vim operator and 
 
 ## 11. Comments — comment.nvim
 
-comment.nvim handles line and block comments, and it is aware of the current file's language so it uses the right comment syntax automatically (` // ` for TypeScript, `#` for Python, `--` for SQL, etc.).
+comment.nvim handles line and block comments, and it is aware of the current file's language so it uses the right comment syntax automatically (`//` for TypeScript, `#` for Python, `--` for SQL, etc.).
 
 ### Line Comment Toggle
 
@@ -1274,122 +1276,122 @@ VSCode's Tab/Shift+Tab indent works similarly but you lose the selection after T
 
 ### Operators
 
-| Key | Name | Description |
-|-----|------|-------------|
-| `d` | delete | Delete text, put in register |
-| `c` | change | Delete text + enter Insert mode |
-| `y` | yank | Copy text to register |
-| `v` | visual | Enter charwise visual mode |
-| `V` | visual line | Enter linewise visual mode |
-| `Ctrl+V` | visual block | Enter blockwise visual mode |
-| `g~` | swap case | Toggle case of text |
-| `gu` | lowercase | Make text lowercase |
-| `gU` | uppercase | Make text uppercase |
-| `=` | auto-indent | Apply smart indentation |
-| `<` | dedent | Shift text left |
-| `>` | indent | Shift text right |
-| `!` | filter | Pipe text through shell command |
+| Key      | Name         | Description                     |
+| -------- | ------------ | ------------------------------- |
+| `d`      | delete       | Delete text, put in register    |
+| `c`      | change       | Delete text + enter Insert mode |
+| `y`      | yank         | Copy text to register           |
+| `v`      | visual       | Enter charwise visual mode      |
+| `V`      | visual line  | Enter linewise visual mode      |
+| `Ctrl+V` | visual block | Enter blockwise visual mode     |
+| `g~`     | swap case    | Toggle case of text             |
+| `gu`     | lowercase    | Make text lowercase             |
+| `gU`     | uppercase    | Make text uppercase             |
+| `=`      | auto-indent  | Apply smart indentation         |
+| `<`      | dedent       | Shift text left                 |
+| `>`      | indent       | Shift text right                |
+| `!`      | filter       | Pipe text through shell command |
 
 ### Text Objects (i = inner, a = around)
 
-| Object | Description |
-|--------|-------------|
-| `iw` / `aw` | inner/around word |
-| `iW` / `aW` | inner/around WORD |
-| `is` / `as` | inner/around sentence |
-| `ip` / `ap` | inner/around paragraph |
-| `i"` / `a"` | inner/around double quotes |
-| `i'` / `a'` | inner/around single quotes |
-| `` i` `` / `` a` `` | inner/around backticks |
-| `i(` / `a(` | inner/around parens (also `ib`/`ab`) |
-| `i{` / `a{` | inner/around braces (also `iB`/`aB`) |
-| `i[` / `a[` | inner/around brackets |
-| `i<` / `a<` | inner/around angle brackets |
-| `it` / `at` | inner/around HTML/JSX tag |
-| `in(` | inner NEXT parens (mini.ai) |
-| `il"` | inner LAST quotes (mini.ai) |
+| Object              | Description                          |
+| ------------------- | ------------------------------------ |
+| `iw` / `aw`         | inner/around word                    |
+| `iW` / `aW`         | inner/around WORD                    |
+| `is` / `as`         | inner/around sentence                |
+| `ip` / `ap`         | inner/around paragraph               |
+| `i"` / `a"`         | inner/around double quotes           |
+| `i'` / `a'`         | inner/around single quotes           |
+| `` i` `` / `` a` `` | inner/around backticks               |
+| `i(` / `a(`         | inner/around parens (also `ib`/`ab`) |
+| `i{` / `a{`         | inner/around braces (also `iB`/`aB`) |
+| `i[` / `a[`         | inner/around brackets                |
+| `i<` / `a<`         | inner/around angle brackets          |
+| `it` / `at`         | inner/around HTML/JSX tag            |
+| `in(`               | inner NEXT parens (mini.ai)          |
+| `il"`               | inner LAST quotes (mini.ai)          |
 
 ### mini.surround
 
-| Key | Description |
-|-----|-------------|
-| `sa{motion}{char}` | Add surrounding |
-| `ds{char}` | Delete surrounding |
-| `cs{old}{new}` | Change surrounding |
-| `sf{char}` | Find surrounding right |
-| `sF{char}` | Find surrounding left |
-| `sh{char}` | Highlight surrounding |
+| Key                | Description            |
+| ------------------ | ---------------------- |
+| `sa{motion}{char}` | Add surrounding        |
+| `ds{char}`         | Delete surrounding     |
+| `cs{old}{new}`     | Change surrounding     |
+| `sf{char}`         | Find surrounding right |
+| `sF{char}`         | Find surrounding left  |
+| `sh{char}`         | Highlight surrounding  |
 
 ### yanky.nvim
 
-| Key | Description |
-|-----|-------------|
-| `y` | Yank (adds to ring) |
-| `p` | Put after cursor |
-| `P` | Put before cursor |
-| `gp` | Put after, cursor moves past |
-| `gP` | Put before, cursor moves past |
-| `[y` | Cycle ring forward (older yank) |
-| `]y` | Cycle ring backward |
-| `[p` / `]p` | Put with indent adjustment |
-| `>p` / `<p` | Put and indent right/left |
-| `=p` / `=P` | Put and auto-format |
-| `<leader>y` | Open yank history picker |
+| Key         | Description                     |
+| ----------- | ------------------------------- |
+| `y`         | Yank (adds to ring)             |
+| `p`         | Put after cursor                |
+| `P`         | Put before cursor               |
+| `gp`        | Put after, cursor moves past    |
+| `gP`        | Put before, cursor moves past   |
+| `[y`        | Cycle ring forward (older yank) |
+| `]y`        | Cycle ring backward             |
+| `[p` / `]p` | Put with indent adjustment      |
+| `>p` / `<p` | Put and indent right/left       |
+| `=p` / `=P` | Put and auto-format             |
+| `<leader>y` | Open yank history picker        |
 
 ### Macros
 
-| Key | Description |
-|-----|-------------|
-| `q{a-z}` | Start recording macro |
-| `q` | Stop recording |
-| `@{a-z}` | Play macro |
-| `@@` | Replay last macro |
-| `{N}@{a}` | Play macro N times |
+| Key       | Description           |
+| --------- | --------------------- |
+| `q{a-z}`  | Start recording macro |
+| `q`       | Stop recording        |
+| `@{a-z}`  | Play macro            |
+| `@@`      | Replay last macro     |
+| `{N}@{a}` | Play macro N times    |
 
 ### multicursor.nvim
 
-| Key | Description |
-|-----|-------------|
-| `<leader>cm` | Add cursor at next match |
+| Key          | Description                |
+| ------------ | -------------------------- |
+| `<leader>cm` | Add cursor at next match   |
 | `<leader>cM` | Add cursors at all matches |
-| `Esc` | Clear extra cursors |
+| `Esc`        | Clear extra cursors        |
 
 ### comment.nvim
 
-| Key | Description |
-|-----|-------------|
-| `gcc` | Toggle line comment |
-| `gbc` | Toggle block comment |
-| `gc{motion}` | Toggle line comment on motion |
-| `gb{motion}` | Toggle block comment on motion |
-| `(visual) gc` | Toggle comment on selection |
+| Key           | Description                       |
+| ------------- | --------------------------------- |
+| `gcc`         | Toggle line comment               |
+| `gbc`         | Toggle block comment              |
+| `gc{motion}`  | Toggle line comment on motion     |
+| `gb{motion}`  | Toggle block comment on motion    |
+| `(visual) gc` | Toggle comment on selection       |
 | `(visual) gb` | Toggle block comment on selection |
 
 ### mini.splitjoin
 
-| Key | Description |
-|-----|-------------|
-| `sj` | Join arguments to one line |
+| Key  | Description                       |
+| ---- | --------------------------------- |
+| `sj` | Join arguments to one line        |
 | `sk` | Split arguments to multiple lines |
 
 ### Visual Mode Movement (This Config)
 
-| Key | Description |
-|-----|-------------|
+| Key          | Description              |
+| ------------ | ------------------------ |
 | `J` (visual) | Move selected lines down |
-| `K` (visual) | Move selected lines up |
-| `>` (visual) | Indent, stay in visual |
-| `<` (visual) | Dedent, stay in visual |
+| `K` (visual) | Move selected lines up   |
+| `>` (visual) | Indent, stay in visual   |
+| `<` (visual) | Dedent, stay in visual   |
 
 ### Indent
 
-| Key | Description |
-|-----|-------------|
-| `>>` | Indent current line |
-| `<<` | Dedent current line |
-| `=` | Auto-indent (with motion) |
-| `==` | Auto-indent current line |
-| `gg=G` | Auto-indent entire file |
+| Key    | Description               |
+| ------ | ------------------------- |
+| `>>`   | Indent current line       |
+| `<<`   | Dedent current line       |
+| `=`    | Auto-indent (with motion) |
+| `==`   | Auto-indent current line  |
+| `gg=G` | Auto-indent entire file   |
 
 ---
 
@@ -1653,7 +1655,7 @@ Open a JavaScript/TypeScript file with function calls and string literals.
 2. With cursor on the string, practice:
    - `cs"'` to change to single quotes
    - `cs'`` ` to change to backtick (template literal)
-   - `` cs`( `` to wrap in parens instead
+   - ``cs`(`` to wrap in parens instead
    - `ds(` to remove the parens
 3. Find a word (no quotes), practice:
    - `saaw"` to wrap in double quotes
@@ -1699,4 +1701,4 @@ Open a JavaScript/TypeScript file with function calls and string literals.
 
 ---
 
-*Part of the "Neovim 0 to Hero" series.*
+_Part of the "Neovim 0 to Hero" series._

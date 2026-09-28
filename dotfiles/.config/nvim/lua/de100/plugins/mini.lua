@@ -20,11 +20,11 @@ return {
                 }
             })
             vim.keymap.set("n", "<leader>ee", "<cmd>lua MiniFiles.open()<CR>",
-                           {desc = "Toggle mini file explorer"}) -- toggle file explorer
+                           {desc = "Toggle file explorer (mini.files)"})
             vim.keymap.set("n", "<leader>ef", function()
                 MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
                 MiniFiles.reveal_cwd()
-            end, {desc = "Toggle into currently opened file"})
+            end, {desc = "Reveal current file (mini.files)"})
         end
     }, -- Surround
     {

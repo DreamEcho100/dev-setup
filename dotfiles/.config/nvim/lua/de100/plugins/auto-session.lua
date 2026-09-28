@@ -15,8 +15,10 @@ return {
         })
 
         local keymap = vim.keymap
-        keymap.set("n", "<leader>wr", "<cmd>AutoSession restore<CR>",
-                   {desc = "Restore session for cwd"})
+        -- Removed: restore is typically automatic or a rare manual action,
+        -- 1:1 wrapper around `:AutoSession restore` — call it directly.
+        -- keymap.set("n", "<leader>wr", "<cmd>AutoSession restore<CR>",
+        --            {desc = "Restore session for cwd"})
         keymap.set("n", "<leader>ws", "<cmd>AutoSession save<CR>",
                    {desc = "Save session for cwd"})
     end

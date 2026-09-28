@@ -3,9 +3,11 @@ return {
         "nvzone/showkeys",
         lazy = true,
         cmd = "ShowkeysToggle",
-        keys = {
-            {"<leader>ks", "<cmd>ShowkeysToggle<CR>", desc = "Toggle Showkeys"}
-        },
+        -- Keymap removed: 1:1 wrapper around `:ShowkeysToggle` (already
+        -- declared in `cmd` above) — call it directly.
+        -- keys = {
+        --     {"<leader>ks", "<cmd>ShowkeysToggle<CR>", desc = "Toggle Showkeys"}
+        -- },
         opts = {
             position = "top-right",
             maxkeys = 3,

@@ -28,40 +28,40 @@ CodeLLDB.
 
 These adapters are installed through Mason and configured automatically:
 
-| Language or runtime | Adapter | Neovim integration | Notes |
-| --- | --- | --- | --- |
-| JavaScript/TypeScript | `js-debug-adapter` | direct `nvim-dap` config | Node and Chromium browser sessions |
-| Python | `debugpy` | `nvim-dap-python` | uses project virtual environments |
-| Go | Delve (`dlv`) | `nvim-dap-go` | programs and nearest tests |
-| C/C++ | CodeLLDB | direct `nvim-dap` config | compile with debug symbols |
-| Rust | CodeLLDB | `rustaceanvim` | Rust owns its DAP configuration |
-| Lua programs | Local Lua Debugger | direct `nvim-dap` config | launches the current Lua file |
-| Neovim Lua | OSV | `one-small-step-for-vimkind` | attach from a second Neovim process |
-| Zig | CodeLLDB | native config | debug an executable built with symbols |
-| Odin | CodeLLDB | native config | debug an executable built with symbols |
+| Language or runtime   | Adapter            | Neovim integration           | Notes                                  |
+| --------------------- | ------------------ | ---------------------------- | -------------------------------------- |
+| JavaScript/TypeScript | `js-debug-adapter` | direct `nvim-dap` config     | Node and Chromium browser sessions     |
+| Python                | `debugpy`          | `nvim-dap-python`            | uses project virtual environments      |
+| Go                    | Delve (`dlv`)      | `nvim-dap-go`                | programs and nearest tests             |
+| C/C++                 | CodeLLDB           | direct `nvim-dap` config     | compile with debug symbols             |
+| Rust                  | CodeLLDB           | `rustaceanvim`               | Rust owns its DAP configuration        |
+| Lua programs          | Local Lua Debugger | direct `nvim-dap` config     | launches the current Lua file          |
+| Neovim Lua            | OSV                | `one-small-step-for-vimkind` | attach from a second Neovim process    |
+| Zig                   | CodeLLDB           | native config                | debug an executable built with symbols |
+| Odin                  | CodeLLDB           | native config                | debug an executable built with symbols |
 
 ### Optional adapters
 
 These are configured only when their runtimes or tools are available:
 
-| Language/runtime | Adapter | Enable/install |
-| --- | --- | --- |
-| Java | `java-debug-adapter` and `java-test` | install Java 21+; `nvim-jdtls` starts per project |
-| C#/.NET | `netcoredbg` | install .NET 10 with `--with-dotnet` or `DE100_INSTALL_DOTNET=true` |
-| Godot/GDScript | Godot's built-in DAP server | install Godot with `--with-godot`; run the project with its debug server |
+| Language/runtime | Adapter                              | Enable/install                                                           |
+| ---------------- | ------------------------------------ | ------------------------------------------------------------------------ |
+| Java             | `java-debug-adapter` and `java-test` | install Java 21+; `nvim-jdtls` starts per project                        |
+| C#/.NET          | `netcoredbg`                         | install .NET 10 with `--with-dotnet` or `DE100_INSTALL_DOTNET=true`      |
+| Godot/GDScript   | Godot's built-in DAP server          | install Godot with `--with-godot`; run the project with its debug server |
 
 ### Deliberate exclusions
 
 Not every filetype has a meaningful debugger.
 
-| Filetypes/workflows | Use instead |
-| --- | --- |
-| Bash/sh | `bash -x`, `set -x`, ShellCheck, tests, or an external Bash debugger when a project truly needs one |
-| HTML/CSS/Markdown/LaTeX | browser preview, renderer logs, linting, and validation |
-| JSON/YAML/TOML | schema diagnostics, formatter, and validation |
-| SQL | Dadbod query execution and database-native explain/profiling tools |
-| Docker/Compose | container logs, `docker exec`, health checks, and attach to the process inside the container |
-| Terraform/Ansible | plan/check mode, validation, logs, and test tools |
+| Filetypes/workflows     | Use instead                                                                                         |
+| ----------------------- | --------------------------------------------------------------------------------------------------- |
+| Bash/sh                 | `bash -x`, `set -x`, ShellCheck, tests, or an external Bash debugger when a project truly needs one |
+| HTML/CSS/Markdown/LaTeX | browser preview, renderer logs, linting, and validation                                             |
+| JSON/YAML/TOML          | schema diagnostics, formatter, and validation                                                       |
+| SQL                     | Dadbod query execution and database-native explain/profiling tools                                  |
+| Docker/Compose          | container logs, `docker exec`, health checks, and attach to the process inside the container        |
+| Terraform/Ansible       | plan/check mode, validation, logs, and test tools                                                   |
 
 The old Chrome Debug Adapter is intentionally absent. It is archived; current
 JavaScript debugging uses Microsoft's `vscode-js-debug` through Mason's
@@ -72,39 +72,41 @@ default merely to make the support list look longer.
 
 The function keys match VS Code where terminals can report the key reliably:
 
-| Action | Neovim | VS Code |
-| --- | --- | --- |
-| Start or continue | `<F5>` | F5 |
-| Stop | `<S-F5>` | Shift+F5 |
-| Toggle breakpoint | `<F9>` | F9 |
-| Step over | `<F10>` | F10 |
-| Step into | `<F11>` | F11 |
-| Step out | `<S-F11>` | Shift+F11 |
-| Toggle debug UI | `<F7>` | open/close Run and Debug view |
+| Action            | Neovim    | VS Code                       |
+| ----------------- | --------- | ----------------------------- |
+| Start or continue | `<F5>`    | F5                            |
+| Stop              | `<S-F5>`  | Shift+F5                      |
+| Toggle breakpoint | `<F9>`    | F9                            |
+| Step over         | `<F10>`   | F10                           |
+| Step into         | `<F11>`   | F11                           |
+| Step out          | `<S-F11>` | Shift+F11                     |
+| Toggle debug UI   | `<F7>`    | open/close Run and Debug view |
 
-The leader namespace works even when a terminal consumes an F-key:
+The leader namespace works even when a terminal consumes an F-key — but note
+that plain duplicates of an F-key that works fine without Shift (continue,
+step over, step into, toggle breakpoint, toggle UI) have been commented out in
+`plugins/dap/core.lua`; use the F-key directly for those instead. Only the
+leader keys with no reliable F-key/Ex-command equivalent remain:
 
-| Mapping | Action |
-| --- | --- |
-| `<leader>dapc` | start or continue |
-| `<leader>dapn` | create a new session |
-| `<leader>dapx` | terminate |
-| `<leader>dapl` | rerun the last configuration |
-| `<leader>dapo` | step over |
-| `<leader>dapi` | step into |
-| `<leader>dapO` | step out |
-| `<leader>dapp` | pause |
-| `<leader>dapt` | debug the nearest test for the current filetype |
-| `<leader>daptb` | toggle breakpoint |
-| `<leader>dapb` | conditional breakpoint |
-| `<leader>dapL` | log point |
-| `<leader>dapr` | open DAP REPL |
-| `<leader>dape` | evaluate expression or visual selection |
-| `<leader>dapu` | toggle DAP UI |
-| `<leader>dapq` | list breakpoints |
-| `<leader>dapC` | clear breakpoints |
-| `<leader>daph` | show repository-specific DAP health |
-| `<leader>dapP` | review and load a trusted project `.nvim/dap.lua` |
+| Mapping        | Action                                                              |
+| -------------- | ------------------------------------------------------------------- |
+| `<leader>dapx` | terminate (kept: `<S-F5>` is unreliable for Shift+F-key under tmux) |
+| `<leader>dapl` | rerun the last configuration                                        |
+| `<leader>dapO` | step out (kept: `<S-F11>` is unreliable for Shift+F-key under tmux) |
+| `<leader>dapp` | pause                                                               |
+| `<leader>dapt` | debug the nearest test for the current filetype                     |
+| `<leader>dapb` | conditional breakpoint (interactive input, no Ex equivalent)        |
+| `<leader>dapL` | log point (interactive input, no Ex equivalent)                     |
+| `<leader>dapr` | open DAP REPL                                                       |
+| `<leader>dape` | evaluate expression or visual selection                             |
+| `<leader>dapq` | list breakpoints                                                    |
+| `<leader>dapC` | clear breakpoints                                                   |
+| `<leader>dapP` | review and load a trusted project `.nvim/dap.lua`                   |
+
+Removed as redundant (use the F-key or Ex command shown instead):
+`<leader>dapc` (`<F5>`), `<leader>dapn` (`:DapNew`), `<leader>dapo` (`<F10>`),
+`<leader>dapi` (`<F11>`), `<leader>daptb` (`<F9>`), `<leader>dapu` (`<F7>`),
+`<leader>daph` (`:De100DapHealth`).
 
 Use `:WhichKey <leader>dap` if you forget a mapping.
 

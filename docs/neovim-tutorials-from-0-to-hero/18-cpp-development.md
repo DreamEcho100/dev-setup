@@ -15,6 +15,15 @@
 > experience required — but you should have written C or C++ code before in
 > any editor.
 
+> **Keymap update:** all `<leader>mcm*` (cmake-tools.nvim) and `<leader>lspc*`
+> (clangd_extensions) keymaps were commented out — each was a bare passthrough
+> to an Ex command the plugin already provides, so this config now calls that
+> command directly instead (see tutorial 13, section 4.6). Wherever a
+> `<leader>mcm*`/`<leader>lspc*` key appears below, type the equivalent
+> `:Command` shown in the reference tables instead — e.g. the old
+> `<leader>mcmb` keymap is now typed as `:CMakeBuild`, and the old
+> `<leader>lspcA` keymap is now typed as `:ClangdAST`.
+
 ---
 
 ## The C/C++ Toolchain at a Glance
@@ -159,7 +168,7 @@ build system that actually invokes the compiler.
 
 ### Generating It: cmake-tools.nvim (the Neovim way)
 
-Once you're in Neovim on a CMake project, press `<leader>mcmg` (CMake generate).
+Once you're in Neovim on a CMake project, press `:CMakeGenerate` (CMake generate).
 cmake-tools.nvim runs:
 
 ```bash
@@ -178,7 +187,7 @@ stay up to date.
 >
 > - `CMakeLists.txt` files in subdirectories
 > - Adding a new `.cpp` source file (add it to `CMakeLists.txt` AND re-run
->   `<leader>mcmg`)
+>   `:CMakeGenerate`)
 > - Changes to `.h` header files (clangd handles headers directly — no cmake
 >   re-run needed)
 
@@ -293,7 +302,7 @@ is faster than any file picker for the header/source dance.
 You're editing `Foo.cpp`. Press `<leader>lh` to check the declaration, then
 `<leader>lh` again to come back.
 
-### `<leader>lspcA` — AST View
+### `:ClangdAST` — AST View
 
 Opens a tree view of the Abstract Syntax Tree for the code near your cursor.
 This is mostly useful for:
@@ -343,28 +352,30 @@ A typical CMake project workflow:
 
 ```
 1. Open project in Neovim
-2. <leader>mcmg    → Configure (cmake -B build ...)
-3. <leader>mcmT    → Select build type (Debug / Release / RelWithDebInfo)
-4. <leader>mcms    → Select build target (which binary to build)
-5. <leader>mcmb    → Build selected target
-6. <leader>mcmr    → Run selected target
+2. :CMakeGenerate            → Configure (cmake -B build ...)
+3. :CMakeSelectBuildType      → Select build type (Debug / Release / RelWithDebInfo)
+4. :CMakeSelectBuildTarget    → Select build target (which binary to build)
+5. :CMakeBuild                → Build selected target
+6. :CMakeRun                  → Run selected target
 ```
 
-### cmake-tools.nvim Keymaps
+### cmake-tools.nvim Commands
 
-All under `<leader>m` (the "make/cmake/format" group):
+No dedicated keymaps — these are rare/occasional actions, so this config
+calls the plugin's own Ex commands directly instead (see tutorial 13,
+section 4.6):
 
-| Key            | Command                   | What It Does                                  |
-| -------------- | ------------------------- | --------------------------------------------- |
-| `<leader>mcmg` | `:CMakeGenerate`          | Configure the project (cmake -B build)        |
-| `<leader>mcmb` | `:CMakeBuild`             | Build the selected target                     |
-| `<leader>mcmr` | `:CMakeRun`               | Run the selected target                       |
-| `<leader>mcmt` | `:CMakeTest`              | Run CTest tests                               |
-| `<leader>mcmc` | `:CMakeClean`             | Clean the build directory                     |
-| `<leader>mcms` | `:CMakeSelectBuildTarget` | Pick which binary to build                    |
-| `<leader>mcmT` | `:CMakeSelectBuildType`   | Debug / Release / RelWithDebInfo / MinSizeRel |
-| `<leader>mcmo` | `:CMakeOpen`              | Open cmake-tools panel                        |
-| `<leader>mp`   | (existing)                | Format file (clang-format)                    |
+| Command                   | What It Does                                  |
+| ------------------------- | --------------------------------------------- |
+| `:CMakeGenerate`          | Configure the project (cmake -B build)        |
+| `:CMakeBuild`             | Build the selected target                     |
+| `:CMakeRun`               | Run the selected target                       |
+| `:CMakeTest`              | Run CTest tests                               |
+| `:CMakeClean`             | Clean the build directory                     |
+| `:CMakeSelectBuildTarget` | Pick which binary to build                    |
+| `:CMakeSelectBuildType`   | Debug / Release / RelWithDebInfo / MinSizeRel |
+| `:CMakeOpen`              | Open cmake-tools panel                        |
+| `<leader>mp`              | Format file (clang-format) — still a keymap   |
 
 ### First CMake Project: Step by Step
 
@@ -415,23 +426,23 @@ int main() {
 nvim .
 ```
 
-Press `<leader>mcmg` → cmake-tools runs the configure step → `build/` directory
+Press `:CMakeGenerate` → cmake-tools runs the configure step → `build/` directory
 is created with `compile_commands.json` → symlinked to project root →
 clangd re-indexes.
 
 **Step 5: Build and run**
 
 ```
-<leader>mcms    → select "hello" target
-<leader>mcmb    → build it (overseer opens a terminal panel)
-<leader>mcmr    → run it (should print "Hello, C++ in Neovim!")
+:CMakeSelectBuildTarget    → select "hello" target
+:CMakeBuild    → build it (overseer opens a terminal panel)
+:CMakeRun    → run it (should print "Hello, C++ in Neovim!")
 ```
 
 **Step 6: Switch to Debug build**
 
 ```
-<leader>mcmT    → select "Debug"
-<leader>mcmb    → rebuild with -g symbols (needed for debugger)
+:CMakeSelectBuildType    → select "Debug"
+:CMakeBuild    → rebuild with -g symbols (needed for debugger)
 ```
 
 ### CMakeLists.txt Best Practices
@@ -819,21 +830,21 @@ Build type Debug includes `-g` (debug symbols) and `-O0` (no optimization,
 so stepping makes sense). **Never debug a Release build** — it's been optimized
 so heavily that stepping through code has nothing to do with what you wrote.
 
-Set the Debug build type in Neovim with `<leader>mcmT` → select "Debug".
+Set the Debug build type in Neovim with `:CMakeSelectBuildType` → select "Debug".
 
 ### DAP Keymaps (From Chapter 10)
 
-| Key             | Action                                               |
-| --------------- | ---------------------------------------------------- |
-| `<F5>`          | Launch/continue debugging                            |
-| `<F7>`          | Toggle DAP UI                                        |
-| `<F9>`          | Toggle breakpoint                                    |
-| `<F10>`         | Step over (next line, don't enter functions)         |
-| `<F11>`         | Step into (enter function)                           |
-| `<S-F11>`       | Step out (finish current function, return to caller) |
-| `<leader>dapr`  | Open DAP REPL (evaluate expressions)                 |
-| `<leader>dapq`  | List breakpoints                                     |
-| `<leader>dapC`  | Clear all breakpoints                                |
+| Key            | Action                                               |
+| -------------- | ---------------------------------------------------- |
+| `<F5>`         | Launch/continue debugging                            |
+| `<F7>`         | Toggle DAP UI                                        |
+| `<F9>`         | Toggle breakpoint                                    |
+| `<F10>`        | Step over (next line, don't enter functions)         |
+| `<F11>`        | Step into (enter function)                           |
+| `<S-F11>`      | Step out (finish current function, return to caller) |
+| `<leader>dapr` | Open DAP REPL (evaluate expressions)                 |
+| `<leader>dapq` | List breakpoints                                     |
+| `<leader>dapC` | Clear all breakpoints                                |
 
 ### Setting Up a Debug Configuration
 
@@ -877,8 +888,8 @@ is executable code and is never loaded automatically. Prefer
 
 ### A Debugging Session Walkthrough
 
-1. Set the build type to Debug: `<leader>mcmT` → "Debug"
-2. Build: `<leader>mcmb`
+1. Set the build type to Debug: `:CMakeSelectBuildType` → "Debug"
+2. Build: `:CMakeBuild`
 3. Open the source file you want to debug
 4. Set a breakpoint: `<F9>` on the line where you want to stop
 5. Start debugging: `<F5>`
@@ -985,8 +996,8 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 **Build and configure CTest:**
 
 ```
-<leader>mcmg    → configure (cmake generates build/ with CTest support)
-<leader>mcmb    → build (compiles the test binary)
+:CMakeGenerate    → configure (cmake generates build/ with CTest support)
+:CMakeBuild    → build (compiles the test binary)
 ```
 
 ### neotest Keymaps
@@ -1005,7 +1016,7 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 ### The Test Workflow
 
 1. Write tests using `;gtest` or `;gtest_f` snippets
-2. Build: `<leader>mcmb`
+2. Build: `:CMakeBuild`
 3. Position cursor inside a test function
 4. Run: `<leader>tn` (run nearest test)
 5. A green gutter marker appears for pass, red for fail
@@ -1018,7 +1029,7 @@ Unlike Go's `go test` which compiles automatically, CTest requires the test
 binary to already be compiled. The workflow is:
 
 1. Code change
-2. `<leader>mcmb` (build)
+2. `:CMakeBuild` (build)
 3. `<leader>tl` (run last test)
 
 The build step is manual — there is no watch mode that auto-compiles.
@@ -1158,14 +1169,14 @@ Priority order (first match wins):
 
 ### Quick Reference
 
-| Scenario                          | Best approach                                      |
-| --------------------------------- | -------------------------------------------------- |
-| Learning, quick experiments       | `compile_flags.txt` with `-std=c++20 -I.`          |
-| Header-only library               | `compile_flags.txt`                                |
-| Custom `sh` / `bash` build script | `bear -- sh build.sh`                              |
-| Makefile project                  | `bear -- make`                                     |
-| CMake project                     | cmake-tools.nvim auto-generates via `<leader>mcmg` |
-| Mixed flags per subdirectory      | `.clangd` config file                              |
+| Scenario                          | Best approach                                        |
+| --------------------------------- | ---------------------------------------------------- |
+| Learning, quick experiments       | `compile_flags.txt` with `-std=c++20 -I.`            |
+| Header-only library               | `compile_flags.txt`                                  |
+| Custom `sh` / `bash` build script | `bear -- sh build.sh`                                |
+| Makefile project                  | `bear -- make`                                       |
+| CMake project                     | cmake-tools.nvim auto-generates via `:CMakeGenerate` |
+| Mixed flags per subdirectory      | `.clangd` config file                                |
 
 ---
 
@@ -1182,7 +1193,7 @@ shows clangd in the server list but no "attached" line.
 ls -la compile_commands.json
 ```
 
-If no: run `<leader>mcmg` (cmake configure) or `bear -- make`.
+If no: run `:CMakeGenerate` (cmake configure) or `bear -- make`.
 
 **Check 2:** Is clangd installed?
 
@@ -1214,7 +1225,7 @@ Scroll to the bottom. Common errors:
 2. The wrong `--sysroot` or `-I` path is in compile_commands.json
 3. clang is not installed (clangd ships headers separately from gcc)
 
-**Fix 1:** Run `<leader>mcmg` to regenerate compile commands.
+**Fix 1:** Run `:CMakeGenerate` to regenerate compile commands.
 
 **Fix 2:** Check if `clang` itself is installed:
 
@@ -1268,7 +1279,7 @@ Then restart Neovim and wait for re-index.
 ### Multi-subproject Repos (cmake-tools uses the wrong root)
 
 **Symptom:** You `nvim .` from a repo that has multiple independent subprojects
-(each with its own `CMakeLists.txt`), navigate into one, press `<leader>mcmb`,
+(each with its own `CMakeLists.txt`), navigate into one, press `:CMakeBuild`,
 and cmake-tools errors: "Cannot find CMakeLists.txt at cwd (repo-root)".
 
 **Why it happens:** cmake-tools stores `config.cwd` once at startup
@@ -1289,7 +1300,7 @@ internally** and doesn't reliably react to `:cd`. You need to tell it manually.
 <leader>mcd       → if :pwd is wrong, press this to force-cd to the nearest root
 
 # Step 2: tell cmake-tools about the new root — pick one:
-<leader>mcmg          → re-run configure; cmake-tools re-reads cwd and picks up the right project
+:CMakeGenerate          → re-run configure; cmake-tools re-reads cwd and picks up the right project
 :CMakeSelectCwd .     → explicitly set cmake-tools cwd to current directory, then configure
 ```
 
@@ -1306,19 +1317,19 @@ build-your-own-game/        ← you ran nvim . here
 ├── .git
 ├── projects/
 │   ├── 0-starter/          ← has its own CMakeLists.txt
-│   │   └── src/main.cpp    ← open this → :pwd auto-updates, then run <leader>mcmg
+│   │   └── src/main.cpp    ← open this → :pwd auto-updates, then run :CMakeGenerate
 │   └── 1-chapter1/
-│       └── src/main.cpp    ← open this → :pwd auto-updates, then run <leader>mcmg
+│       └── src/main.cpp    ← open this → :pwd auto-updates, then run :CMakeGenerate
 └── (no CMakeLists.txt at root)
 ```
 
-**Summary:** `:cd` + `<leader>mcmg` is the two-step reset. Everything else
+**Summary:** `:cd` + `:CMakeGenerate` is the two-step reset. Everything else
 (Telescope, grep, overseer) follows `:cd` automatically; only cmake-tools
 needs the explicit re-configure.
 
 ### cmake-tools.nvim Doesn't Detect CMakeLists.txt
 
-**Symptom:** `<leader>mcmg` does nothing, or cmake-tools commands aren't available.
+**Symptom:** `:CMakeGenerate` does nothing, or cmake-tools commands aren't available.
 
 **Check:** cmake-tools.nvim loads lazily when `ft = {"c", "cpp", "cmake"}`.
 Open a `.cpp` file first, or a `CMakeLists.txt` file. The plugin may not be
@@ -1349,7 +1360,7 @@ or change it explicitly:
 
 **Check:** The files must be in the project that clangd knows about
 (i.e., appear in `compile_commands.json`). If you just created a new file,
-re-run `<leader>mcmg` to regenerate compile commands.
+re-run `:CMakeGenerate` to regenerate compile commands.
 
 ### Snippets Not Triggering
 
@@ -1386,8 +1397,8 @@ nvim .
 In Neovim:
 
 ```
-<leader>mcmg    → configure cmake, generate compile_commands.json
-<leader>mcmT    → select "Debug" build type
+:CMakeGenerate    → configure cmake, generate compile_commands.json
+:CMakeSelectBuildType    → select "Debug" build type
 ```
 
 ### The Development Loop
@@ -1397,7 +1408,7 @@ In Neovim:
    ↓
 2. Write test (;gtest snippet)    ← TDD: write test first
    ↓
-3. <leader>mcmb                     ← Build (overseer shows output)
+3. :CMakeBuild                     ← Build (overseer shows output)
    ↓
 4. <leader>tn                     ← Run nearest test
    ↓
@@ -1405,7 +1416,7 @@ In Neovim:
    ↓
 6. Implement the feature           ← LSP completions, inlay hints help
    ↓
-7. <leader>mcmb                     ← Build again
+7. :CMakeBuild                     ← Build again
    ↓
 8. <leader>tl                     ← Re-run last test
    ↓
@@ -1456,7 +1467,7 @@ auto-implementation options (clangd can generate the stub in `.cpp`).
 | VSCode Workflow                            | This Neovim Workflow                                 |
 | ------------------------------------------ | ---------------------------------------------------- |
 | cmake-tools extension → status bar buttons | `<leader>m*` keymaps                                 |
-| "Build" button in status bar               | `<leader>mcmb`                                       |
+| "Build" button in status bar               | `:CMakeBuild`                                        |
 | "Debug" F5                                 | `<F5>` (same!)                                       |
 | Breakpoints in gutter (click)              | `<F9>` (toggle)                                      |
 | "Go to Header/Source" (right-click)        | `<leader>lh`                                         |
@@ -1486,10 +1497,10 @@ Do these in order — each builds on the previous.
    - `add_executable(practice src/main.cpp)`
 3. Create `src/main.cpp` with a simple program that prints something
 4. Open Neovim: `nvim .`
-5. Press `<leader>mcmg` to configure
+5. Press `:CMakeGenerate` to configure
 6. Verify `compile_commands.json` exists: `:!ls compile_commands.json`
-7. Press `<leader>mcmb` to build
-8. Press `<leader>mcmr` to run it
+7. Press `:CMakeBuild` to build
+8. Press `:CMakeRun` to run it
 
 **Goal:** End with a working CMake project that clangd understands.
 
@@ -1527,8 +1538,8 @@ In the project from Exercise 1:
        std::cout << v[i] << '\n';           // out-of-bounds at i=3
    }
    ```
-2. Set build type to Debug: `<leader>mcmT` → "Debug"
-3. Build: `<leader>mcmb`
+2. Set build type to Debug: `:CMakeSelectBuildType` → "Debug"
+3. Build: `:CMakeBuild`
 4. Set a breakpoint on the `std::cout` line: `<F9>`
 5. Launch debugger: `<F5>`
 6. Open DAP UI: `<F7>`
@@ -1559,7 +1570,7 @@ In the project from Exercise 1:
 
 2. Create `tests/calculator_test.cpp` using the `;gtest` snippet
 3. Write 2-3 test cases for your Calculator class
-4. Build: `<leader>mcmb`
+4. Build: `:CMakeBuild`
 5. Run nearest test: `<leader>tn` (cursor inside a test function)
 6. Toggle summary to see all tests: `<leader>ts`
 7. Intentionally break a test (change the expected value) — observe the red

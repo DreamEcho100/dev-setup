@@ -402,17 +402,17 @@ This config uses **nvim-dap** (Debug Adapter Protocol) with **nvim-dap-ui** for 
 
 This config ships with debug adapters pre-configured for:
 
-| Language/runtime      | Adapter                        | Notes                                      |
-| --------------------- | ------------------------------ | ------------------------------------------ |
-| Go                    | Delve via `nvim-dap-go`         | Program and nearest-test debugging         |
-| JavaScript/TypeScript | current `js-debug-adapter`     | Node and Chromium browser sessions         |
-| Python                | debugpy via `nvim-dap-python`  | Uses project virtual environments          |
-| C/C++/Zig/Odin        | CodeLLDB                       | Build with debug symbols                   |
-| Rust                  | CodeLLDB via `rustaceanvim`    | Rust-specific ownership                    |
-| Lua/Neovim Lua        | Local Lua Debugger / OSV       | Launch standalone Lua or attach to Neovim  |
-| Java                  | Java debug/test bundles        | Optional; requires Java 21+ and JDTLS       |
-| C#/.NET               | netcoredbg                     | Optional; requires .NET                    |
-| Godot/GDScript        | Godot built-in DAP server      | Optional; Godot listens on port 6006       |
+| Language/runtime      | Adapter                       | Notes                                     |
+| --------------------- | ----------------------------- | ----------------------------------------- |
+| Go                    | Delve via `nvim-dap-go`       | Program and nearest-test debugging        |
+| JavaScript/TypeScript | current `js-debug-adapter`    | Node and Chromium browser sessions        |
+| Python                | debugpy via `nvim-dap-python` | Uses project virtual environments         |
+| C/C++/Zig/Odin        | CodeLLDB                      | Build with debug symbols                  |
+| Rust                  | CodeLLDB via `rustaceanvim`   | Rust-specific ownership                   |
+| Lua/Neovim Lua        | Local Lua Debugger / OSV      | Launch standalone Lua or attach to Neovim |
+| Java                  | Java debug/test bundles       | Optional; requires Java 21+ and JDTLS     |
+| C#/.NET               | netcoredbg                    | Optional; requires .NET                   |
+| Godot/GDScript        | Godot built-in DAP server     | Optional; Godot listens on port 6006      |
 
 ### VSCode launch.json Compatibility
 

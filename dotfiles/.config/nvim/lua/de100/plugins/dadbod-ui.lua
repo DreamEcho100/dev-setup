@@ -53,9 +53,11 @@ How to's
         {"tpope/vim-dadbod"},
         {"kristijanhusak/vim-dadbod-completion", ft = {"sql", "mysql", "plsql"}}
     },
-    keys = { -- Mapping to toggle DBUI
-        {"<leader>dadui", "<cmd>DBUIToggle<CR>", desc = "Toggle DBUI"}
-    },
+    -- Keymap removed: 1:1 wrapper around `:DBUIToggle` (already declared in
+    -- `cmd` below) — call it directly, this is opened rarely per session.
+    -- keys = {
+    --     {"<leader>dadui", "<cmd>DBUIToggle<CR>", desc = "Toggle DBUI"}
+    -- },
     cmd = {"DBUI", "DBUIToggle", "DBUIAddConnection", "DBUIFindBuffer"},
     init = function()
         vim.g.db_ui_show_help = 0

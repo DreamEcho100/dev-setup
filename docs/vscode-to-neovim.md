@@ -23,6 +23,7 @@ The goal is not to clone VS Code. The goal is to keep the productive parts while
 | IntelliSense        | LSP + Blink completion                                       |
 | Format on save      | Conform                                                      |
 | Linting             | nvim-lint + LSP diagnostics                                  |
+| Jupyter extension   | `jupytext.nvim` + `molten-nvim` + `image.nvim`               |
 
 ## Daily Loop
 

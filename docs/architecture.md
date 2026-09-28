@@ -81,6 +81,7 @@ init.lua
 │ Test/tasks       │ neotest, overseer                                 │
 │ Remote           │ remote-nvim, conn-manager, ssh, tmux              │
 │ Docs/math        │ render-markdown, vimtex, Mermaid/LaTeX tooling    │
+│ Notebooks/data   │ jupytext, molten, image.nvim, quarto/otter        │
 │ AI hooks         │ codecompanion default hook, copilot/avante optional │
 └──────────────────┴──────────────────────────────────────────────────┘
 ```

@@ -12,10 +12,12 @@ return {
             {"<leader>e", group = "explorer"}, {"<leader>f", group = "file"},
             {"<leader>g", group = "git"}, {"<leader>h", group = "harpoon"},
             {"<leader>H", group = "http/rest"},
+            {"<leader>j", group = "jupyter/notebook"},
             {"<leader>l", group = "lsp/lint"},
             {"<leader>lspc", group = "lsp/clangd"},
             {"<leader>m", group = "make/cmake/format"},
-            {"<leader>mcm", group = "cmake"},
+            -- "cmake" group removed: cmake-tools.lua's <leader>mcm* keys were
+            -- commented out (call :CMake* directly), no members left.
             {"<leader>p", group = "pick/search"},
             {"<leader>r", group = "rename/refactor"},
             {"<leader>s", group = "splits/session"},
@@ -23,8 +25,11 @@ return {
             {"<leader>u", group = "ui/toggles"},
             {"<leader>v", group = "view/help"},
             {"<leader>w", group = "workspace/session"},
-            {"<leader>x", group = "trouble/lists"},
-            {"<leader>y", group = "yank"}, {"<leader>k", group = "keys/show"}
+            -- "trouble/lists" group removed: trouble.lua's <leader>x* keys were
+            -- commented out (call :Trouble directly), no members left.
+            {"<leader>y", group = "yank"}
+            -- "keys/show" group removed: showkeys.lua's <leader>ks was the only
+            -- member and was commented out (call :ShowkeysToggle directly).
         }
     }
 }

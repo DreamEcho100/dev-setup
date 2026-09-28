@@ -58,6 +58,7 @@
       - shfmt
       - codespell
       - imagemagick
+      - libmagickwand-dev # image.nvim magick_cli processor (Molten plot rendering)
       - graphviz
       - xclip
       - wl-clipboard
@@ -297,7 +298,7 @@
 
     - name: Install Python editor tools
       ansible.builtin.command:
-        cmd: python3 -m pip install --user --upgrade pynvim ruff black isort pylint
+        cmd: python3 -m pip install --user --upgrade pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
       changed_when: true
       failed_when: false
 

@@ -77,6 +77,14 @@ return {
                 scope_highlight = nil
             }
         },
-        html = {comment = {conceal = false}}
+        html = {comment = {conceal = false}},
+        latex = {
+            enabled = true,
+            -- Requires the pylatexenc pip package (see neovim.yml)
+            converter = "latex2text",
+            highlight = "RenderMarkdownMath",
+            top_pad = 0,
+            bottom_pad = 0,
+        }
     }
 }

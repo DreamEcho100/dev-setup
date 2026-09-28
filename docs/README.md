@@ -32,7 +32,7 @@ mfansible/
 |   |-- vscode-to-neovim.md      # VS Code feature translation
 |   |-- neovim-power-user.md     # Vim/Neovim power path
 |   |-- architecture.md          # Runtime and plugin architecture
-|   `-- tutorials/               # Ordered deep-dive learning series
+|   `-- neovim-tutorials-from-0-to-hero/  # Ordered deep-dive learning series
 `-- current-plan.md              # Living implementation checklist
 ```
 
@@ -76,7 +76,10 @@ Read these in order:
 2. `vscode-to-neovim.md`
 3. `neovim-power-user.md`
 4. `architecture.md`
-5. `tutorials/README.md`
+5. `neovim-tutorials-from-0-to-hero/README.md`
 
 Terminal-first users should also read
 `neovim-tutorials-from-0-to-hero/20-shell-terminal-tmux.md`.
+
+Doing Python math/data work (e.g. following an external Jupyter-based course)
+should also read `neovim-tutorials-from-0-to-hero/21-python-math-jupyter.md`.

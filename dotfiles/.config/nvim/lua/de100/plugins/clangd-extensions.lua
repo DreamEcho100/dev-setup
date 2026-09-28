@@ -37,27 +37,30 @@ return {
             highlights = {detail = "Comment"}
         }
     },
-    keys = {
-        {
-            "<leader>lspcA",
-            "<cmd>ClangdAST<CR>",
-            ft = {"c", "cpp"},
-            desc = "Clangd AST view"
-        }, {
-            "<leader>lspcT",
-            "<cmd>ClangdTypeHierarchy<CR>",
-            ft = {"c", "cpp"},
-            desc = "Type hierarchy"
-        }, {
-            "<leader>lspcS",
-            "<cmd>ClangdSymbolInfo<CR>",
-            ft = {"c", "cpp"},
-            desc = "Symbol info"
-        }, {
-            "<leader>lspcM",
-            "<cmd>ClangdMemoryUsage<CR>",
-            ft = {"c", "cpp"},
-            desc = "Clangd memory usage"
-        }
-    }
+    -- Keymaps removed: these are rare/exploratory actions, each a 1:1 wrapper
+    -- around an Ex command clangd_extensions already exposes — just call it
+    -- directly, e.g. `:ClangdAST`. Kept as a comment for reference:
+    -- keys = {
+    --     {
+    --         "<leader>lspcA",
+    --         "<cmd>ClangdAST<CR>",
+    --         ft = {"c", "cpp"},
+    --         desc = "Clangd AST view"
+    --     }, {
+    --         "<leader>lspcT",
+    --         "<cmd>ClangdTypeHierarchy<CR>",
+    --         ft = {"c", "cpp"},
+    --         desc = "Type hierarchy"
+    --     }, {
+    --         "<leader>lspcS",
+    --         "<cmd>ClangdSymbolInfo<CR>",
+    --         ft = {"c", "cpp"},
+    --         desc = "Symbol info"
+    --     }, {
+    --         "<leader>lspcM",
+    --         "<cmd>ClangdMemoryUsage<CR>",
+    --         ft = {"c", "cpp"},
+    --         desc = "Clangd memory usage"
+    --     }
+    -- }
 }
