@@ -313,25 +313,38 @@ every run cell's output (text, images, plots) is pinned directly below it,
 all visible at once as you scroll through the notebook — Molten never
 opens a separate floating popup window for anything.
 
-Known, accepted trade-off (traced to `molten-nvim` itself, not fixable here
-without patching its own source):
+### Multiple `Math()`/`Latex()` calls in one cell: combined into one image
 
-- **Overlap.** When more than one image output is visible at once (e.g. a
-  cell running two `display(Math(...))` calls, or just several image cells
-  close together in the viewport), they can render on top of each other.
-  `outputbuffer.py`'s `build_output_text` gives every image chunk the same
-  vertical position in this inline path, so `image.nvim` places the second
-  image over the first.
-- **Scroll-jumbling.** Inline images are placed via Kitty-graphics-protocol
-  escape codes at an absolute screen row computed once, when a cell's
-  output is (re)shown. There's no `WinScrolled` handling anywhere in
-  `molten-nvim`'s Python plugin, so scrolling the window without moving
-  the cursor to a new cell never re-triggers that placement — the image
-  stays visually pinned to its old screen row while the text scrolls
-  under it.
+`molten-nvim`'s inline path gives every image chunk in one cell's output
+the same vertical position (`outputbuffer.py`'s `build_output_text`), so
+two separate `display(Math(...))` images would render on top of each other
+if each showed up immediately on its own — not fixable from this config
+without patching `molten-nvim`'s own source.
 
-Both are scoped to cases with more than one simultaneously-visible image;
-a single image per cell (the common case) is unaffected.
+Instead, `10-de100-math-render.py` buffers every `Math()`/`Latex()` call
+made during a cell's execution (registering the same handler across the
+`text/plain`, `text/latex`, and `image/png` formatters so none of them show
+anything immediately) and, once the cell finishes running (IPython's
+`post_run_cell` event), renders and vertically stacks all of them into a
+single combined image, shown once. No overlap is possible, since Molten
+only ever sees one image chunk for that output. The trade-off: math no
+longer appears exactly where you called `display()` interleaved with other
+output (`print()` calls, etc.) — it all appears together, once, at the end
+of the cell's output. `print()`/stream output itself is untouched, since
+only `Math`/`Latex` objects are buffered.
+
+The combined image also gets a thin border, colored to match the rendered
+text (not a separate theme accent color, so it can't desync from whatever
+colorscheme is active) — a visual cue that everything inside it is one
+grouped math output, distinct from surrounding `print()`/stream text.
+
+One separate, unrelated caveat remains: inline images are placed via
+Kitty-graphics-protocol escape codes at an absolute screen row computed
+once, when a cell's output is (re)shown. There's no `WinScrolled` handling
+anywhere in `molten-nvim`'s Python plugin, so scrolling the window without
+moving the cursor to a new cell never re-triggers that placement — the
+image (combined or not) stays visually pinned to its old screen row while
+the text scrolls under it. Not fixable here either.
 
 ## 7. When to Reach for `.qmd` Instead of `.ipynb`
 
