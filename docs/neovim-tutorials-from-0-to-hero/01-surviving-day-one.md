@@ -1806,7 +1806,7 @@ One of Neovim's strengths is that it handles every text-based file type well. He
 
 Markdown gets special treatment:
 
-- `render-markdown.nvim` renders markdown formatting inline (headers look like headers, bold text looks bold)
+- `render-markdown.nvim` renders markdown formatting inline (headers look like headers, bold text looks bold) — off by default (live rendering could get visually jumbled), toggle with `<leader>ur`
 - `markdown-preview.nvim` opens a live preview in the browser (`:MarkdownPreview`)
 - `bullets.nvim` makes bullet list editing ergonomic
 - `img-clip.nvim` lets you paste images from clipboard directly into markdown

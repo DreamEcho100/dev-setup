@@ -570,7 +570,7 @@ Here's the big reference table: every popular VSCode extension mapped to its Neo
 | **Better Comments**            | todo-comments.nvim                    | Yes                                | `TODO:`, `FIXME:`, `HACK:`, `NOTE:` highlighted |
 | **Code Spell Checker**         | codespell (in conform.nvim)           | Yes (`formatting.lua`)             | Runs as a formatter via `["*"] = {"codespell"}` |
 | **Markdown Preview**           | markdown-preview.nvim                 | Yes (`markdown-preview.lua`)       | Opens in browser                                |
-| **Render Markdown**            | render-markdown.nvim                  | Yes (`render-markdown.lua`)        | Inline markdown rendering in Neovim             |
+| **Render Markdown**            | render-markdown.nvim                  | Yes (`render-markdown.lua`)        | Inline markdown rendering in Neovim, off by default — `<leader>ur` toggles it |
 | **Image Preview**              | snacks.image                          | Yes (in `snacks.lua`)              | Images in markdown buffers                      |
 | **Kubernetes**                 | kubectl.nvim                          | Yes (`kubectl.lua`)                | Kubernetes management from Neovim               |
 | **REST Client**                | kulala.nvim                           | Yes (`kulala.lua`)                 | Same as Thunder Client replacement              |

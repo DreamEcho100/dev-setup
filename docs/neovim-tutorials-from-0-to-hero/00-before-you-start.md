@@ -503,8 +503,9 @@ dotfiles/.config/nvim/
         ├── go.lua              ← Go: tabstop=4, goimports on save, gopls settings
         ├── rust.lua            ← Rust: clippy linter, rust-analyzer formatting
         ├── python.lua          ← Python: 4-space indent, ruff formatter, pylint
-        ├── markdown.lua        ← Markdown: wrap=true, spell=true, conceal=2,
-        │                          render-markdown.nvim activated
+        ├── markdown.lua        ← Markdown: wrap=true, spell=true, conceal=2
+        │                          (preps the buffer for render-markdown.nvim,
+        │                          which is off by default — <leader>ur to enable)
         ├── yaml.lua            ← YAML: 2-space indent enforced
         ├── sql.lua             ← SQL: dadbod completion, sqlfluff formatter
         ├── c.lua               ← C: clang-format, clangd, tabstop=4

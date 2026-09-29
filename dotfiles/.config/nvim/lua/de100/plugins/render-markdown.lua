@@ -38,7 +38,31 @@ return {
             callback = function() vim.treesitter.start() end
         })
     end,
+    keys = {
+        {
+            "<leader>ur",
+            function()
+                local rm = require("render-markdown")
+                rm.toggle()
+                local enabled = rm.get()
+                local notify = vim.notify
+                if _G.LazyVim and _G.LazyVim.info and _G.LazyVim.warn then
+                    notify = enabled and LazyVim.info or LazyVim.warn
+                    notify((enabled and "Enabled" or "Disabled") ..
+                               " Markdown Render", {title = "Option"})
+                else
+                    notify((enabled and "Enabled" or "Disabled") ..
+                               " Markdown Render", enabled and
+                               vim.log.levels.INFO or vim.log.levels.WARN)
+                end
+            end,
+            desc = "Toggle live Markdown rendering"
+        }
+    },
     opts = {
+        -- Off by default: live rendering can get visually jumbled;
+        -- <leader>ur toggles it on/off for the whole session on demand.
+        enabled = false,
         restart_highlighter = true,
         heading = {
             sign = false,

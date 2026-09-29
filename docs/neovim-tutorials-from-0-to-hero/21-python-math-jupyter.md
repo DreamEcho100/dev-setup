@@ -123,6 +123,11 @@ raw triple-backtick line) — this is just display, the underlying file still
 has real markdown fences. Markdown/prose cells are plain markdown text
 between code fences, rendered normally (headings, etc.).
 
+`render-markdown.nvim` is off by default (live rendering could get visually
+jumbled) — press `<leader>ur` to turn it on for the session when you want
+this restyling; without it, you'll see the raw markdown/fence syntax
+instead.
+
 ## 4. Running Cells
 
 First, attach a kernel to the buffer (once per session):
@@ -195,10 +200,12 @@ from §2 first — this is the single most common cause.
 `render-markdown.nvim` converts inline LaTeX math (`$...$` or `$$...$$`) to
 readable unicode directly in the buffer, using the `latex2text` converter from
 the `pylatexenc` Python package. This is configured in
-`plugins/render-markdown.lua`'s `opts.latex` block. If math isn't rendering,
-confirm `pylatexenc` is installed (`python3 -m pip show pylatexenc`) and that
-the buffer has the `latex` treesitter parser (`:TSInstall latex` if missing —
-though it should already be in this config's `ensure_installed` list).
+`plugins/render-markdown.lua`'s `opts.latex` block. Remember it's off by
+default (`<leader>ur` to enable, see §3) — nothing renders until you toggle
+it on. If math still isn't rendering with it enabled, confirm `pylatexenc`
+is installed (`python3 -m pip show pylatexenc`) and that the buffer has the
+`latex` treesitter parser (`:TSInstall latex` if missing — though it should
+already be in this config's `ensure_installed` list).
 
 For anything beyond simple inline notation — derivations, multi-line proofs,
 numbered equations — write a `.tex` file instead and lean on the existing
@@ -469,12 +476,14 @@ A typical course workflow, translated to this config:
 
 ```text
 Course gives you a .ipynb           -> :e notebook.ipynb
-Read the explanation cells          -> render-markdown shows headings/math
+Read the explanation cells          -> <leader>ur, then render-markdown shows
+                                        headings/math
 Run the provided code cell          -> <leader>jr
 Modify the code and re-run          -> edit, <leader>jr again
 Try something in a new cell         -> insert a "# %%" line, write code, <leader>jr
-Write your own notes/derivation     -> Markdown cell (render-markdown) or
-                                        a .tex file for anything math-heavy
+Write your own notes/derivation     -> Markdown cell (render-markdown, off by
+                                        default) or a .tex file for anything
+                                        math-heavy
 Save                                 -> :w (jupytext converts back to .ipynb)
 ```
 
