@@ -1,0 +1,25 @@
+# VS Code Light+ terminal palette for Ghostty.
+
+foreground = 343434
+background = ffffff
+selection-foreground = 343434
+selection-background = add6ff
+cursor-color = 000000
+cursor-text = ffffff
+
+palette = 0=#000000
+palette = 1=#ff0000
+palette = 2=#008000
+palette = 3=#795e26
+palette = 4=#007acc
+palette = 5=#af00db
+palette = 6=#267f99
+palette = 7=#d2d2d2
+palette = 8=#767676
+palette = 9=#a31515
+palette = 10=#587c0c
+palette = 11=#895503
+palette = 12=#0064c1
+palette = 13=#af00db
+palette = 14=#267f99
+palette = 15=#929292

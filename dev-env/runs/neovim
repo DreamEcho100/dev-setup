@@ -214,7 +214,10 @@ if command -v go >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
 fi
 
 if command -v python3 >/dev/null 2>&1 || [[ "$dry" == "1" ]]; then
-    execute python3 -m pip install --user --upgrade pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
+    execute python3 -m pip install --user --upgrade --break-system-packages pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
+    # jupyter_client doesn't auto-create this dir before writing kernel
+    # connection files, so the first-ever kernel launch fails without it.
+    execute mkdir -p -m 0700 "$HOME/.local/share/jupyter/runtime"
 fi
 
 execute "$prefix/bin/nvim" --version

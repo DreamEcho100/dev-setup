@@ -727,7 +727,7 @@ a tmux session for each one automatically.
 │   Project:                                      │
 │ > frontend                                      │
 │   backend                                       │
-│   mfansible                                     │
+│   dev-setup                                     │
 │   dotfiles                                      │
 │   personal-site                                 │
 │                                                 │
@@ -765,7 +765,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 Then symlink the script:
 ```bash
-ln -sf ~/path/to/mfansible/dotfiles/.local/scripts/tmux-sessionizer \
+ln -sf ~/path/to/dev-setup/dotfiles/.local/scripts/tmux-sessionizer \
        ~/.local/bin/tmux-sessionizer
 ```
 

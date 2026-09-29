@@ -1784,10 +1784,10 @@ The session stores:
 Check `auto-session.lua` for the specific keybindings, but common auto-session commands:
 
 ```vim
-:SessionSave         " manually save current session
-:SessionRestore      " manually restore session
-:SessionDelete       " delete the saved session for current directory
-:Autosession search  " search through all saved sessions (via Telescope)
+:AutoSession save     " manually save current session
+:AutoSession restore  " manually restore session
+:AutoSession delete   " delete the saved session for current directory
+:AutoSession search   " search through all saved sessions (via Telescope)
 ```
 
 The session is automatically saved when you quit (`ZZ`, `:wq`, etc.) and automatically restored when you open Neovim in that directory.

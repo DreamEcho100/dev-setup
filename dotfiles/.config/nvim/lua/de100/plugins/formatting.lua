@@ -24,7 +24,18 @@ return {
                 jsonc = web_formatters,
                 less = web_formatters,
                 liquid = web_formatters,
-                markdown = web_formatters,
+                -- markdownlint-cli2's --fix handles lint-rule issues (blank
+                -- lines around headings, etc.) that prettier doesn't touch;
+                -- conform's stop_after_first is a list-wide flag (verified
+                -- in conform's own source), so it can't mix "alternatives"
+                -- with "always run" in one list — this just runs prettier
+                -- then markdownlint-cli2 unconditionally. Using -cli2, not
+                -- the legacy markdownlint-cli: only cli2 properly searches
+                -- parent directories for .markdownlint.json (confirmed by
+                -- testing both directly) — needed so course-project-level
+                -- rule overrides (e.g. disabling MD001/MD025/MD033 for
+                -- auto-converted Jupyter notebook markdown) actually apply.
+                markdown = {"prettierd", "prettier", "markdownlint-cli2"},
                 scss = web_formatters,
                 svelte = web_formatters,
                 typescript = web_formatters,

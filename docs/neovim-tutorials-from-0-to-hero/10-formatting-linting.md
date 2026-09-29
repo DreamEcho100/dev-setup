@@ -2232,7 +2232,7 @@ ftplugin, and wire up a formatter for it.
 
 6. Open a TOML file to test — this repo has one:
    ```bash
-   nvim ~/mfansible/dotfiles/.config/nvim/stylua.toml
+   nvim ~/dev-setup/dotfiles/.config/nvim/stylua.toml
    ```
    (Or any `.toml` file.)
 

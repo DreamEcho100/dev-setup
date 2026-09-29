@@ -18,8 +18,12 @@ return {
         vim.g.molten_wrap_output = true
     end,
     keys = {
-        { "<leader>jr", "<cmd>MoltenReevaluateCell<CR>", desc = "Jupyter: run/re-run cell" },
+        -- <leader>jr (run/create a cell) lives in quarto.lua: it needs
+        -- quarto.runner.run_cell(), not :MoltenReevaluateCell (which only
+        -- re-runs a cell that already exists — does nothing on first run).
         { "<leader>jv", ":<C-u>MoltenEvaluateVisual<CR>gv", mode = "x", desc = "Jupyter: run selection" },
+        -- ]j/[j navigate cells you've already run (Molten's own definition
+        -- of a "cell"); nothing to jump to until at least one has been run.
         { "]j", "<cmd>MoltenNext<CR>", desc = "Jupyter: next cell/output" },
         { "[j", "<cmd>MoltenPrev<CR>", desc = "Jupyter: prev cell/output" },
     },

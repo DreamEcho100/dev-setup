@@ -64,7 +64,7 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - `ansible-playbook --check dotfiles.yml` passed with `ansible_remote_tmp=/tmp/ansible-remote`.
 - `dev-env/runs/dotfiles --dry` passed.
 - `dev-env/runs/neovim --dry` passed.
-- Isolated Neovim plugin sync passed with repo config and `/tmp/mfansible-nvim-*` XDG data/state/cache dirs.
+- Isolated Neovim plugin sync passed with repo config and `/tmp/dev-setup-nvim-*` XDG data/state/cache dirs.
 - Headless Neovim startup passed with the isolated XDG dirs.
 - Targeted `checkhealth lazy` and `checkhealth provider` passed with the isolated XDG dirs.
 - Removed unsupported Treesitter parser names after sync warnings for `jsonc` and `norg`.
@@ -99,7 +99,7 @@ Backup archive: `_archive/nvim/20260609-pre-modernization/pre-modernization-conf
 - Applied `-buildvcs=false` only to Neovim's `golangci-lint` process to avoid VCS stamping failures without changing normal shell builds.
 - Kept `hellogo/go.mod` `replace github.com/DreamEcho100/mystrings => ../mystrings` intact.
 - Added `/home/viavi/Desktop/workspaces/github/DreamEcho100/bootdotdev-learn-go/go.work` with `./hellogo` and `./mystrings`.
-- Verified `go env GOWORK`, `gopls check`, `go test`, `go build -o /tmp/mfansible-hellogo .`, and direct `golangci-lint` for `hellogo`.
+- Verified `go env GOWORK`, `gopls check`, `go test`, `go build -o /tmp/dev-setup-hellogo .`, and direct `golangci-lint` for `hellogo`.
 
 ### Phase 9: Balanced Go Neovim IDE
 

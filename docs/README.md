@@ -1,4 +1,4 @@
-# MFansible Neovim Docs
+# Dev Setup Neovim Docs
 
 This directory documents the dotfiles bootstrap and Neovim configuration for two overlapping users:
 
@@ -8,7 +8,7 @@ This directory documents the dotfiles bootstrap and Neovim configuration for two
 ## Map
 
 ```text
-mfansible/
+dev-setup/
 |-- dotfiles.yml                 # Cross-platform-ish dotfile symlink playbook
 |-- terminal.yml                 # zsh, terminal, prompt, font, and tmux playbook
 |-- neovim.yml                   # Cross-platform-ish Neovim/tooling playbook

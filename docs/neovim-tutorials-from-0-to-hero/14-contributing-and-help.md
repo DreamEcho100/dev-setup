@@ -1118,11 +1118,11 @@ Contributing to the Neovim configuration itself — plugin files, options, keyma
 ```bash
 # Fork on GitHub first (click Fork on the repo page)
 # Then clone your fork:
-git clone https://github.com/YOUR_USERNAME/mfansible.git
-cd mfansible
+git clone https://github.com/YOUR_USERNAME/dev-setup.git
+cd dev-setup
 
 # Add the upstream remote so you can pull future changes:
-git remote add upstream https://github.com/DreamEcho100/mfansible.git
+git remote add upstream https://github.com/DreamEcho100/dev-setup.git
 
 # Create a feature branch:
 git checkout -b feat/add-rust-analyzer-support
@@ -1560,7 +1560,7 @@ This section is a curated, opinionated list of resources for going deeper on any
 
 **[Neovim GitHub Discussions](https://github.com/neovim/neovim/discussions)** — Official Q&A for Neovim itself (not plugins). For questions about built-in behavior, API usage, or potential bugs. More authoritative than Reddit for Neovim-core questions.
 
-**[This Config's Issue Tracker](https://github.com/DreamEcho100/mfansible/issues)** — For problems specific to this config, this is the right place. Before opening an issue, check if it's already reported. Include your Neovim version (`:version`), the relevant config file, and the exact error from `:messages`.
+**[This Config's Issue Tracker](https://github.com/DreamEcho100/dev-setup/issues)** — For problems specific to this config, this is the right place. Before opening an issue, check if it's already reported. Include your Neovim version (`:version`), the relevant config file, and the exact error from `:messages`.
 
 ### Plugin-Specific Resources
 

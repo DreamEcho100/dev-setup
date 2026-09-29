@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Switch the mfansible visual profile across Kitty, Ghostty, Starship, and Neovim.
+# Switch the dev-setup visual profile across Kitty, Ghostty, Starship, and Neovim.
 
 set -euo pipefail
 
@@ -21,6 +21,21 @@ Themes:
   rose-pine-moon
   gruvbox-dark
   evergarden-spring
+  vscode-dark
+  vscode-light
+  everforest-dark-hard
+  everforest-dark-medium
+  everforest-dark-soft
+  everforest-light-hard
+  everforest-light-medium
+  everforest-light-soft
+  nightfox
+  dayfox
+  dawnfox
+  duskfox
+  nordfox
+  terafox
+  carbonfox
 
 Notes:
   - Restart terminals or reload their config after switching.
@@ -30,7 +45,11 @@ EOF
 
 theme_exists() {
     case "$1" in
-    tokyo-night | catppuccin-mocha | rose-pine-moon | gruvbox-dark | evergarden-spring)
+    tokyo-night | catppuccin-mocha | rose-pine-moon | gruvbox-dark | evergarden-spring | \
+        vscode-dark | vscode-light | \
+        everforest-dark-hard | everforest-dark-medium | everforest-dark-soft | \
+        everforest-light-hard | everforest-light-medium | everforest-light-soft | \
+        nightfox | dayfox | dawnfox | duskfox | nordfox | terafox | carbonfox)
         return 0
         ;;
     *)
@@ -40,6 +59,7 @@ theme_exists() {
 }
 
 theme_values() {
+    nvim_setup=""
     case "$1" in
     tokyo-night)
         kitty_theme="tokyo-night.conf"
@@ -115,6 +135,240 @@ theme_values() {
         purple="#d6a0d1"
         red="#e67e80"
         yellow="#dbbc7f"
+        ;;
+    vscode-dark)
+        kitty_theme="vscode-dark.conf"
+        ghostty_theme="vscode-dark"
+        nvim_theme="vscode"
+        palette_name="vscode_dark"
+        bg="#1e1e1e"
+        fg="#cccccc"
+        blue="#3b8eea"
+        cyan="#29b8db"
+        green="#23d18b"
+        orange="#ce9178" # VS Code Dark+'s well-known string/orange accent
+        purple="#d670d6"
+        red="#f14c4c"
+        yellow="#f5f543"
+        ;;
+    vscode-light)
+        kitty_theme="vscode-light.conf"
+        ghostty_theme="vscode-light"
+        nvim_theme="vscode"
+        palette_name="vscode_light"
+        nvim_setup='require("vscode").setup({ style = "light" })'
+        bg="#ffffff"
+        fg="#343434"
+        blue="#007acc"
+        cyan="#267f99"
+        green="#008000"
+        orange="#c72e0f"
+        purple="#af00db"
+        red="#ff0000"
+        yellow="#795e26"
+        ;;
+    everforest-dark-hard)
+        kitty_theme="everforest-dark-hard.conf"
+        ghostty_theme="everforest-dark-hard"
+        nvim_theme="everforest"
+        palette_name="everforest_dark_hard"
+        nvim_setup='vim.g.everforest_background = "hard"'
+        bg="#272e33"
+        fg="#d3c6aa"
+        blue="#7fbbb3"
+        cyan="#83c092"
+        green="#a7c080"
+        orange="#e69875" # Everforest's documented orange accent (not in base 16)
+        purple="#d699b6"
+        red="#e67e80"
+        yellow="#dbbc7f"
+        ;;
+    everforest-dark-medium)
+        kitty_theme="everforest-dark-medium.conf"
+        ghostty_theme="everforest-dark-medium"
+        nvim_theme="everforest"
+        palette_name="everforest_dark_medium"
+        bg="#2d353b"
+        fg="#d3c6aa"
+        blue="#7fbbb3"
+        cyan="#83c092"
+        green="#a7c080"
+        orange="#e69875"
+        purple="#d699b6"
+        red="#e67e80"
+        yellow="#dbbc7f"
+        ;;
+    everforest-dark-soft)
+        kitty_theme="everforest-dark-soft.conf"
+        ghostty_theme="everforest-dark-soft"
+        nvim_theme="everforest"
+        palette_name="everforest_dark_soft"
+        nvim_setup='vim.g.everforest_background = "soft"'
+        bg="#333c43"
+        fg="#d3c6aa"
+        blue="#7fbbb3"
+        cyan="#83c092"
+        green="#a7c080"
+        orange="#e69875"
+        purple="#d699b6"
+        red="#e67e80"
+        yellow="#dbbc7f"
+        ;;
+    everforest-light-hard)
+        kitty_theme="everforest-light-hard.conf"
+        ghostty_theme="everforest-light-hard"
+        nvim_theme="everforest"
+        palette_name="everforest_light_hard"
+        nvim_setup='vim.o.background = "light"
+vim.g.everforest_background = "hard"'
+        bg="#fffbef"
+        fg="#5c6a72"
+        blue="#3a94c5"
+        cyan="#35a77c"
+        green="#8da101"
+        orange="#dfa000"
+        purple="#df69ba"
+        red="#f85552"
+        yellow="#dfa000"
+        ;;
+    everforest-light-medium)
+        kitty_theme="everforest-light-medium.conf"
+        ghostty_theme="everforest-light-medium"
+        nvim_theme="everforest"
+        palette_name="everforest_light_medium"
+        nvim_setup='vim.o.background = "light"
+vim.g.everforest_background = "medium"'
+        bg="#fdf6e3"
+        fg="#5c6a72"
+        blue="#3a94c5"
+        cyan="#35a77c"
+        green="#8da101"
+        orange="#dfa000"
+        purple="#df69ba"
+        red="#f85552"
+        yellow="#dfa000"
+        ;;
+    everforest-light-soft)
+        kitty_theme="everforest-light-soft.conf"
+        ghostty_theme="everforest-light-soft"
+        nvim_theme="everforest"
+        palette_name="everforest_light_soft"
+        nvim_setup='vim.o.background = "light"
+vim.g.everforest_background = "soft"'
+        bg="#f3ead3"
+        fg="#5c6a72"
+        blue="#3a94c5"
+        cyan="#35a77c"
+        green="#8da101"
+        orange="#dfa000"
+        purple="#df69ba"
+        red="#f85552"
+        yellow="#dfa000"
+        ;;
+    nightfox)
+        kitty_theme="nightfox.conf"
+        ghostty_theme="nightfox"
+        nvim_theme="nightfox"
+        palette_name="nightfox"
+        bg="#192330"
+        fg="#cdcecf"
+        blue="#719cd6"
+        cyan="#63cdcf"
+        green="#81b29a"
+        orange="#f4a261" # Nightfox's own documented "extended" orange accent
+        purple="#9d79d6"
+        red="#c94f6d"
+        yellow="#dbc074"
+        ;;
+    dayfox)
+        kitty_theme="dayfox.conf"
+        ghostty_theme="dayfox"
+        nvim_theme="dayfox"
+        palette_name="dayfox"
+        bg="#f6f2ee"
+        fg="#3d2b5a"
+        blue="#2848a9"
+        cyan="#287980"
+        green="#396847"
+        orange="#955f61"
+        purple="#6e33ce"
+        red="#a5222f"
+        yellow="#ac5402"
+        ;;
+    dawnfox)
+        kitty_theme="dawnfox.conf"
+        ghostty_theme="dawnfox"
+        nvim_theme="dawnfox"
+        palette_name="dawnfox"
+        bg="#faf4ed"
+        fg="#575279"
+        blue="#286983"
+        cyan="#56949f"
+        green="#618774"
+        orange="#d7827e"
+        purple="#907aa9"
+        red="#b4637a"
+        yellow="#ea9d34"
+        ;;
+    duskfox)
+        kitty_theme="duskfox.conf"
+        ghostty_theme="duskfox"
+        nvim_theme="duskfox"
+        palette_name="duskfox"
+        bg="#232136"
+        fg="#e0def4"
+        blue="#569fba"
+        cyan="#9ccfd8"
+        green="#a3be8c"
+        orange="#ea9a97"
+        purple="#c4a7e7"
+        red="#eb6f92"
+        yellow="#f6c177"
+        ;;
+    nordfox)
+        kitty_theme="nordfox.conf"
+        ghostty_theme="nordfox"
+        nvim_theme="nordfox"
+        palette_name="nordfox"
+        bg="#2e3440"
+        fg="#cdcecf"
+        blue="#81a1c1"
+        cyan="#88c0d0"
+        green="#a3be8c"
+        orange="#c9826b"
+        purple="#b48ead"
+        red="#bf616a"
+        yellow="#ebcb8b"
+        ;;
+    terafox)
+        kitty_theme="terafox.conf"
+        ghostty_theme="terafox"
+        nvim_theme="terafox"
+        palette_name="terafox"
+        bg="#152528"
+        fg="#e6eaea"
+        blue="#5a93aa"
+        cyan="#a1cdd8"
+        green="#7aa4a1"
+        orange="#ff8349"
+        purple="#ad5c7c"
+        red="#e85c51"
+        yellow="#fda47f"
+        ;;
+    carbonfox)
+        kitty_theme="carbonfox.conf"
+        ghostty_theme="carbonfox"
+        nvim_theme="carbonfox"
+        palette_name="carbonfox"
+        bg="#161616"
+        fg="#f2f4f8"
+        blue="#78a9ff"
+        cyan="#33b1ff"
+        green="#25be6a"
+        orange="#3ddbd9"
+        purple="#be95ff"
+        red="#ee5396"
+        yellow="#08bdba"
         ;;
     esac
 }
@@ -233,7 +487,8 @@ theme = $ghostty_theme
 EOF
 
     cat >"$THEME_STATE_DIR/nvim.lua" <<EOF
-vim.cmd.colorscheme("$nvim_theme")
+${nvim_setup:+$nvim_setup
+}vim.cmd.colorscheme("$nvim_theme")
 EOF
 
     write_starship
@@ -245,7 +500,11 @@ EOF
 
 case "${1:-}" in
 list)
-    printf '%s\n' tokyo-night catppuccin-mocha rose-pine-moon gruvbox-dark evergarden-spring
+    printf '%s\n' tokyo-night catppuccin-mocha rose-pine-moon gruvbox-dark evergarden-spring \
+        vscode-dark vscode-light \
+        everforest-dark-hard everforest-dark-medium everforest-dark-soft \
+        everforest-light-hard everforest-light-medium everforest-light-soft \
+        nightfox dayfox dawnfox duskfox nordfox terafox carbonfox
     ;;
 current)
     if [[ -r "$THEME_STATE_DIR/current" ]]; then

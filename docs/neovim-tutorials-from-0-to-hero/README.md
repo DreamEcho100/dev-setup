@@ -129,11 +129,11 @@ Before starting, confirm you have these. Check them off as you go:
 - [ ] **Terminal basics** — you can navigate directories with `cd`, list files
       with `ls`, and you know what `~` means.
 - [ ] **git installed** — run `git --version`. You should see a version number.
-- [ ] **This repo cloned** — `git clone <repo-url> ~/mfansible` or wherever
+- [ ] **This repo cloned** — `git clone <repo-url> ~/dev-setup` or wherever
       you've put it.
 - [ ] **Ansible installed** — `ansible --version`. If missing:
       `sudo apt install ansible` (Debian/Ubuntu) or `brew install ansible` (mac).
-- [ ] **Playbook run at least once** — `cd ~/mfansible && ansible-playbook neovim.yml -K`.
+- [ ] **Playbook run at least once** — `cd ~/dev-setup && ansible-playbook neovim.yml -K`.
       This builds Neovim from source, installs LSP servers, formatters,
       ripgrep, fd, and a bunch of other tools.
 - [ ] **Neovim >= 0.10** — `nvim --version`. The config uses APIs that require

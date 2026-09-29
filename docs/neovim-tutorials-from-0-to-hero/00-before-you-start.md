@@ -605,7 +605,7 @@ Check each of these before running the playbook:
 
 ```bash
 # Navigate to the repo root
-cd ~/mfansible    # adjust to wherever you cloned the repo
+cd ~/dev-setup    # adjust to wherever you cloned the repo
 
 # Run with sudo password prompt (-K means "ask BECOME password"):
 ansible-playbook neovim.yml -K
@@ -888,12 +888,12 @@ sudo npm install -g \
 pip3 install --user pynvim ruff black isort pylint
 
 # Step 5: Link (or copy) the config
-# If the repo is at ~/mfansible:
+# If the repo is at ~/dev-setup:
 mkdir -p ~/.config
-ln -sf ~/mfansible/dotfiles/.config/nvim ~/.config/nvim
+ln -sf ~/dev-setup/dotfiles/.config/nvim ~/.config/nvim
 
 # Or copy it:
-cp -r ~/mfansible/dotfiles/.config/nvim ~/.config/nvim
+cp -r ~/dev-setup/dotfiles/.config/nvim ~/.config/nvim
 
 # Step 6: First launch — install plugins
 nvim

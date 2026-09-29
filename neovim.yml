@@ -298,9 +298,15 @@
 
     - name: Install Python editor tools
       ansible.builtin.command:
-        cmd: python3 -m pip install --user --upgrade pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
+        cmd: python3 -m pip install --user --upgrade --break-system-packages pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
       changed_when: true
       failed_when: false
+
+    - name: Ensure Jupyter runtime dir exists (jupyter_client doesn't auto-create it)
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.local/share/jupyter/runtime"
+        state: directory
+        mode: "0700"
 
     - name: Verify installed Neovim
       ansible.builtin.command: "{{ neovim_install_prefix }}/bin/nvim --version"

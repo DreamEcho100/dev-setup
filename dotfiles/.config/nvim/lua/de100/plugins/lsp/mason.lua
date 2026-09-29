@@ -92,7 +92,11 @@ return {
                 "js-debug-adapter",
                 "local-lua-debugger-vscode",
                 "luacheck",
-                "markdownlint",
+                -- markdownlint-cli2, not the legacy markdownlint-cli:
+                -- confirmed the older tool never searches parent
+                -- directories for .markdownlint.json/etc — only cli2
+                -- does real upward config discovery.
+                "markdownlint-cli2",
                 "prettier",
                 "prettierd",
                 "pylint",

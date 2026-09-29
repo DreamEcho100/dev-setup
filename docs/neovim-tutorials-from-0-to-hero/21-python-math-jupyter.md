@@ -84,24 +84,30 @@ Open any `.ipynb` file normally:
 :e notebook.ipynb
 ```
 
-`jupytext.nvim` intercepts the read, converts the notebook to a percent-format
-Markdown/Python buffer behind the scenes, and converts it back to valid
-`.ipynb` JSON on save. You edit readable text; the file on disk stays a
-real notebook any other tool (JupyterLab, VS Code, `nbconvert`) can open.
+`jupytext.nvim` intercepts the read, converts the notebook to a Markdown
+buffer behind the scenes (this config uses jupytext's `"markdown"` style, not
+percent-format — see `plugins/jupytext.lua`), and converts it back to valid
+`.ipynb` JSON on save. You edit readable text; the file on disk stays a real
+notebook any other tool (JupyterLab, VS Code, `nbconvert`) can open.
 
-A percent-format cell looks like this:
+A code cell is a fenced code block with the language and the cell's id as
+attributes:
 
-```python
-# %%
+````markdown
+```{python id="9voiYnfRbiZC"}
 import numpy as np
 import matplotlib.pyplot as plt
 
 x = np.linspace(0, 2 * np.pi, 200)
 plt.plot(x, np.sin(x))
 ```
+````
 
-The `# %%` marker is the cell boundary. Anything between two markers (or
-before the first one) is one cell.
+`render-markdown.nvim` restyles that fence line into a compact header in the
+buffer (you'll see something like `♦ python id="9voiYnfRbiZC"` instead of the
+raw triple-backtick line) — this is just display, the underlying file still
+has real markdown fences. Markdown/prose cells are plain markdown text
+between code fences, rendered normally (headings, etc.).
 
 ## 4. Running Cells
 
@@ -113,12 +119,36 @@ First, attach a kernel to the buffer (once per session):
 
 Pick a kernel (usually `python3`) when prompted. Then:
 
-| Key                   | Action                               |
-| --------------------- | ------------------------------------ |
-| `<leader>jr`          | Run/re-run the cell under the cursor |
-| `<leader>jv` (visual) | Run only the selected lines          |
-| `]j`                  | Jump to the next cell/output         |
-| `[j`                  | Jump to the previous cell/output     |
+| Key                   | Action                                          |
+| --------------------- | ------------------------------------------------ |
+| `<leader>jr`          | Create/run the cell under the cursor (works on a cell you've never run before) |
+| `<leader>jv` (visual) | Create/run a cell from the selected lines         |
+| `]b` / `[b`           | Jump to the next/previous code block, **run or not** |
+| `]j` / `[j`           | Jump to the next/previous **already-run** cell/output |
+
+**Important distinction, worth understanding, not just memorizing:** a
+"Molten cell" only exists once you've actually evaluated some code —
+molten-nvim has no built-in concept of the markdown fenced code blocks
+jupytext generates. `<leader>jr` doesn't call Molten's own
+`:MoltenReevaluateCell` (that command only *re-runs a cell that already
+exists* — it silently does nothing on code you've never evaluated).
+Instead, `<leader>jr` calls quarto-nvim's `require("quarto.runner").run_cell()`,
+which uses treesitter to find the code block under your cursor, creates a
+Molten cell from it, and evaluates it — this is what actually works the
+first time. `]j`/`[j` (`:MoltenNext`/`:MoltenPrev`) only navigate between
+cells that already exist, so on a fresh notebook they'll have nothing to do
+until you've run at least one cell with `<leader>jr`.
+
+For linear "step through the notebook top to bottom" work — the normal way
+to follow a course video — use `]b`/`[b` instead: these come from
+`nvim-treesitter-textobjects` (`plugins/treesitter-textobjects.lua`) and
+jump between *every* fenced code block structurally, regardless of whether
+Molten has ever seen it. This is the documented pattern from molten-nvim's
+own `docs/Notebook-Setup.md` ("Treesitter Text Objects" section), adapted
+for this config's newer main-branch `nvim-treesitter` (the
+`nvim-treesitter-textobjects.move` module, not the older
+`nvim-treesitter.configs` API that doc's own snippet assumes). Typical flow:
+`]b` to the next block, `<leader>jr` to run it, `]b` again, repeat.
 
 That's the entire keymap surface on purpose — everything else below is a rare
 enough action that it's invoked directly as an Ex command instead (same
@@ -281,7 +311,8 @@ python3 -m pip show pylatexenc
 - [ ] Repeat the plot test inside tmux to confirm passthrough works.
 - [ ] Write a Markdown cell with inline math (`$x^2 + y^2 = z^2$`) and confirm
       it renders as unicode.
-- [ ] Navigate between cells with `]j` / `[j`.
+- [ ] Navigate between already-run cells with `]j` / `[j`.
+- [ ] Navigate between all code blocks (run or not) with `]b` / `[b`.
 - [ ] Open (or create) a `.qmd` file and run a Python cell in it.
 - [ ] Open a `.tex` file and compile it with vimtex.
 

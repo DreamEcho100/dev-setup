@@ -66,7 +66,7 @@ case "${XDG_CACHE_HOME:-}" in
 esac
 
 DOTFILES_DIR="$(cd "$script_dir/../../dotfiles" && pwd)"
-BACKUP_ROOT="$XDG_STATE_HOME/mfansible/backups/dotfiles-$(date +%Y%m%d-%H%M%S)"
+BACKUP_ROOT="$XDG_STATE_HOME/dev-setup/backups/dotfiles-$(date +%Y%m%d-%H%M%S)"
 
 log "Real user:        $REAL_USER"
 log "Real user home:   $REAL_HOME"

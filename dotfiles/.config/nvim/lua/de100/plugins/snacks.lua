@@ -33,6 +33,9 @@ return {
             -- HACK: read picker docs @ https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
             picker = {
                 enabled = true,
+                -- Routes vim.ui.select (LSP code actions, etc.) through
+                -- Snacks' picker UI instead of Neovim's plain default list.
+                ui_select = true,
                 matchers = {frecency = true, cwd_bonus = false},
                 -- exclude = {".git", "node_modules", "dist", "build"},
 

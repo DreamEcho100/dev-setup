@@ -7,15 +7,35 @@
 -- https://github.com/jmbuhr/otter.nvim
 return {
     "quarto-dev/quarto-nvim",
-    ft = { "quarto" },
+    -- "markdown" included: jupytext generates markdown for .ipynb, and
+    -- molten-nvim's own docs (Notebook-Setup.md) say this combo gets "the
+    -- full benefits of quarto-nvim" on those buffers too, not just .qmd.
+    ft = { "quarto", "markdown" },
     dependencies = { "jmbuhr/otter.nvim", "nvim-treesitter/nvim-treesitter" },
     opts = {
         lspFeatures = {
             languages = { "python" },
-            chunks = "curly",
+            -- "curly" (quarto-nvim's own default) only matches fences like
+            -- ```{python}` (real .qmd files). jupytext's markdown style
+            -- generates plain ```python id="..."` fences with no braces, so
+            -- any non-"curly" value here makes quarto-nvim fall back to the
+            -- standard nvim-treesitter markdown injections query instead,
+            -- which correctly matches plain fences (confirmed by running
+            -- `jupytext --to markdown` directly on a real course notebook).
+            chunks = "plain",
             diagnostics = { enabled = true, triggers = { "BufWritePost" } },
             completion = { enabled = true },
         },
         codeRunner = { enabled = true, default_method = "molten" },
+    },
+    keys = {
+        -- The actual "create + run this cell" command (works on first run,
+        -- unlike Molten's own :MoltenReevaluateCell which requires the cell
+        -- to already exist). Dispatches to Molten via codeRunner above.
+        {
+            "<leader>jr",
+            function() require("quarto.runner").run_cell() end,
+            desc = "Jupyter: run/re-run cell",
+        },
     },
 }

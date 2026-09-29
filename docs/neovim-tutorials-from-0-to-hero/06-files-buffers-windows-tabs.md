@@ -978,7 +978,7 @@ your current working directory.
                Snapshot: all open buffers, window layout, tab structure,
                cursor positions in every buffer, current directory.
 
-<leader>wr   → RESTORE the session for this working directory
+:AutoSession restore   → RESTORE the session for this working directory
                Loads the snapshot: reopens all buffers, recreates your splits,
                returns cursor to where it was in each file.
 ```
@@ -1005,7 +1005,7 @@ When you execute `<leader>ws`, the session file records:
 # Morning arrival:
 $ cd ~/projects/myapp
 $ nvim
-<leader>wr     → everything comes back
+:AutoSession restore     → everything comes back
                  Your splits are restored.
                  Each file opens at the cursor position you left.
                  All your background buffers are loaded.
@@ -1041,7 +1041,7 @@ manual control? Several practical reasons:
 
 > 💡 **VSCode equivalent**
 >
-> `<leader>ws` / `<leader>wr` is the manual equivalent of VS Code's automatic workspace state
+> `<leader>ws` / `:AutoSession restore` is the manual equivalent of VS Code's automatic workspace state
 > saving. VSCode does this silently when you close (recording which files were open, their
 > scroll positions, etc.) and restores when you reopen the project. Neovim with auto-session
 > is the same concept, with you in control of the save/restore cycle rather than it being
@@ -1065,7 +1065,7 @@ $ nvim
 Neovim opens. Empty. But you know what to do:
 
 ```
-<leader>wr   → restore the session from yesterday
+:AutoSession restore   → restore the session from yesterday
 ```
 
 Your screen fills back up. The vertical split you had — `app.ts` on the left, `types.ts` on
@@ -1222,7 +1222,7 @@ Tomorrow:
 ```
 $ cd ~/projects/myapp
 $ nvim
-<leader>wr      → everything back, exactly here
+:AutoSession restore      → everything back, exactly here
 ```
 
 ---
@@ -1349,10 +1349,10 @@ $ nvim
 
 ### auto-session
 
-| Key          | Action                                        |
-| ------------ | --------------------------------------------- |
-| `<leader>ws` | Save session for current working directory    |
-| `<leader>wr` | Restore session for current working directory |
+| Key / Command           | Action                                        |
+| ------------------------ | --------------------------------------------- |
+| `<leader>ws`             | Save session for current working directory    |
+| `:AutoSession restore`   | Restore session for current working directory |
 
 ---
 
@@ -1459,7 +1459,7 @@ directory with at least a few files — a real project is ideal.
 6. Save the session: `<leader>ws`.
 7. Close Neovim completely: `:qa`.
 8. Reopen Neovim in the same directory: `nvim`.
-9. Restore the session: `<leader>wr`.
+9. Restore the session: `:AutoSession restore`.
 10. Verify: Do your splits come back? Are your Harpoon bookmarks intact (`<leader>h1-3`)?
     Are all your buffers loaded (`:ls`)?
 11. Use `<leader>pk` to search for "session save" and find the keymap you just used.

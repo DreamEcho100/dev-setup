@@ -170,11 +170,14 @@ There are things auto-session cannot or does not save:
 
 Understanding these limitations helps you avoid surprises. The rule of thumb: if it's a file on disk, it restores perfectly. If it's a running process or in-memory state, it doesn't.
 
-### The Keymaps: `<leader>wr` and `<leader>ws`
+### `<leader>ws` and `:AutoSession restore`
 
-Your config provides two explicit session keymaps:
+Your config provides one explicit session keymap, `<leader>ws` (save); restore
+is invoked directly as an Ex command instead of a keymap, since it's a rarer,
+occasional action (see tutorial 13, section 4.6, for this config's general
+"commented-out keymap, use the Ex command" convention).
 
-**`<leader>wr` — Restore session**
+**`:AutoSession restore` — Restore session**
 
 This manually triggers a session restore for the current directory. Use this when:
 
@@ -182,7 +185,10 @@ This manually triggers a session restore for the current directory. Use this whe
 - The automatic restore didn't trigger for some reason
 - You want to go back to a previously saved state (discarding changes to the session layout you've made since)
 
-When you press `<leader>wr`, auto-session looks up the session file for the current directory and loads it. All currently open buffers close (you'll be prompted if there are unsaved changes), and the session's buffers and layout load in their place.
+When you run `:AutoSession restore`, auto-session looks up the session file
+for the current directory and loads it. All currently open buffers close
+(you'll be prompted if there are unsaved changes), and the session's buffers
+and layout load in their place.
 
 **`<leader>ws` — Save session manually**
 
@@ -212,12 +218,12 @@ Sessions are stored in `~/.local/share/nvim/sessions/`. You can inspect this dir
 ls ~/.local/share/nvim/sessions/
 ```
 
-You'll see files with names that look like mangled paths:
+You'll see files with names that look like mangled paths:s
 
 ```
 %home%viavi%projects%my-api-project.vim
 %home%viavi%projects%frontend-app.vim
-%home%viavi%Desktop%workspaces%github%DreamEcho100%mfansible.vim
+%home%viavi%Desktop%workspaces%github%DreamEcho100%dev-setup.vim
 ```
 
 The naming convention is: take the absolute path of the directory, replace every `/` with `%`, and add `.vim` as the extension. So `/home/viavi/projects/my-api-project` becomes `%home%viavi%projects%my-api-project.vim`.
@@ -261,16 +267,16 @@ Sometimes a session file gets corrupted, or the files it references have been mo
 rm ~/.local/share/nvim/sessions/%home%viavi%projects%problematic-project.vim
 ```
 
-**Fix 2: Use the :Autosession command**
+**Fix 2: Use the :AutoSession command**
 
-auto-session provides a `:Autosession` command with subcommands:
+auto-session provides an `:AutoSession` command with subcommands:
 
 ```vim
-:Autosession delete          " Delete the session for current directory
-:Autosession search          " Open a picker to search/manage sessions
+:AutoSession delete          " Delete the session for current directory
+:AutoSession search          " Open a picker to search/manage sessions
 ```
 
-`:Autosession delete` removes the session file for the current directory and lets you start fresh. Next time you exit Neovim, a new (clean) session file will be created.
+`:AutoSession delete` removes the session file for the current directory and lets you start fresh. Next time you exit Neovim, a new (clean) session file will be created.
 
 **Fix 3: Start Neovim with session restore disabled**
 
@@ -1293,7 +1299,7 @@ You're immediately in your tmux session. The status bar shows `api  frontend  in
   /home/viavi/projects/frontend-app
   /home/viavi/projects/ml-pipeline
   /home/viavi/projects/infra-k8s
-  /home/viavi/Desktop/workspaces/github/DreamEcho100/mfansible
+  /home/viavi/Desktop/workspaces/github/DreamEcho100/dev-setup
 ```
 
 You type `api` — the list narrows to `api-service`. Enter.
@@ -1917,9 +1923,9 @@ Adjust your layout and make it the permanent setup for this project.
 |  tmux a -t NAME  Reattach to named session                       |
 +------------------------------------------------------------------+
 |  auto-session                                                    |
-|  <leader>wr      Restore session for current directory           |
 |  <leader>ws      Save session manually                           |
-|  :Autosession delete    Delete session for current directory     |
+|  :AutoSession restore   Restore session for current directory    |
+|  :AutoSession delete    Delete session for current directory     |
 |  ~/.local/share/nvim/sessions/   Session files location          |
 +------------------------------------------------------------------+
 |  DATABASE (dadbod-ui)                                            |

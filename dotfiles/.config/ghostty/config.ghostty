@@ -1,4 +1,4 @@
-# Ghostty terminal profile managed by mfansible.
+# Ghostty terminal profile managed by dev-setup.
 # Override machine-specific settings in local.ghostty.
 
 theme = tokyo-night

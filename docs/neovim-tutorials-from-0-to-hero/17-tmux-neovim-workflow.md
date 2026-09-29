@@ -353,7 +353,7 @@ With this rule:
 
 ```
 tmux ls
-mfansible     (2 windows)   [attached]
+dev-setup     (2 windows)   [attached]
 my-api        (3 windows)
 my-frontend   (3 windows)
 dotfiles      (1 window)
@@ -367,7 +367,7 @@ Switching projects is `<C-f>` or `<prefix>$` to pick from the list.
 Here's the template used for most projects in this workflow:
 
 ```
-Session: mfansible
+Session: dev-setup
 │
 ├── Window 1: "editor"    ← Neovim (main workspace)
 │   └── Full-width Neovim, or Neovim + a small terminal split for quick commands
@@ -452,12 +452,12 @@ opening Neovim, auto-session picks up the right session.
 ### The Combined Workflow
 
 ```
-1. <C-f> → pick "mfansible" project
-   → tmux creates/switches to "mfansible" session
+1. <C-f> → pick "dev-setup" project
+   → tmux creates/switches to "dev-setup" session
    → Neovim isn't open yet (first launch of the day)
 
 2. Press <prefix>1 to go to the editor window
-   → cd ~/Desktop/workspaces/github/DreamEcho100/mfansible
+   → cd ~/Desktop/workspaces/github/DreamEcho100/dev-setup
    → nvim .
    → auto-session kicks in: restores your last Neovim state in this directory
    → You're back to the exact files you had open yesterday
@@ -465,7 +465,7 @@ opening Neovim, auto-session picks up the right session.
 3. Do work. Neovim auto-saves the session on exit (:q).
 
 4. <C-f> → pick "my-api" project
-   → tmux switches session (mfansible is still alive, just backgrounded)
+   → tmux switches session (dev-setup is still alive, just backgrounded)
    → You're in my-api, open Neovim, auto-session restores that project's state
 
 5. At the end of the day: <prefix>d to detach
@@ -531,14 +531,14 @@ for you.
 
 ### A Simple Example
 
-Create this at `~/Desktop/workspaces/mfansible/.ready-tmux.sh`:
+Create this at `~/Desktop/workspaces/dev-setup/.ready-tmux.sh`:
 
 ```bash
 #!/usr/bin/env bash
 # .ready-tmux.sh — project workspace setup script
 
-SESSION="mfansible"
-WORKDIR="$HOME/Desktop/workspaces/github/DreamEcho100/mfansible"
+SESSION="dev-setup"
+WORKDIR="$HOME/Desktop/workspaces/github/DreamEcho100/dev-setup"
 
 # If session already exists, just attach
 if tmux has-session -t "$SESSION" 2>/dev/null; then
@@ -566,7 +566,7 @@ tmux switch-client -t "$SESSION" 2>/dev/null || tmux attach-session -t "$SESSION
 Make it executable:
 
 ```bash
-chmod +x ~/Desktop/workspaces/mfansible/.ready-tmux.sh
+chmod +x ~/Desktop/workspaces/dev-setup/.ready-tmux.sh
 ```
 
 Run it:
@@ -574,7 +574,7 @@ Run it:
 ```bash
 ~/.ready-tmux.sh
 # or
-~/.local/bin/mfansible    # if you alias it
+~/.local/bin/dev-setup    # if you alias it
 ```
 
 ### A Go Project Template
@@ -896,7 +896,7 @@ Do these before moving on. They'll make everything in this chapter concrete.
 
 1. Make sure `fzf` is installed: `which fzf`
 2. Run `tmux-sessionizer` directly from a terminal
-3. Pick a project directory (e.g., the mfansible repo)
+3. Pick a project directory (e.g., the dev-setup repo)
 4. Verify you land in a new tmux session named after the directory
 5. Now switch back to your original session: `<prefix>s` → pick it
 6. From inside Neovim (open any file), press `<C-f>`
@@ -907,17 +907,17 @@ Do these before moving on. They'll make everything in this chapter concrete.
 
 ### Exercise 4: The Full Project Setup
 
-Set up a proper workspace for the mfansible repo:
+Set up a proper workspace for the dev-setup repo:
 
-1. Run `tmux-sessionizer` and pick the mfansible directory
+1. Run `tmux-sessionizer` and pick the dev-setup directory
 2. Rename window 1: `<prefix>,` → type `editor`
 3. Open Neovim: `nvim .`
 4. Create window 2: `<prefix>c` → name it `git` → run `git log --oneline -10`
 5. Create window 3: `<prefix>c` → name it `misc` → leave it at bash
 6. Navigate between windows with `<prefix>1`, `<prefix>2`, `<prefix>3`
 7. From window 1 (Neovim), press `<C-f>` and pick a different project
-8. Notice: the mfansible session is preserved in the background
-9. Switch back: `<prefix>s` → pick mfansible → your Neovim is still there
+8. Notice: the dev-setup session is preserved in the background
+9. Switch back: `<prefix>s` → pick dev-setup → your Neovim is still there
 
 **Goal:** Experience the "project = session" pattern.
 

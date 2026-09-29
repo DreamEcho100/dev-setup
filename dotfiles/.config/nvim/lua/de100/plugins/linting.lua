@@ -81,7 +81,7 @@ return {
             javascript = { "biomejs", "eslint_d" },
             javascriptreact = { "biomejs", "eslint_d" },
             lua = { "luacheck" },
-            markdown = { "markdownlint", "codespell" },
+            markdown = { "markdownlint-cli2", "codespell" },
             python = { "ruff", "pylint" },
             sh = { "shellcheck" },
             svelte = { "biomejs", "eslint_d" },

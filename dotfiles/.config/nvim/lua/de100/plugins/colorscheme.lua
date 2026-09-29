@@ -330,5 +330,24 @@ return {
 
             -- vim.cmd.colorscheme("catppuccin")
         end
-    }
+    }, -- NOTE: VS Code (Dark+/Light+) — style set per-variant by de100-theme
+    {
+        "Mofiqul/vscode.nvim",
+        name = "vscode-nvim",
+        priority = 1000,
+        opts = {style = "dark", transparent = false, italic_comments = true},
+        config = function(_, opts)
+            require("vscode").setup(opts)
+        end
+    }, -- NOTE: Everforest — warm, soft-contrast, designed for eye comfort
+    {
+        "sainnhe/everforest",
+        lazy = false,
+        priority = 1000,
+        init = function()
+            vim.g.everforest_background = "medium"
+            vim.g.everforest_better_performance = 1
+        end
+    }, -- NOTE: Nightfox family (nightfox/dayfox/dawnfox/duskfox/nordfox/terafox/carbonfox)
+    {"EdenEast/nightfox.nvim", lazy = false, priority = 1000}
 }
