@@ -46,8 +46,9 @@ after this chapter was added, the dependencies below are already installed.
 If you're not sure, verify each:
 
 ```sh
-python3 -m pip show pynvim jupyter_client ipykernel jupytext pylatexenc
+python3 -m pip show pynvim jupyter_client ipykernel jupytext pylatexenc matplotlib sympy
 dpkg -l | grep libmagickwand-dev   # Debian/Ubuntu
+dpkg -l | grep dvipng              # Debian/Ubuntu — needed for §6a's full-LaTeX math output
 ```
 
 Then, inside Neovim, run once (only needed after installing/updating
@@ -78,11 +79,24 @@ plots render as blank space or garbled text instead of an image.
 
 ## 3. Opening a Notebook
 
-Open any `.ipynb` file normally:
+Open any existing `.ipynb` file normally:
 
 ```vim
 :e notebook.ipynb
 ```
+
+To create a brand-new, empty notebook, use `:JupytextNew` instead of just
+touching a file (a genuinely empty `.ipynb` isn't valid JSON, so a plain
+`:e new.ipynb` on a file that doesn't exist yet, or one created empty by
+something like oil.nvim, would otherwise be nothing to convert):
+
+```vim
+:JupytextNew notebooks/lesson1
+```
+
+Path can be relative or absolute; `.ipynb` is appended if you leave it off,
+and it refuses to overwrite an existing file. `<leader>jn` does the same
+thing but prompts for the path interactively.
 
 `jupytext.nvim` intercepts the read, converts the notebook to a Markdown
 buffer behind the scenes (this config uses jupytext's `"markdown"` style, not
@@ -189,6 +203,99 @@ though it should already be in this config's `ensure_installed` list).
 For anything beyond simple inline notation — derivations, multi-line proofs,
 numbered equations — write a `.tex` file instead and lean on the existing
 vimtex setup (see §11).
+
+## 6a. Rendering Math *Output* (Code Cells, Not Markdown)
+
+§6 is for prose — text you write in a Markdown cell. This section is
+different: it's for math that comes back as **code-cell output**, e.g.
+`display(Math("..."))` or a bare `sympy` expression left as a cell's last
+line. That output only carries a `text/latex` mimetype (plus a plain-text
+repr) by default — Molten only rasterizes real image mimetypes (`image/png`,
+`image/svg+xml`) through image.nvim, so it can't turn `text/latex` into a
+picture on its own. Without help, that would just show:
+
+```text
+Out[7]: <IPython.core.display.Math object>
+```
+
+**`Math(...)`/`Latex(...)` already auto-render — no extra code needed.**
+`dotfiles/.config/ipython/startup/10-de100-math-render.py` (deployed by
+`neovim.yml`/`dev-env/runs/neovim` into
+`~/.ipython/profile_default/startup/`, which every IPython/Jupyter kernel
+runs at startup) registers an `image/png` formatter for both classes, using
+matplotlib's mathtext parser to rasterize the LaTeX automatically. So
+`display(Math("x^2 + y^2 = z^2"))` just works, exactly as called, with a real
+rendered image — confirmed via a real kernel round-trip, not just a
+standalone script. Covers most course notation (fractions, exponents, Greek
+letters, sums, integrals) but only mathtext's subset of LaTeX — no arbitrary
+packages or custom macros; if the string can't be parsed, it silently falls
+back to the plain-text repr rather than erroring.
+
+The rendered image's colors track your active Neovim colorscheme rather than
+being hardcoded: `dotfiles/.config/nvim/lua/de100/utils/theme-colors.lua`
+exports the current `Normal` highlight's bg/fg to
+`~/.local/state/nvim/de100/theme/colors.json` on every colorscheme change
+(including at startup), and the render hook reads that file fresh on every
+call. Most of this config's themes set a transparent `Normal` background
+(no `bg` in that file), so the image falls back to a transparent background
+with themed text color in that case — a theme that does set an explicit
+background renders fully opaque, matching it exactly.
+
+Considered but **not** using `molten-nvim`'s own native `text/latex`
+rendering path (the `pnglatex` package, real `pdflatex`) as an alternative:
+`pnglatex` compiles through a fixed `\documentclass{article}` template with
+no `xcolor`/color package loaded, so there's no clean way to make it
+theme-aware without patching `molten-nvim`'s own `_from_latex` — the same
+"fragile against `:Lazy update`" problem that rules out most third-party
+plugin patches. The custom hook here, where colors are fully under our
+control, is the better fit for this config's needs.
+
+For math that isn't already wrapped in `Math()`/`Latex()`, or when you want
+full LaTeX fidelity (arbitrary packages/macros) rather than mathtext's
+subset, two more options:
+
+- **`;mathimg`** (LuaSnip snippet, no extra system dependencies) — the same
+  matplotlib mathtext approach, spelled out manually for a one-off plot-style
+  render:
+  ```python
+  import matplotlib.pyplot as plt
+  fig = plt.figure(figsize=(0.01, 0.01))
+  fig.text(0, 0, r"$x^2 + y^2 = z^2$", fontsize=20)
+  plt.axis("off")
+  plt.show()
+  ```
+
+- **`;sympymath`** (needs the `dvipng` package from §2) — full LaTeX fidelity,
+  using the same `pdflatex` this config already installs for vimtex:
+  ```python
+  import sympy
+  sympy.init_printing(use_latex="dvipng")
+  ```
+  Run once per session; after that, any bare `sympy` expression left as a
+  cell's last line auto-renders as a real rasterized-LaTeX image.
+
+### Math output isn't rendering
+
+If a cell running `Math(...)`/`Latex(...)` still shows
+`<IPython.core.display.Math object>` instead of an image, confirm the
+startup script actually loaded for this kernel: `:MoltenInfo` or check
+`~/.ipython/profile_default/startup/10-de100-math-render.py` exists and
+`matplotlib` is installed for the same Python the kernel uses
+(`python3 -m pip show matplotlib`). A syntax matplotlib's mathtext genuinely
+can't parse (arbitrary LaTeX packages/macros) falls back to the plain repr by
+design — reach for `;sympymath` for those instead.
+
+### Two math images in the same cell overlap/garble
+
+If a single cell runs more than one `display(Math(...))` (or mixes a plot
+with a Math display), the resulting images can render on top of each other.
+Traced to `molten-nvim` itself, not this config: `outputbuffer.py` gives
+every image chunk within one cell's output the same vertical position in
+its `virt`-text (inline) display mode, so `image.nvim` places the second
+image over the first. Not fixable here without patching `molten-nvim`'s own
+source (which `:Lazy update` would silently discard) — the practical
+workaround is one `Math()`/plot per cell. The common case, one image per
+cell, is unaffected.
 
 ## 7. When to Reach for `.qmd` Instead of `.ipynb`
 
@@ -311,6 +418,10 @@ python3 -m pip show pylatexenc
 - [ ] Repeat the plot test inside tmux to confirm passthrough works.
 - [ ] Write a Markdown cell with inline math (`$x^2 + y^2 = z^2$`) and confirm
       it renders as unicode.
+- [ ] Run a cell with `;mathimg` or `;sympymath` and confirm real rendered
+      math output (an image), not `<... object>` repr text.
+- [ ] Run `:JupytextNew scratch/test`, confirm it opens as an empty converted
+      notebook with no error.
 - [ ] Navigate between already-run cells with `]j` / `[j`.
 - [ ] Navigate between all code blocks (run or not) with `]b` / `[b`.
 - [ ] Open (or create) a `.qmd` file and run a Python cell in it.

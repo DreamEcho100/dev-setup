@@ -224,7 +224,11 @@ return {
                 desc = "Explorer picker (fuzzy, snacks)"
             }, {
                 "<leader>er",
-                function() require("snacks").explorer.reveal() end,
+                function()
+                    require("snacks").explorer.reveal({
+                        file = require("de100.utils.explorer-reveal").target_path()
+                    })
+                end,
                 desc = "Reveal current file (snacks explorer)"
             }, {
                 "<leader>pws",
@@ -248,7 +252,53 @@ return {
             {
                 "<leader>th",
                 function()
-                    require("snacks").picker.colorschemes({layout = "ivy"})
+                    local theme_persist = require("de100.utils.theme-persist")
+                    local vim_colorschemes =
+                        require("snacks.picker.source.vim").colorschemes
+                    local snacks_preview = require("snacks.picker.preview")
+
+                    require("snacks").picker.colorschemes({
+                        layout = "ivy",
+                        finder = function()
+                            return theme_persist.merge_items(vim_colorschemes())
+                        end,
+                        -- Same live-preview-then-revert-on-Esc shape as snacks'
+                        -- own preview.colorscheme, but applying through
+                        -- theme_persist.apply() so meta-variants (gruvbox-dark,
+                        -- vscode-light, everforest-*) render correctly during
+                        -- preview too, not just on confirm.
+                        preview = function(ctx)
+                            if not ctx.preview.state.colorscheme then
+                                ctx.preview.state.colorscheme = vim.g.colors_name or
+                                                                     "default"
+                                ctx.preview.state.background = vim.o.background
+                                ctx.preview.win:on("WinClosed", function()
+                                    vim.schedule(function()
+                                        if not ctx.preview.state.colorscheme then
+                                            return
+                                        end
+                                        vim.cmd("colorscheme " ..
+                                                    ctx.preview.state.colorscheme)
+                                        vim.o.background =
+                                            ctx.preview.state.background
+                                    end)
+                                end, {win = true})
+                            end
+                            vim.schedule(
+                                function() theme_persist.apply(ctx.item) end)
+                            snacks_preview.file(ctx)
+                        end,
+                        confirm = function(picker, item)
+                            picker:close()
+                            if item then
+                                picker.preview.state.colorscheme = nil
+                                vim.schedule(function()
+                                    theme_persist.apply(item)
+                                    theme_persist.persist(item)
+                                end)
+                            end
+                        end
+                    })
                 end,
                 desc = "Pick Color Schemes"
             }, {

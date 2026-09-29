@@ -11,7 +11,7 @@ one app. A terminal-native setup splits those jobs across focused tools.
 | Integrated terminal   | Kitty or Ghostty                                        |
 | Terminal profile      | zsh config in `~/.zshrc`                                |
 | Command palette       | shell aliases, `fzf`, `tmux-sessionizer`, Neovim Snacks |
-| Theme picker          | `de100-theme set <theme>`                               |
+| Theme picker          | `<leader>th` in Neovim, or `de100-theme-sync set <theme> --all` |
 | Terminal font setting | Kitty/Ghostty font config                               |
 | Terminal tabs/splits  | tmux sessions, windows, and panes                       |
 | Restore windows       | `tmux-resurrect` and `tmux-continuum`                   |
@@ -143,24 +143,32 @@ font-size = 13
 
 ## Theme Switching
 
-Use one command for terminals, Starship, and Neovim:
+Inside Neovim, `<leader>th` opens a live colorscheme picker and persists your
+choice on Enter directly — no shell command needed for that. From a shell
+(scripting, first-run provisioning, or syncing Kitty/Ghostty/Starship to match
+whatever Neovim already has), use `de100-theme-sync`. `set` always requires an
+explicit `--all` or `--targets=<comma-list>` — there's no implicit default:
 
 ```sh
-de100-theme list
-de100-theme current
-de100-theme set tokyo-night
-de100-theme set catppuccin-mocha
-de100-theme set rose-pine-moon
-de100-theme set gruvbox-dark
-de100-theme set evergarden-spring
+de100-theme-sync list
+de100-theme-sync current
+de100-theme-sync set tokyo-night --all
+de100-theme-sync set catppuccin-mocha --all
+de100-theme-sync set rose-pine-moon --all
+de100-theme-sync set gruvbox-dark --all
+de100-theme-sync set gruvbox-light --all
+de100-theme-sync set evergarden-spring --all
+de100-theme-sync set evergarden-lunar --all
 ```
 
-What it writes:
+Valid targets: `kitty`, `ghostty`, `starship`, `nvim`. What each writes:
 
-- `~/.config/kitty/local.conf`
-- `~/.config/ghostty/local.ghostty`
-- `~/.local/state/de100/theme/starship.toml`
-- `~/.local/state/de100/theme/nvim.lua`
+- `kitty` → `~/.config/kitty/local.conf`
+- `ghostty` → `~/.config/ghostty/local.ghostty`
+- `starship` → `~/.local/state/de100/theme/starship.toml`
+- `nvim` → `~/.local/state/nvim/de100/theme/nvim.lua` (Neovim's own `stdpath("state")`,
+  not the plain `~/.local/state/de100/theme/` this script otherwise uses — the same
+  file `<leader>th` writes)
 
 Those are local override/state files. They are ignored by Git, so theme changes
 do not dirty the repo.
@@ -170,7 +178,7 @@ Reload behavior:
 - Kitty: restart the terminal or reload config from Kitty controls.
 - Ghostty: reload config or restart the terminal.
 - Starship: open a new shell.
-- Neovim: restart or run `:colorscheme <name>` manually for a live preview.
+- Neovim: restart, or use `<leader>th` for an immediate, persisted change.
 
 ## tmux Basics
 

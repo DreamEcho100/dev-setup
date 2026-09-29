@@ -1,6 +1,6 @@
 # Machine-local Kitty overrides.
 # Copy to local.conf or use:
-#   de100-theme set catppuccin-mocha
+#   de100-theme-sync set catppuccin-mocha --all
 #
 # Examples:
 #   font_family FiraCode Nerd Font Mono

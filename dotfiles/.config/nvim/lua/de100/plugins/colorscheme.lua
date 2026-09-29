@@ -330,7 +330,7 @@ return {
 
             -- vim.cmd.colorscheme("catppuccin")
         end
-    }, -- NOTE: VS Code (Dark+/Light+) — style set per-variant by de100-theme
+    }, -- NOTE: VS Code (Dark+/Light+) — style set per-variant by de100-theme-sync / <leader>th (theme-persist.lua)
     {
         "Mofiqul/vscode.nvim",
         name = "vscode-nvim",

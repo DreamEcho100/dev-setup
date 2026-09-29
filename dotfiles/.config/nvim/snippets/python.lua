@@ -108,4 +108,21 @@ return {
 		desc = {"```python", "Union[TypeA, TypeB]", "```"}}, {
 		t("Union["), i(1, "TypeA"), t(", "), i(2, "TypeB"), t("]"),
 	}),
+
+	-- ── Math rendering (Molten/Jupyter output) ──────────────────────────────
+	-- Molten only rasterizes real image mimetypes (image/png, image/svg+xml);
+	-- IPython.display.Math/Latex only produce text/latex, which Molten can't
+	-- turn into a picture on its own. Both snippets route through an actual
+	-- image instead. See docs/neovim-tutorials-from-0-to-hero/21-python-math-jupyter.md.
+	s({trig = ";mathimg", name = "Render LaTeX math as an image (matplotlib mathtext)",
+		desc = {"```python", "import matplotlib.pyplot as plt", "fig = plt.figure(figsize=(0.01, 0.01))",
+			"fig.text(0, 0, r\"$...$\", fontsize=20)", "plt.axis(\"off\")", "plt.show()", "```"}}, {
+		t({"import matplotlib.pyplot as plt", "fig = plt.figure(figsize=(0.01, 0.01))",
+			"fig.text(0, 0, r\""}), t("$"), i(1, "x^2 + y^2 = z^2"), t("$"),
+		t("\", fontsize="), i(2, "20"), t({")", "plt.axis(\"off\")", "plt.show()"}),
+	}),
+	s({trig = ";sympymath", name = "sympy full-LaTeX auto-render setup (needs dvipng)",
+		desc = {"```python", "import sympy", "sympy.init_printing(use_latex=\"dvipng\")", "```"}}, {
+		t({"import sympy", "sympy.init_printing(use_latex=\"dvipng\")"}),
+	}),
 }

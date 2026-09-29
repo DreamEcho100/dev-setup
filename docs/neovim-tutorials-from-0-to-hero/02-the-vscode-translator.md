@@ -539,7 +539,7 @@ The `colorscheme.lua` file includes several themes configured and ready:
 - **rose-pine** (primary)
 - Others can be added via the colorschemes file
 
-The `<leader>th` picker lets you preview and switch themes live. The active theme is saved in `lua/current-theme.lua`.
+The `<leader>th` picker lets you preview themes live as you move through the list (`<Esc>` reverts), and pressing `<Enter>` both applies **and persists** your choice — it's still there on your next restart, no extra step needed. It also lists light/dark meta-variants (`gruvbox-dark`, `vscode-light`, `everforest-dark-hard`, etc.) that aren't separate colorscheme files, applying the right flags for each. To also keep Kitty/Ghostty/Starship in sync with the same theme from a shell, use `de100-theme-sync set <theme> --all`; see section 33 for details.
 
 ---
 
@@ -1804,25 +1804,36 @@ The visual environment matters for a tool you'll spend hours in every day. Let's
 <leader>th    " opens Snacks colorscheme picker — live preview!
 ```
 
-As you navigate the picker, the colorscheme applies in real-time so you can see it on your actual code. Press Enter to confirm, Esc to revert.
+As you navigate the picker, the colorscheme applies in real-time so you can see it on your actual code (`<Esc>` reverts to whatever you had before). Press `<Enter>` and it both keeps the colorscheme **and persists it** — this is a real difference from a plain preview: it's still there next time you open Neovim, with no extra step. This also works for meta-variant names like `gruvbox-dark`, `vscode-light`, or `everforest-dark-hard` that don't correspond to a separate colorscheme file — the picker knows which extra flag each one needs (`vim.o.background`, `vim.g.everforest_background`, `require("vscode").setup({style=...})`) and applies + persists that too (`dotfiles/.config/nvim/lua/de100/theme-persist.lua`).
 
 ### The Current Theme System
 
-The active theme is stored in:
-
-```
-dotfiles/.config/nvim/lua/current-theme.lua
-```
-
-This file is loaded by the config to apply your chosen theme on startup. It's a simple Lua file:
+Confirming a pick in `<leader>th` writes a generated state file to `~/.local/state/nvim/de100/theme/nvim.lua` (Neovim's own `stdpath("state")`) directly from Neovim — no shell command needed. `dotfiles/.config/nvim/lua/current-theme.lua` is a small loader that runs at the end of `init.lua` and `dofile()`s that state file on startup:
 
 ```lua
-return "rose-pine"  -- or whatever theme you picked
+local theme_state = vim.fn.stdpath("state") .. "/de100/theme/nvim.lua"
+
+if vim.fn.filereadable(theme_state) == 1 then
+    dofile(theme_state)
+else
+    vim.cmd.colorscheme("evergarden-spring")
+end
 ```
+
+If the state file doesn't exist yet (fresh machine, never picked a theme), it falls back to `evergarden-spring`.
+
+If you also want Kitty, Ghostty, and Starship to match — or you're scripting a fresh machine and want to seed Neovim's theme before ever opening the editor — use the separate `de100-theme-sync` shell command instead, which requires an explicit `--all` or `--targets=kitty,ghostty,starship,nvim`:
+
+```sh
+de100-theme-sync set catppuccin-mocha --all
+de100-theme-sync set catppuccin-mocha --targets=nvim
+```
+
+It writes the exact same `~/.local/state/nvim/de100/theme/nvim.lua` file/format, so the two mechanisms never conflict — whichever ran last wins. Run `de100-theme-sync list` to see every available theme name, and `de100-theme-sync current` to check what's active.
 
 ### Available Themes in This Config
 
-The `colorscheme.lua` plugin file includes several themes configured and ready to use. You can add more by installing colorscheme plugins.
+The `colorscheme.lua` plugin file includes several themes configured and ready to use — rose-pine, gruvbox, kanagawa, solarized-osaka, tokyonight, monokai-pro, catppuccin, vscode.nvim, everforest, and the nightfox family (nightfox/dayfox/dawnfox/duskfox/nordfox/terafox/carbonfox). You can add more by installing colorscheme plugins there and adding a matching entry in `de100-theme-sync` (and, for a meta-variant with no separate colorscheme file, in `theme-persist.lua`'s `M.extras` too).
 
 ### Rose-Pine (The Default)
 

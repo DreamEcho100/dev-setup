@@ -1,4 +1,5 @@
 _ignore
+__pycache__/
 dotfiles/.config/kitty/local.conf
 dotfiles/.config/ghostty/local.ghostty
 dotfiles/.config/starship/local.toml
