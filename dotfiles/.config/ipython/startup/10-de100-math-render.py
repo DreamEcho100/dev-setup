@@ -19,11 +19,13 @@ Molten renders every image chunk within one cell's output at the same
 screen position (a molten-nvim bug, not fixable from here), so more than
 one Math()/Latex() call in a single cell would overlap if each produced its
 own separate image immediately. Instead: each call is buffered (not
-displayed) as it happens, and combined into a single vertically-stacked
-image shown once the cell finishes running (via IPython's post_run_cell
-event) — trading exact inline interleaving with other output for a
-guaranteed non-overlapping result while staying fully inline (no floating
-window).
+displayed) as it happens — via the _ipython_display_ formatter protocol,
+which fully bypasses IPython's normal per-mimetype publishing so nothing is
+shown for it at all — and combined into a single vertically-stacked,
+bordered image shown once the cell finishes running (via IPython's
+post_run_cell event) — trading exact inline interleaving with other output
+for a guaranteed non-overlapping result while staying fully inline (no
+floating window).
 """
 from IPython import get_ipython
 from IPython.display import Math, Latex
@@ -143,7 +145,7 @@ def _math_to_png(obj):
 # text (not the theme's own border/accent color) so it reads as "this output
 # belongs together" without introducing a second color to track/desync from
 # the active colorscheme.
-_BORDER_WIDTH = 2
+_BORDER_WIDTH = 1
 _BORDER_PADDING = 8
 
 
@@ -175,27 +177,26 @@ def _add_border(img, color_hex, fill_rgba):
 # Buffered (Math|Latex) objects for the currently-running cell. Module-level
 # because IPython's events/formatters are called on this same shared state
 # regardless of which cell is executing; cells run one at a time, so this
-# is safe for the normal sequential-execution case. _pending_math_ids
-# dedupes: text/plain, text/latex, and image/png formatters all fire for
-# the *same* display() call, so without this each object would be
-# buffered — and rendered into the combined image — once per mimetype.
+# is safe for the normal sequential-execution case. Registered on the
+# _ipython_display_ formatter (not the per-mimetype text/plain, text/latex,
+# image/png formatters): DisplayFormatter.format() checks this one first and
+# short-circuits to an empty format_dict before any per-mimetype formatter
+# runs, so nothing is ever published for a buffered call — no dedup needed
+# either, since this fires exactly once per object regardless of mimetype.
+# (An earlier per-mimetype-formatter version left a stray truthy-empty-string
+# text/plain entry behind — PlainTextFormatter never returns None, only the
+# empty string when its pretty-printer writes nothing — which was non-None
+# and so still got published, showing up in Molten as a spurious
+# "No usable MIMEtype" line for every buffered call.)
 _pending_math = []
-_pending_math_ids = set()
 
 
-def _buffer_math(obj, *_args, **_kwargs):
-    # *_args/**_kwargs: text/plain's formatter uses IPython's pretty-print
-    # protocol (printer(obj, pretty_printer, cycle)), not the single-arg
-    # convention image/png and text/latex formatters use — accept either.
-    if id(obj) not in _pending_math_ids:
-        _pending_math_ids.add(id(obj))
-        _pending_math.append(obj)
-    return None  # suppress this mimetype's own immediate representation
+def _buffer_math(obj):
+    _pending_math.append(obj)
 
 
 def _clear_pending(_event=None):
     _pending_math.clear()
-    _pending_math_ids.clear()
 
 
 def _combine_pending(_event=None):
@@ -203,7 +204,6 @@ def _combine_pending(_event=None):
         return
     objs = list(_pending_math)
     _pending_math.clear()
-    _pending_math_ids.clear()
 
     import io
 
@@ -248,9 +248,7 @@ def _combine_pending(_event=None):
 
 _ip = get_ipython()
 if _ip is not None:
-    for _mimetype in ("text/plain", "text/latex", "image/png"):
-        _formatter = _ip.display_formatter.formatters[_mimetype]
-        _formatter.for_type(Math, _buffer_math)
-        _formatter.for_type(Latex, _buffer_math)
+    _ip.display_formatter.ipython_display_formatter.for_type(Math, _buffer_math)
+    _ip.display_formatter.ipython_display_formatter.for_type(Latex, _buffer_math)
     _ip.events.register("pre_run_cell", _clear_pending)
     _ip.events.register("post_run_cell", _combine_pending)
