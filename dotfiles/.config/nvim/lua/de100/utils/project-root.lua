@@ -21,15 +21,33 @@ local function search_path_for(fname)
     return vim.uv.cwd()
 end
 
+-- Session-lifetime cache, keyed by search path, expiring after
+-- CACHE_TTL_MS so a project created/removed mid-session still eventually
+-- gets picked up rather than caching forever.
+local CACHE_TTL_MS = 5000
+local _cache = {}
+
 --- Finds the project root for the given buffer (current buffer by default),
 --- walking up from its path looking for M.markers. Returns nil if none
 --- found — mirrors vim.fs.root's own nullable contract, so callers decide
---- their own fallback.
+--- their own fallback. Cached per search path for CACHE_TTL_MS, since this
+--- walks the filesystem tree and both <leader>mcd and
+--- de100.utils.explorer-reveal can call it repeatedly in quick succession.
 ---@param bufnr? integer
 ---@return string|nil
 function M.find(bufnr)
     local fname = vim.api.nvim_buf_get_name(bufnr or 0)
-    return vim.fs.root(search_path_for(fname), M.markers)
+    local search_path = search_path_for(fname)
+
+    local now = vim.uv.now()
+    local cached = _cache[search_path]
+    if cached and (now - cached.at) < CACHE_TTL_MS then
+        return cached.root
+    end
+
+    local root = vim.fs.root(search_path, M.markers)
+    _cache[search_path] = {root = root, at = now}
+    return root
 end
 
 return M
