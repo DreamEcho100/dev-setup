@@ -1518,9 +1518,9 @@ The VSCode JSON snippet format is well-known and LuaSnip can actually load VSCod
 
 ### 9.1 The Theme Picker: <leader>th
 
-The config includes a theme picker bound to `<leader>th`. This opens a Telescope window listing all installed colorschemes. Select one and it previews live. However, this change is temporary — it resets when you restart Neovim.
+The config includes a theme picker bound to `<leader>th`. This opens a Snacks picker window listing all installed colorschemes, **plus** a handful of light/dark meta-variants (`gruvbox-dark`, `vscode-light`, `everforest-dark-hard`, etc.) that don't correspond to a separate colorscheme file — the picker knows the extra flag each one needs and applies it. As you move through the list the colorscheme applies live so you can preview it on real code; `<Esc>` reverts to what you had before. `<Enter>` both keeps the selection **and persists it to disk** — it's still your theme the next time you start Neovim, no extra step required.
 
-To make it permanent, see section 9.3.
+See section 9.3 for exactly what gets written and how it relates to `de100-theme-sync`.
 
 ### 9.2 Available Themes in This Config
 
@@ -1550,25 +1550,35 @@ To use a variant, the colorscheme command includes the variant name:
 :colorscheme tokyonight-night   " Tokyo Night night
 ```
 
-### 9.3 Making It Permanent: current-theme.lua
+### 9.3 Making It Permanent: `theme-persist.lua` and `de100-theme-sync`
 
-The file `lua/current-theme.lua` contains exactly one line:
-
-```lua
-vim.cmd("colorscheme rose-pine-moon")
-```
-
-To change your theme permanently, edit this file. That's it. The entire theming system is designed around this single file being trivially editable.
-
-For example, to switch to catppuccin-mocha:
+`lua/current-theme.lua` is **not** a file you hand-edit. It's a small loader:
 
 ```lua
-vim.cmd("colorscheme catppuccin-mocha")
+local theme_state = vim.fn.stdpath("state") .. "/de100/theme/nvim.lua"
+
+if vim.fn.filereadable(theme_state) == 1 then
+    dofile(theme_state)
+else
+    vim.cmd.colorscheme("evergarden-spring")
+end
 ```
 
-Save the file, restart Neovim (or source the file with `:luafile ~/.config/nvim/lua/current-theme.lua`), and your theme is changed.
+On startup it `dofile()`s a generated state file at `~/.local/state/nvim/de100/theme/nvim.lua` (Neovim's own `stdpath("state")`). If that file doesn't exist yet, it falls back to `evergarden-spring`.
 
-Why is this a separate file rather than a setting in `options.lua`? Because options.lua runs early, before plugins are loaded. Colorscheme plugins aren't available yet. `current-theme.lua` runs last in `init.lua`, after `require("de100.lazy")` has loaded all plugins. So the colorscheme plugin is guaranteed to be available when this file runs.
+Confirming a pick in `<leader>th` writes that state file directly — see `dotfiles/.config/nvim/lua/de100/theme-persist.lua` (`M.persist`). That's the normal, everyday way to change themes; nothing else is required.
+
+Separately, `de100-theme-sync` (`dotfiles/.local/scripts/de100-theme-sync`) is a shell command for keeping Kitty, Ghostty, and Starship in sync with the same theme too, or for seeding Neovim's theme from a script before the editor's ever been opened. `set` always requires an explicit `--all` or `--targets=<comma-list>`:
+
+```sh
+de100-theme-sync list
+de100-theme-sync set catppuccin-mocha --all
+de100-theme-sync set catppuccin-mocha --targets=nvim
+```
+
+Both mechanisms write the identical `~/.local/state/nvim/de100/theme/nvim.lua` format, so they never conflict — whichever ran most recently wins on the next Neovim start.
+
+Why is `current-theme.lua` a separate file rather than a setting in `options.lua`? Because `options.lua` runs early, before plugins are loaded, and colorscheme plugins aren't available yet. `current-theme.lua` runs last in `init.lua`, after `require("de100.lazy")` has loaded all plugins, so the colorscheme plugin is guaranteed to be available when it runs.
 
 The loading chain in `init.lua`:
 
@@ -1584,7 +1594,7 @@ Notice `options.lua` also sets a fallback:
 vim.cmd('colorscheme default')
 ```
 
-This runs early and sets the built-in default colorscheme. If plugins fail to load for any reason, you still get a working (if plain) editor. Then `current-theme.lua` overwrites this with your chosen theme.
+This runs early and sets the built-in default colorscheme. If plugins fail to load for any reason, you still get a working (if plain) editor. Then `current-theme.lua` overwrites this with the persisted theme.
 
 ### 9.4 Dark vs Light Variants
 

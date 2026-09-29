@@ -7,20 +7,45 @@ set -euo pipefail
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 THEME_STATE_DIR="$STATE_HOME/de100/theme"
+# Neovim's stdpath("state") is $XDG_STATE_HOME/nvim, not $XDG_STATE_HOME
+# itself, so the nvim.lua write (read by current-theme.lua via that same
+# stdpath call) must live under this separate path — NOT under
+# THEME_STATE_DIR above, which is this script's own bookkeeping
+# (current/starship.toml) and has nothing to do with Neovim's convention.
+NVIM_THEME_STATE_DIR="$STATE_HOME/nvim/de100/theme"
+
+# Shared meta-variant catalogue (name -> real colorscheme + extra setup
+# snippet), also read by
+# dotfiles/.config/nvim/lua/de100/utils/theme-persist.lua. One source of
+# truth for themes with no dedicated colors/<name> file.
+THEME_META_FILE="$CONFIG_HOME/nvim/lua/de100/utils/theme-meta.json"
+
+theme_meta_real() { jq -r --arg k "$1" '.[$k].real // empty' "$THEME_META_FILE"; }
+theme_meta_setup() { jq -r --arg k "$1" '.[$k].setup // empty' "$THEME_META_FILE"; }
 
 usage() {
     cat <<'EOF'
 Usage:
-  de100-theme list
-  de100-theme current
-  de100-theme set <theme>
+  de100-theme-sync list
+  de100-theme-sync current
+  de100-theme-sync set <theme> --all
+  de100-theme-sync set <theme> --targets=<comma-separated targets>
+
+Targets (for `set`, choose exactly one form): kitty, ghostty, starship, nvim
+
+Examples:
+  de100-theme-sync set catppuccin-mocha --all
+  de100-theme-sync set catppuccin-mocha --targets=kitty,ghostty,starship
+  de100-theme-sync set catppuccin-mocha --targets=nvim
 
 Themes:
   tokyo-night
   catppuccin-mocha
   rose-pine-moon
   gruvbox-dark
+  gruvbox-light
   evergarden-spring
+  evergarden-lunar
   vscode-dark
   vscode-light
   everforest-dark-hard
@@ -39,13 +64,16 @@ Themes:
 
 Notes:
   - Restart terminals or reload their config after switching.
-  - Neovim reads the new theme on next start; run :colorscheme manually for live changes.
+  - Neovim reads the new theme on next start; run :colorscheme manually for a
+    live preview, or use <leader>th inside Neovim to pick and persist a theme
+    (including its light/dark meta-variants) without leaving the editor.
 EOF
 }
 
 theme_exists() {
     case "$1" in
-    tokyo-night | catppuccin-mocha | rose-pine-moon | gruvbox-dark | evergarden-spring | \
+    tokyo-night | catppuccin-mocha | rose-pine-moon | gruvbox-dark | gruvbox-light | \
+        evergarden-spring | evergarden-lunar | \
         vscode-dark | vscode-light | \
         everforest-dark-hard | everforest-dark-medium | everforest-dark-soft | \
         everforest-light-hard | everforest-light-medium | everforest-light-soft | \
@@ -109,7 +137,8 @@ theme_values() {
     gruvbox-dark)
         kitty_theme="gruvbox-dark.conf"
         ghostty_theme="gruvbox-dark"
-        nvim_theme="gruvbox"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="gruvbox_dark"
         bg="#282828"
         fg="#ebdbb2"
@@ -120,6 +149,22 @@ theme_values() {
         purple="#d3869b"
         red="#fb4934"
         yellow="#fabd2f"
+        ;;
+    gruvbox-light)
+        kitty_theme="gruvbox-light.conf"
+        ghostty_theme="gruvbox-light"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
+        palette_name="gruvbox_light"
+        bg="#fbf1c7"
+        fg="#3c3836"
+        blue="#458588"
+        cyan="#689d6a"
+        green="#98971a"
+        orange="#d79921"
+        purple="#b16286"
+        red="#cc241d"
+        yellow="#d79921"
         ;;
     evergarden-spring)
         kitty_theme="tokyo-night.conf"
@@ -136,10 +181,27 @@ theme_values() {
         red="#e67e80"
         yellow="#dbbc7f"
         ;;
+    evergarden-lunar)
+        kitty_theme="tokyo-night.conf"
+        ghostty_theme="tokyo-night"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
+        palette_name="evergarden_lunar"
+        bg="#1C1D29"
+        fg="#F7F1E6"
+        blue="#99B3D5"
+        cyan="#ACD1B6"
+        green="#C5D9B5"
+        orange="#F5A58D"
+        purple="#A69FD5"
+        red="#EB7F86"
+        yellow="#F7DDAF"
+        ;;
     vscode-dark)
         kitty_theme="vscode-dark.conf"
         ghostty_theme="vscode-dark"
-        nvim_theme="vscode"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="vscode_dark"
         bg="#1e1e1e"
         fg="#cccccc"
@@ -154,9 +216,9 @@ theme_values() {
     vscode-light)
         kitty_theme="vscode-light.conf"
         ghostty_theme="vscode-light"
-        nvim_theme="vscode"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="vscode_light"
-        nvim_setup='require("vscode").setup({ style = "light" })'
         bg="#ffffff"
         fg="#343434"
         blue="#007acc"
@@ -170,9 +232,9 @@ theme_values() {
     everforest-dark-hard)
         kitty_theme="everforest-dark-hard.conf"
         ghostty_theme="everforest-dark-hard"
-        nvim_theme="everforest"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="everforest_dark_hard"
-        nvim_setup='vim.g.everforest_background = "hard"'
         bg="#272e33"
         fg="#d3c6aa"
         blue="#7fbbb3"
@@ -186,7 +248,8 @@ theme_values() {
     everforest-dark-medium)
         kitty_theme="everforest-dark-medium.conf"
         ghostty_theme="everforest-dark-medium"
-        nvim_theme="everforest"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="everforest_dark_medium"
         bg="#2d353b"
         fg="#d3c6aa"
@@ -201,9 +264,9 @@ theme_values() {
     everforest-dark-soft)
         kitty_theme="everforest-dark-soft.conf"
         ghostty_theme="everforest-dark-soft"
-        nvim_theme="everforest"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="everforest_dark_soft"
-        nvim_setup='vim.g.everforest_background = "soft"'
         bg="#333c43"
         fg="#d3c6aa"
         blue="#7fbbb3"
@@ -217,10 +280,9 @@ theme_values() {
     everforest-light-hard)
         kitty_theme="everforest-light-hard.conf"
         ghostty_theme="everforest-light-hard"
-        nvim_theme="everforest"
+        nvim_theme="$(theme_meta_real "$1")"
+        nvim_setup="$(theme_meta_setup "$1")"
         palette_name="everforest_light_hard"
-        nvim_setup='vim.o.background = "light"
-vim.g.everforest_background = "hard"'
         bg="#fffbef"
         fg="#5c6a72"
         blue="#3a94c5"
@@ -464,8 +526,25 @@ disabled = true
 EOF
 }
 
+VALID_TARGETS="kitty ghostty starship nvim"
+
+target_valid() {
+    case " $VALID_TARGETS " in
+    *" $1 "*) return 0 ;;
+    *) return 1 ;;
+    esac
+}
+
+target_enabled() {
+    case " $2 " in
+    *" $1 "*) return 0 ;;
+    *) return 1 ;;
+    esac
+}
+
 set_theme() {
     local theme="$1"
+    local targets="$2" # space-separated, e.g. "kitty ghostty starship nvim"
 
     if ! theme_exists "$theme"; then
         echo "Unknown theme: $theme" >&2
@@ -474,33 +553,111 @@ set_theme() {
     fi
 
     theme_values "$theme"
-    mkdir -p "$THEME_STATE_DIR" "$CONFIG_HOME/kitty" "$CONFIG_HOME/ghostty"
+    mkdir -p "$THEME_STATE_DIR"
 
-    cat >"$CONFIG_HOME/kitty/local.conf" <<EOF
-# Generated by de100-theme. Edit local.conf.example for manual overrides.
+    if target_enabled kitty "$targets"; then
+        mkdir -p "$CONFIG_HOME/kitty"
+        cat >"$CONFIG_HOME/kitty/local.conf" <<EOF
+# Generated by de100-theme-sync. Edit local.conf.example for manual overrides.
 include themes/$kitty_theme
 EOF
+    fi
 
-    cat >"$CONFIG_HOME/ghostty/local.ghostty" <<EOF
-# Generated by de100-theme. Edit local.ghostty.example for manual overrides.
+    if target_enabled ghostty "$targets"; then
+        mkdir -p "$CONFIG_HOME/ghostty"
+        cat >"$CONFIG_HOME/ghostty/local.ghostty" <<EOF
+# Generated by de100-theme-sync. Edit local.ghostty.example for manual overrides.
 theme = $ghostty_theme
 EOF
+    fi
 
-    cat >"$THEME_STATE_DIR/nvim.lua" <<EOF
+    if target_enabled nvim "$targets"; then
+        mkdir -p "$NVIM_THEME_STATE_DIR"
+        cat >"$NVIM_THEME_STATE_DIR/nvim.lua" <<EOF
 ${nvim_setup:+$nvim_setup
 }vim.cmd.colorscheme("$nvim_theme")
 EOF
+    fi
 
-    write_starship
+    if target_enabled starship "$targets"; then
+        write_starship
+    fi
+
     printf '%s\n' "$theme" >"$THEME_STATE_DIR/current"
 
     echo "Theme set to: $theme"
-    echo "Reload or restart Kitty/Ghostty, open a new shell for Starship, and restart Neovim."
+    echo "Targets synced: $targets"
+    echo "Reload or restart the affected apps to see the change take effect."
+}
+
+cmd_set() {
+    local theme="${1:-}"
+    if [[ -z "$theme" ]]; then
+        usage
+        exit 1
+    fi
+    shift
+
+    local all_flag=0
+    local targets_csv=""
+    local arg
+    for arg in "$@"; do
+        case "$arg" in
+        --all)
+            all_flag=1
+            ;;
+        --targets=*)
+            targets_csv="${arg#--targets=}"
+            ;;
+        *)
+            echo "Unknown option: $arg" >&2
+            usage
+            exit 1
+            ;;
+        esac
+    done
+
+    if [[ $all_flag -eq 1 && -n "$targets_csv" ]]; then
+        echo "Error: --all and --targets=<list> cannot be combined" >&2
+        usage
+        exit 1
+    fi
+    if [[ $all_flag -eq 0 && -z "$targets_csv" ]]; then
+        echo "Error: set requires exactly one of --all or --targets=<list>" >&2
+        usage
+        exit 1
+    fi
+
+    local targets=""
+    if [[ $all_flag -eq 1 ]]; then
+        targets="$VALID_TARGETS"
+    else
+        local target_list=()
+        IFS=',' read -ra target_list <<<"$targets_csv"
+        local t
+        for t in "${target_list[@]}"; do
+            if ! target_valid "$t"; then
+                echo "Unknown target: $t" >&2
+                usage
+                exit 1
+            fi
+            targets="$targets $t"
+        done
+        targets="${targets# }"
+        if [[ -z "$targets" ]]; then
+            echo "Error: --targets=<list> must name at least one target" >&2
+            usage
+            exit 1
+        fi
+    fi
+
+    set_theme "$theme" "$targets"
 }
 
 case "${1:-}" in
 list)
-    printf '%s\n' tokyo-night catppuccin-mocha rose-pine-moon gruvbox-dark evergarden-spring \
+    printf '%s\n' tokyo-night catppuccin-mocha rose-pine-moon gruvbox-dark gruvbox-light \
+        evergarden-spring evergarden-lunar \
         vscode-dark vscode-light \
         everforest-dark-hard everforest-dark-medium everforest-dark-soft \
         everforest-light-hard everforest-light-medium everforest-light-soft \
@@ -514,11 +671,8 @@ current)
     fi
     ;;
 set)
-    if [[ $# -ne 2 ]]; then
-        usage
-        exit 1
-    fi
-    set_theme "$2"
+    shift
+    cmd_set "$@"
     ;;
 -h | --help | help | "")
     usage

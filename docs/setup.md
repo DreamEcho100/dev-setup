@@ -146,16 +146,22 @@ The terminal layer manages the shell/workstation experience around Neovim:
 Theme switching is centralized:
 
 ```sh
-de100-theme list
-de100-theme current
-de100-theme set tokyo-night
-de100-theme set catppuccin-mocha
-de100-theme set rose-pine-moon
-de100-theme set gruvbox-dark
+de100-theme-sync list
+de100-theme-sync current
+de100-theme-sync set tokyo-night --all
+de100-theme-sync set catppuccin-mocha --all
+de100-theme-sync set rose-pine-moon --all
+de100-theme-sync set gruvbox-dark --all
+de100-theme-sync set gruvbox-light --all
+de100-theme-sync set evergarden-lunar --all
 ```
 
-The default is Tokyo Night. `de100-theme` writes ignored local override/state
-files, so switching themes does not dirty the tracked repo config.
+`set` always requires an explicit `--all` or `--targets=kitty,ghostty,starship,nvim`
+(pick one or more) — there's no implicit default, so you always know what a
+switch touched. The default is Tokyo Night. `de100-theme-sync` writes ignored
+local override/state files, so switching themes does not dirty the tracked
+repo config. Inside Neovim, `<leader>th` picks and persists a theme (including
+light/dark meta-variants) directly, without needing the shell command.
 
 Mason installs editor-facing LSP/DAP/formatter packages where possible. System package managers install compilers, runtimes, and binary dependencies Mason cannot reliably provide.
 

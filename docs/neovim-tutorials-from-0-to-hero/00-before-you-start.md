@@ -297,9 +297,11 @@ dotfiles/.config/nvim/
 │                                  so teammates get the same plugin versions.
 │
 ├── lua/
-│   ├── current-theme.lua       ← One-line file that picks the active colorscheme.
-│   │                              Edit this to switch themes without touching
-│   │                              the colorscheme plugin config.
+│   ├── current-theme.lua       ← Loader that applies the persisted colorscheme
+│   │                              on startup. Don't edit it directly — use
+│   │                              <leader>th inside Neovim (persists on Enter),
+│   │                              or `de100-theme-sync set <theme> --all` from
+│   │                              a shell to also sync Kitty/Ghostty/Starship.
 │   │
 │   └── de100/                  ← The personal namespace. "de100" = DreamEcho100.
 │       │                          Neovim looks for modules in lua/ so this is
@@ -464,7 +466,8 @@ dotfiles/.config/nvim/
 │           │                      back exactly where you left off.
 │           │
 │           ├── colorscheme.lua ← All installed colorschemes (tokyonight, catppuccin,
-│           │                      gruvbox, rose-pine, etc). Switch in current-theme.lua.
+│           │                      gruvbox, rose-pine, etc). Switch with <leader>th, or
+│           │                      `de100-theme-sync set <theme> --all` from a shell.
 │           │
 │           ├── lualine.lua     ← Status line at the bottom. Shows:
 │           │                      - Current mode (NORMAL/INSERT/VISUAL)

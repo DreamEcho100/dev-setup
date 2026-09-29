@@ -73,6 +73,7 @@
       - texlive-latex-extra
       - texlive-fonts-recommended
       - latexmk
+      - dvipng # LaTeX->PNG rasterizer for sympy.preview()/matplotlib usetex math rendering in Molten (not needed by vimtex)
       - fzf
       - wordnet
       - bear # generates compile_commands.json for non-CMake C/C++ projects
@@ -298,7 +299,7 @@
 
     - name: Install Python editor tools
       ansible.builtin.command:
-        cmd: python3 -m pip install --user --upgrade --break-system-packages pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc
+        cmd: python3 -m pip install --user --upgrade --break-system-packages pynvim ruff black isort pylint jupyter_client ipykernel jupytext pylatexenc matplotlib sympy
       changed_when: true
       failed_when: false
 
@@ -307,6 +308,19 @@
         path: "{{ lookup('env', 'HOME') }}/.local/share/jupyter/runtime"
         state: directory
         mode: "0700"
+
+    - name: Ensure IPython startup dir exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.ipython/profile_default/startup"
+        state: directory
+        mode: "0755"
+
+    - name: Symlink de100 Math/Latex auto-render IPython startup script
+      ansible.builtin.file:
+        src: "{{ playbook_dir }}/dotfiles/.config/ipython/startup/10-de100-math-render.py"
+        dest: "{{ lookup('env', 'HOME') }}/.ipython/profile_default/startup/10-de100-math-render.py"
+        state: link
+        force: true
 
     - name: Verify installed Neovim
       ansible.builtin.command: "{{ neovim_install_prefix }}/bin/nvim --version"

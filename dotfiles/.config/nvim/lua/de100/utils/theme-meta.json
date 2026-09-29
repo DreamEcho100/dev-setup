@@ -1,0 +1,13 @@
+{
+  "gruvbox-dark": {"real": "gruvbox"},
+  "gruvbox-light": {"real": "gruvbox", "setup": "vim.o.background = \"light\""},
+  "vscode-dark": {"real": "vscode"},
+  "vscode-light": {"real": "vscode", "setup": "require(\"vscode\").setup({ style = \"light\" })"},
+  "everforest-dark-hard": {"real": "everforest", "setup": "vim.g.everforest_background = \"hard\""},
+  "everforest-dark-medium": {"real": "everforest"},
+  "everforest-dark-soft": {"real": "everforest", "setup": "vim.g.everforest_background = \"soft\""},
+  "everforest-light-hard": {"real": "everforest", "setup": "vim.o.background = \"light\"\nvim.g.everforest_background = \"hard\""},
+  "everforest-light-medium": {"real": "everforest", "setup": "vim.o.background = \"light\"\nvim.g.everforest_background = \"medium\""},
+  "everforest-light-soft": {"real": "everforest", "setup": "vim.o.background = \"light\"\nvim.g.everforest_background = \"soft\""},
+  "evergarden-lunar": {"real": "evergarden", "setup": "require(\"evergarden\").setup({ theme = { variant = \"lunar\" } })"}
+}

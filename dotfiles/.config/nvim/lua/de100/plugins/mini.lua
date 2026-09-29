@@ -22,7 +22,8 @@ return {
             vim.keymap.set("n", "<leader>ee", "<cmd>lua MiniFiles.open()<CR>",
                            {desc = "Toggle file explorer (mini.files)"})
             vim.keymap.set("n", "<leader>ef", function()
-                MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
+                MiniFiles.open(require("de100.utils.explorer-reveal").target_path(),
+                                false)
                 MiniFiles.reveal_cwd()
             end, {desc = "Reveal current file (mini.files)"})
         end
