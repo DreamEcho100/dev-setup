@@ -308,10 +308,10 @@ design — reach for `;sympymath` for those instead.
 ### All output displays inline, below the cell — no floating window
 
 `dotfiles/.config/nvim/lua/de100/plugins/molten.lua` sets
-`g:molten_image_location = "virt"` and `g:molten_auto_open_output = false`:
-every run cell's output (text, images, plots) is pinned directly below it,
-all visible at once as you scroll through the notebook — Molten never
-opens a separate floating popup window for anything.
+`g:molten_auto_open_output = false`: every run cell's output (text, images,
+plots) is pinned directly below it, all visible at once as you scroll
+through the notebook — Molten never opens a separate floating popup window
+on its own (only `<leader>jo`, below, opens one deliberately).
 
 ### Multiple `Math()`/`Latex()` calls in one cell: combined into one image
 
@@ -322,21 +322,84 @@ if each showed up immediately on its own — not fixable from this config
 without patching `molten-nvim`'s own source.
 
 Instead, `10-de100-math-render.py` buffers every `Math()`/`Latex()` call
-made during a cell's execution (registering the same handler across the
-`text/plain`, `text/latex`, and `image/png` formatters so none of them show
-anything immediately) and, once the cell finishes running (IPython's
-`post_run_cell` event), renders and vertically stacks all of them into a
-single combined image, shown once. No overlap is possible, since Molten
-only ever sees one image chunk for that output. The trade-off: math no
-longer appears exactly where you called `display()` interleaved with other
-output (`print()` calls, etc.) — it all appears together, once, at the end
-of the cell's output. `print()`/stream output itself is untouched, since
-only `Math`/`Latex` objects are buffered.
+made during a cell's execution — registered on IPython's
+`_ipython_display_` formatter protocol, which fully bypasses the normal
+per-mimetype publishing path so nothing is shown for it at all — and, once
+the cell finishes running (IPython's `post_run_cell` event), renders and
+vertically stacks all of them into a single combined image, shown once. No
+overlap is possible, since Molten only ever sees one image chunk for that
+output. The trade-off: math no longer appears exactly where you called
+`display()` interleaved with other output (`print()` calls, etc.) — it all
+appears together, once, at the end of the cell's output. `print()`/stream
+output itself is untouched, since only `Math`/`Latex` objects are buffered.
 
-The combined image also gets a thin border, colored to match the rendered
-text (not a separate theme accent color, so it can't desync from whatever
-colorscheme is active) — a visual cue that everything inside it is one
-grouped math output, distinct from surrounding `print()`/stream text.
+(An earlier version registered on the `text/plain`/`text/latex`/`image/png`
+formatters directly instead, each returning `None` to suppress its own
+mimetype. `text/latex`/`image/png` disappeared correctly, but
+`PlainTextFormatter` never actually returns `None` — when its pretty-printer
+writes nothing, the result is `""`, and IPython only drops a formatter's
+result when it's exactly `None`, so `format_dict = {"text/plain": ""}` still
+went out as a real, near-empty `publish_display_data` call. Molten correctly
+had nothing useful to render from that and printed
+`<No usable MIMEtype! Received mimetypes ['text/plain']>` once per buffered
+call. `_ipython_display_` avoids this entirely: it short-circuits before any
+per-mimetype formatter runs, for both `display()` calls and a bare trailing
+`Math(...)` expression, so zero messages go out for a buffered call.)
+
+The combined image also gets a thin (1px) border, colored to match the
+rendered text (not a separate theme accent color, so it can't desync from
+whatever colorscheme is active) — a visual cue that everything inside it is
+one grouped math output, distinct from surrounding `print()`/stream text.
+
+`g:molten_output_show_exec_time` is also off (`molten.lua`): the
+"`Out[2]: ✓ Done 1.50s`" execution-time header Molten normally prepends to
+every output has no way to auto-hide after a delay — checked
+`molten-nvim`'s source directly, the only timers in the plugin are
+kernel-message polling loops, nothing display-related — so it's just
+persistent noise on top of an already-inline, always-visible view. It's a
+single global option (no per-cell or per-location override anywhere in
+`molten-nvim`), so this also applies to the `<leader>jo` popup below.
+
+### `<leader>jo`: floating output popup for one cell at a time
+
+The always-inline default above trades exact placement for zero floating
+windows — but sometimes you want a distraction-free popup with *just* one
+cell's output, front and center, without turning that behavior on
+everywhere. `<leader>jo` toggles Molten's own floating output window
+(`:MoltenShowOutput`/`:MoltenHideOutput`) for whichever cell the cursor is
+on: press it once to opt that cell in, and from then on entering it shows
+the popup while leaving it hides the popup again — repeating every time you
+re-enter, until you press `<leader>jo` on that same cell again to opt it
+back out. It shows exactly what the inline view shows (same chunks, same
+`molten_output_show_exec_time = false`) — just in a floating window instead
+of pinned below the cell.
+
+Molten has no native per-cell scoping for this (`auto_open_output` is a
+single global flag shared by every cell, confirmed by reading
+`molten-nvim`'s Python source — one `MoltenOptions` instance, shared by
+reference everywhere), so `de100/utils/molten-popup.lua` tracks the toggled
+cells itself and drives the show/hide calls off a `CursorMoved` autocmd.
+Cell identity comes from `otter.nvim`'s code-chunk ranges — the same
+mechanism `<leader>jr` (`quarto.runner.run_cell()`) already uses internally
+to find "the cell the cursor is in" — since neither `quarto-nvim` nor
+`molten-nvim` expose a public query for that.
+
+`molten.lua` sets `image_location = "both"`, not `"virt"`: under `"virt"`,
+`ImageOutputChunk.place()` (`outputchunks.py`) never actually places an
+image for the popup's build call, and — because that early return happens
+*before* the chunk claims its own Kitty-image identifier — closing the
+popup would delete the *inline* image's identifier instead of a
+popup-only one (they were the same shared identifier), permanently killing
+it. `"both"` gives the popup a real image with its own separate identifier,
+so it shows correctly and closing it only ever removes its own copy.
+
+### Known limitation: rendered images disappear whenever a floating window opens
+
+`image.nvim` (`dotfiles/.config/nvim/lua/de100/plugins/image.lua`) proactively hides any image whose screen position is covered by a window, floating windows included, and only shows it again on a later cursor move — not automatically when that window closes — because Kitty-protocol images paint over the whole terminal grid regardless of Neovim's own window layering. That's `window_overlap_clear_enabled = true`, turned on for a real reason: without it, re-running a Molten cell whose new output overlaps the old one can leave garbled/duplicate plot images behind.
+
+In practice this means *any* floating window — completion, which-key, help, `<leader>jo`'s own popup, anything else — can make every visible cell's rendered image vanish until you move the cursor out of and back into a cell. `image.nvim` has a `window_overlap_clear_ft_ignore` option meant to exempt specific filetypes from counting as "covering," but exempting `blink.cmp`'s and `which-key.nvim`'s own filetypes made no observed difference (confirmed after a full Neovim restart) — the actual mechanism causing this isn't the filetype check, and wasn't tracked down further. **Accepted as an unresolved limitation.**
+
+If this is worse than the garbled-plot-on-rerun problem it's meant to prevent, setting `window_overlap_clear_enabled = false` in `image.lua` removes the disappearing-image behavior entirely (trade-off: re-running a cell whose new plot output overlaps the old one can once again leave stale/garbled images behind).
 
 One separate, unrelated caveat remains: inline images are placed via
 Kitty-graphics-protocol escape codes at an absolute screen row computed

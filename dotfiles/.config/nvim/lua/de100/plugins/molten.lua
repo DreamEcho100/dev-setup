@@ -18,11 +18,8 @@ return {
 
         -- All output (text, images, plots) renders inline, pinned below
         -- each run cell — every cell you've run stays visible at once, no
-        -- floating popup window ever. molten_image_location only controls
-        -- whether IMAGE chunks appear in the floating window; it doesn't
-        -- stop the window itself from opening, so molten_auto_open_output
-        -- must also be false or entering a cell still pops an
-        -- empty-of-images floating window.
+        -- floating popup window opens on its own. molten_auto_open_output
+        -- must be false or entering a cell still pops a floating window.
         --
         -- Known trade-off, accepted: molten-nvim's inline path gives every
         -- image chunk visible at once the same y coordinate
@@ -32,8 +29,33 @@ return {
         -- a new cell can leave an image's Kitty-graphics-protocol
         -- placement stuck at its old screen row. Not fixable here without
         -- patching molten-nvim's own source.
-        vim.g.molten_image_location = "virt"
+        --
+        -- image_location = "both" (not "virt"): ImageOutputChunk.place()
+        -- (outputchunks.py) only actually places an image for a mode this
+        -- option includes — under "virt", the <leader>jo popup's build call
+        -- (virtual=false) hit none of its branches and returned early
+        -- *before* claiming its own Kitty-image identifier, so its
+        -- img_identifier stayed pointing at the inline image's; closing the
+        -- popup then deleted that shared identifier — the inline copy —
+        -- instead of a floating-only one. "both" gives the popup its own
+        -- real image and its own separate identifier ("<path>" vs the
+        -- inline copy's "virt-<path>"), so closing it only ever removes its
+        -- own copy. Confirmed via source this doesn't change inline
+        -- rendering for cells that never open the popup: for the inline
+        -- (virtual=true) call, "both" and "virt" hit the exact same branch.
+        vim.g.molten_image_location = "both"
         vim.g.molten_auto_open_output = false
+
+        -- No config exists to auto-fade this after a delay (checked
+        -- molten-nvim's source directly — the only timers in the plugin
+        -- are kernel-message polling loops, nothing display-related), so
+        -- the exec-time header ("Out[2]: ✓ Done 1.50s") is just noise
+        -- prepended to every output, floating or inline alike — a single
+        -- global option, no per-cell/per-location override. Off entirely.
+        vim.g.molten_output_show_exec_time = false
+    end,
+    config = function()
+        require("de100.utils.molten-popup").setup()
     end,
     keys = {
         -- <leader>jr (run/create a cell) lives in quarto.lua: it needs
@@ -44,5 +66,10 @@ return {
         -- of a "cell"); nothing to jump to until at least one has been run.
         { "]j", "<cmd>MoltenNext<CR>", desc = "Jupyter: next cell/output" },
         { "[j", "<cmd>MoltenPrev<CR>", desc = "Jupyter: prev cell/output" },
+        {
+            "<leader>jo",
+            function() require("de100.utils.molten-popup").toggle() end,
+            desc = "Jupyter: toggle output popup for this cell",
+        },
     },
 }
