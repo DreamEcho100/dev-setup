@@ -8,35 +8,68 @@ of rendered math. This registers an image/png formatter for both classes
 using matplotlib's mathtext (no system LaTeX/dvipng required), so any
 Math(...)/Latex(...) — via display() or as a cell's last expression —
 renders as an image automatically, with no change needed to the calling
-code. The rendered colors track the active Neovim colorscheme (see
-_theme_colors()) rather than being hardcoded, falling back to
-transparent/black when no theme data has been exported yet. Deployed via
-neovim.yml / dev-env/runs/neovim into ~/.ipython/profile_default/startup/,
-which IPython auto-runs at kernel startup for every profile.
+code. The rendered colors and size track the active Neovim colorscheme and
+the terminal's real font size (see _render_context()) rather than being
+hardcoded, falling back to a fixed DPI/transparent-black when no render
+context has been exported yet. Deployed via neovim.yml / dev-env/runs/neovim
+into ~/.ipython/profile_default/startup/, which IPython auto-runs at kernel
+startup for every profile.
 """
 from IPython import get_ipython
 from IPython.display import Math, Latex
 
+_FALLBACK_DPI = 150
+# Rendering *natively* at a tiny DPI to hit a ~1-row pixel target looks
+# blurry/small next to the terminal's own hinted font rendering — a raster
+# renderer with no font hinting has too few pixels to work with at that
+# size. So instead: always rasterize at a fixed, good-quality DPI, then
+# downscale to the real target size with a proper resampling filter
+# (Lanczos, via Pillow — already installed as a matplotlib dependency).
+# This is the supersampling image.nvim/Kitty's protocol won't do for us,
+# since Molten never gives image.nvim an explicit size hint to work from.
+_SUPERSAMPLE_DPI = 300
 
-def _theme_colors():
-    """Reads {bg, fg} written by dotfiles/.config/nvim/lua/de100/utils/
-    theme-colors.lua on every ColorScheme autocmd. Note the extra "nvim"
-    segment: Neovim's own stdpath("state") is $XDG_STATE_HOME/nvim, not
-    $XDG_STATE_HOME itself.
+# Session-lifetime cache (this module reloads per kernel, so "session" here
+# is "this kernel process"), expiring after _CONTEXT_TTL_SECONDS so a theme
+# switch or terminal resize is still picked up within a few renders rather
+# than requiring a kernel restart.
+_CONTEXT_TTL_SECONDS = 5.0
+_context_cache = {"data": (None, None, None), "checked_at": 0.0}
+
+
+def _render_context():
+    """Reads {bg, fg, cell_width, cell_height} written by
+    dotfiles/.config/nvim/lua/de100/utils/render-context.lua on every
+    ColorScheme/VimResized autocmd. Note the extra "nvim" segment:
+    Neovim's own stdpath("state") is $XDG_STATE_HOME/nvim, not
+    $XDG_STATE_HOME itself. Cached for _CONTEXT_TTL_SECONDS since this can
+    run once per Math()/Latex() display in a cell.
     """
+    import time
+
+    now = time.monotonic()
+    if now - _context_cache["checked_at"] < _CONTEXT_TTL_SECONDS:
+        return _context_cache["data"]
+
     import json
     import os
 
     state_home = os.environ.get(
         "XDG_STATE_HOME", os.path.expanduser("~/.local/state")
     )
-    path = os.path.join(state_home, "nvim", "de100", "theme", "colors.json")
+    path = os.path.join(
+        state_home, "nvim", "de100", "theme", "render-context.json"
+    )
     try:
         with open(path) as f:
             data = json.load(f)
-        return data.get("bg"), data.get("fg")
+        result = (data.get("bg"), data.get("fg"), data.get("cell_height"))
     except Exception:
-        return None, None
+        result = (None, None, None)
+
+    _context_cache["data"] = result
+    _context_cache["checked_at"] = now
+    return result
 
 
 def _math_to_png(obj):
@@ -53,7 +86,7 @@ def _math_to_png(obj):
     if not (text.startswith("$") and text.endswith("$")):
         text = "$" + text + "$"
 
-    bg, fg = _theme_colors()
+    bg, fg, cell_height = _render_context()
 
     fig = Figure(figsize=(0.01, 0.01))
     FigureCanvasAgg(fig)
@@ -63,13 +96,33 @@ def _math_to_png(obj):
         fig.savefig(
             buf,
             format="png",
-            dpi=150,
+            dpi=_SUPERSAMPLE_DPI,
             bbox_inches="tight",
             pad_inches=0.15,
             facecolor=bg or "none",
             transparent=bg is None,
         )
-        return buf.getvalue()
+        if not cell_height:
+            return buf.getvalue()
+
+        from PIL import Image
+
+        buf.seek(0)
+        img = Image.open(buf)
+        # 1.1x (barely more than one code line) still looked visibly small
+        # and blurry after supersampling — there's a hard floor here: a
+        # plain raster image has no font-hinting engine the way a
+        # terminal's own text renderer does, so small anti-aliased text
+        # reads as "soft" no matter the source quality. More target pixels
+        # is the only real lever; 1.8x trades a bit of extra height for
+        # meaningfully crisper text.
+        target_height = max(1, round(cell_height * 1.8))
+        scale = target_height / img.height
+        target_width = max(1, round(img.width * scale))
+        img = img.resize((target_width, target_height), Image.LANCZOS)
+        out = io.BytesIO()
+        img.save(out, format="PNG")
+        return out.getvalue()
     except Exception:
         # Fall back to the plain-text repr (e.g. real LaTeX syntax outside
         # mathtext's supported subset) rather than breaking the display.

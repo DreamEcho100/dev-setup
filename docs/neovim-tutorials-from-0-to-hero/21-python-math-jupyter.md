@@ -231,15 +231,35 @@ letters, sums, integrals) but only mathtext's subset of LaTeX — no arbitrary
 packages or custom macros; if the string can't be parsed, it silently falls
 back to the plain-text repr rather than erroring.
 
-The rendered image's colors track your active Neovim colorscheme rather than
-being hardcoded: `dotfiles/.config/nvim/lua/de100/utils/theme-colors.lua`
-exports the current `Normal` highlight's bg/fg to
-`~/.local/state/nvim/de100/theme/colors.json` on every colorscheme change
-(including at startup), and the render hook reads that file fresh on every
-call. Most of this config's themes set a transparent `Normal` background
-(no `bg` in that file), so the image falls back to a transparent background
-with themed text color in that case — a theme that does set an explicit
-background renders fully opaque, matching it exactly.
+The rendered image's colors and size track your active Neovim setup rather
+than being hardcoded: `dotfiles/.config/nvim/lua/de100/utils/render-context.lua`
+exports the current `Normal` highlight's bg/fg *and* the terminal's real cell
+pixel dimensions to `~/.local/state/nvim/de100/theme/render-context.json`
+on every colorscheme change *and* terminal resize, and the render hook reads
+that file fresh on every call (cached for a couple of seconds so it isn't
+re-read on every single render). The cell-size query is a direct
+`ioctl(TIOCGWINSZ)` read done fresh on every export (the same approach
+image.nvim itself uses internally, but not depending on *its* cache, which
+only refreshes on a `VimResized` event this config doesn't want to assume
+every terminal fires for e.g. a font-zoom that doesn't change the row/col
+grid). Most of this config's themes set a
+transparent `Normal` background (no `bg` in that file), so the image falls
+back to a transparent background with themed text color in that case — a
+theme that does set an explicit background renders fully opaque, matching
+it exactly.
+
+Sizing: `image.nvim` (Molten's image provider) turns a PNG's raw pixel
+height into terminal rows as `rows = png_height_px / real_cell_height_px` —
+it has no notion of "render this at 1 line tall," so a naive fixed DPI
+renders wildly oversized (measured: a plain one-line expression came out
+3-4 terminal rows tall). The hook always rasterizes at a fixed
+high-quality DPI first, then downscales to the real target pixel height
+(derived from `cell_height`) with Pillow's Lanczos filter, rather than
+rendering natively at a tiny DPI — the latter looks blurry, since
+matplotlib's rasterizer has no font hinting to fall back on at very small
+native sizes the way a terminal's own text renderer does. The result is
+crisp text sized to match roughly one terminal row for simple expressions,
+scaling up proportionally for taller content (fractions, stacked terms).
 
 Considered but **not** using `molten-nvim`'s own native `text/latex`
 rendering path (the `pnglatex` package, real `pdflatex`) as an alternative:
@@ -285,17 +305,33 @@ startup script actually loaded for this kernel: `:MoltenInfo` or check
 can't parse (arbitrary LaTeX packages/macros) falls back to the plain repr by
 design — reach for `;sympymath` for those instead.
 
-### Two math images in the same cell overlap/garble
+### All output displays inline, below the cell — no floating window
 
-If a single cell runs more than one `display(Math(...))` (or mixes a plot
-with a Math display), the resulting images can render on top of each other.
-Traced to `molten-nvim` itself, not this config: `outputbuffer.py` gives
-every image chunk within one cell's output the same vertical position in
-its `virt`-text (inline) display mode, so `image.nvim` places the second
-image over the first. Not fixable here without patching `molten-nvim`'s own
-source (which `:Lazy update` would silently discard) — the practical
-workaround is one `Math()`/plot per cell. The common case, one image per
-cell, is unaffected.
+`dotfiles/.config/nvim/lua/de100/plugins/molten.lua` sets
+`g:molten_image_location = "virt"` and `g:molten_auto_open_output = false`:
+every run cell's output (text, images, plots) is pinned directly below it,
+all visible at once as you scroll through the notebook — Molten never
+opens a separate floating popup window for anything.
+
+Known, accepted trade-off (traced to `molten-nvim` itself, not fixable here
+without patching its own source):
+
+- **Overlap.** When more than one image output is visible at once (e.g. a
+  cell running two `display(Math(...))` calls, or just several image cells
+  close together in the viewport), they can render on top of each other.
+  `outputbuffer.py`'s `build_output_text` gives every image chunk the same
+  vertical position in this inline path, so `image.nvim` places the second
+  image over the first.
+- **Scroll-jumbling.** Inline images are placed via Kitty-graphics-protocol
+  escape codes at an absolute screen row computed once, when a cell's
+  output is (re)shown. There's no `WinScrolled` handling anywhere in
+  `molten-nvim`'s Python plugin, so scrolling the window without moving
+  the cursor to a new cell never re-triggers that placement — the image
+  stays visually pinned to its old screen row while the text scrolls
+  under it.
+
+Both are scoped to cases with more than one simultaneously-visible image;
+a single image per cell (the common case) is unaffected.
 
 ## 7. When to Reach for `.qmd` Instead of `.ipynb`
 
