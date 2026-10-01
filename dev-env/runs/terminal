@@ -132,6 +132,8 @@ elif command_exists apt-get; then
         direnv
         fonts-jetbrains-mono
         fonts-firacode
+        fonts-dejavu-core
+        fonts-liberation
         fonts-noto-color-emoji
     )
 

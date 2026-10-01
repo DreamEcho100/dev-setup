@@ -343,7 +343,7 @@ _SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
 # Rows are whole, so spacing comes from fitting an image into its rows with a
 # small gap (a fraction of a row) instead of adding a spare row: a 21px sympy
 # image in 20px rows takes one row, scaled to leave the gap, not two.
-_ROW_GAP = 0.12
+_ROW_GAP = 0.15
 # How much of a row an image may overflow before it takes another one.
 _ROW_OVERFLOW = 0.25
 # Spare space around the combined Math() image, in rows.

@@ -252,23 +252,28 @@ Clearing output has keymaps (and the commands behind them):
 <leader>jx   :MoltenInterrupt stop the running cell (like Jupyter's "interrupt kernel")
 ```
 
-Saving outputs into the file has commands only (no keymaps):
+Saving outputs as a picture has commands only (no keymaps):
 
 ```text
-:MoltenSaveOutput     save the output of the cell under the cursor
-:MoltenSaveOutputAll  save every cell's output
+:MoltenCellExportImage      the output of the cell under the cursor -> one PNG
+:MoltenAllCellsExportImage  the output of every finished cell in this file -> one PNG
 ```
 
-They write into the notebook that belongs to the file, next to it: the `.ipynb`
-itself when you are editing one, otherwise `<name>.ipynb` beside a `.qmd`/`.py`
-(created if missing; the `jupytext` CLI makes it, and for `.qmd` it needs the
-`quarto` binary). The buffer is saved first and the notebook's cells are
-refreshed from it with `jupytext --update`, because Molten matches each cell to
-the notebook by its code, so unsaved edits would not match. Outputs already in
-the notebook stay for cells you did not save. `:MoltenSaveOutputAll` is
-Molten's `:MoltenExportOutput!`; `:MoltenSaveOutput` is `:MoltenExportCellOutput!`,
-a command added in the molten-nvim fork (identical cells are matched in order,
-as in the full export).
+The PNG is saved next to the file, named after it with the kind and a
+timestamp, so repeated exports never overwrite each other:
+`<file name>-cell-20261001-104756.png` or `<file name>-all-cells-20261001-104756.png`.
+Each cell's block starts with its `Out[n]` and then shows its text, errors and
+images in order, drawn in your colorscheme's background and text colours at 2x
+(small images such as sympy's are scaled up to stay readable; plots are not).
+The font is the one your terminal is configured with: `font_family` from
+`kitty.conf` (then `local.conf`) or `font-family` from ghostty's config,
+looked up in `fc-list`. If that cannot be found it falls back to JetBrainsMono
+Nerd Font, DejaVu Sans Mono or Liberation Mono, which `terminal.yml` /
+`dev-env/runs/terminal` install (`fonts-dejavu-core`, `fonts-liberation`), and
+last to Pillow's built-in font. The drawing is `:MoltenExportImage` in the
+molten-nvim fork (`outputimage.py`); `utils/molten-export-image.lua` only picks
+the name, colours and font. To put outputs into the `.ipynb` instead, use
+Molten's own `:MoltenExportOutput!`.
 
 `<leader>jx` sends the kernel an interrupt, so an infinite loop or a slow
 computation stops with a `KeyboardInterrupt`, and the kernel's variables
@@ -725,8 +730,9 @@ python3 -m pip show pylatexenc
 - [ ] Run a cell, then `:MoltenClear` (that cell's output goes away) and
       `:MoltenClearAll` (every cell's output goes away; the kernel and its
       variables are untouched).
-- [ ] Run two cells, then `:MoltenSaveOutput` on one: only that cell's output
-      appears in the `.ipynb` next to the file; `:MoltenSaveOutputAll` writes both.
+- [ ] Run two cells, then `:MoltenCellExportImage` on one: a timestamped PNG of
+      just that output appears next to the file; `:MoltenAllCellsExportImage`
+      writes one with both.
 - [ ] Navigate between already-run cells with `]j` / `[j`.
 - [ ] Navigate between all code blocks (run or not) with `]b` / `[b`.
 - [ ] Open (or create) a `.qmd` file and run a Python cell in it.
