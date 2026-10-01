@@ -467,11 +467,17 @@ single global option (no per-cell or per-location override anywhere in
 ### The Molten fork and keeping it current
 
 `plugins/molten.lua` installs `DreamEcho100/molten-nvim` (branch
-`fix/inline-image-offset`) instead of `benlubas/molten-nvim`. The fork is
-upstream `main` plus one patch, reviewed upstream as PR #365, that reserves an
-inline image's rows in Molten's own output so images stop covering the
-`Out[n]` header and text above them. Molten's author has said he no longer
-fixes bugs himself (issue #324), so the branch is kept current by hand:
+`de100-integration`) instead of `benlubas/molten-nvim`. The fork is upstream
+`main` plus two small fixes, each also sent upstream as its own PR from its own
+branch (`fix/inline-image-offset`, #365, and `fix/float-after-done`):
+
+- inline images no longer cover the `Out[n]` header and the text above them
+  (Molten now reserves the image's rows itself);
+- a finished cell can show and hide its floating output window again (upstream
+  commit `81aa71b` broke that: `<leader>jo` and `:MoltenShowOutput` did nothing).
+
+Molten's author has said he no longer fixes bugs himself (issue #324), so the
+branch is kept current by hand:
 
 - Every 10th Neovim start (`vim.g.de100_molten_upstream_check_every`, `0`
   turns it off) a background check asks GitHub whether upstream `main` has

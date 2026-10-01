@@ -5,14 +5,16 @@
 -- After first install, run :UpdateRemotePlugins once and restart Neovim.
 -- https://github.com/benlubas/molten-nvim
 return {
-    -- Fork of benlubas/molten-nvim carrying one fix (upstream PR #365):
-    -- inline images were drawn over the "Out[n]" header and any text printed
-    -- before them (the popup was fine) because image.nvim's separate padding
-    -- extmark gets dropped on redraw. The fork reserves the image's rows in
-    -- Molten's own extmark and draws the image on them. Switch back to
-    -- "benlubas/molten-nvim" with `version = "^1.0.0"` once it's released.
+    -- Fork of benlubas/molten-nvim: upstream main plus two fixes, each also
+    -- sent upstream on its own branch. (1) PR #365: inline images were drawn
+    -- over the "Out[n]" header and text above them, because image.nvim's
+    -- separate padding extmark gets dropped on redraw; the fork reserves the
+    -- image's rows in Molten's own extmark. (2) finished cells could not show
+    -- or hide their floating window (upstream 81aa71b skipped _show_selected
+    -- for DONE cells). Switch back to "benlubas/molten-nvim" with
+    -- `version = "^1.0.0"` once both are released.
     "DreamEcho100/molten-nvim",
-    branch = "fix/inline-image-offset",
+    branch = "de100-integration",
     build = ":UpdateRemotePlugins",
     ft = { "python", "quarto", "markdown" },
     dependencies = { "3rd/image.nvim" },
