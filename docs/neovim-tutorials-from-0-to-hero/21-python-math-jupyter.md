@@ -534,13 +534,26 @@ popup-only one (they were the same shared identifier), permanently killing
 it. `"both"` gives the popup a real image with its own separate identifier,
 so it shows correctly and closing it only ever removes its own copy.
 
-### Known limitation: rendered images disappear whenever a floating window opens
+### Images and floating windows
 
-`image.nvim` (`dotfiles/.config/nvim/lua/de100/plugins/image.lua`) proactively hides any image whose screen position is covered by a window, floating windows included, and only shows it again on a later cursor move — not automatically when that window closes — because Kitty-protocol images paint over the whole terminal grid regardless of Neovim's own window layering. That's `window_overlap_clear_enabled = true`, turned on for a real reason: without it, re-running a Molten cell whose new output overlaps the old one can leave garbled/duplicate plot images behind.
+`image.nvim` (`plugins/image.lua`) hides any image whose screen position is
+covered by a window (Kitty images paint over the whole terminal regardless of
+Neovim's window layering) and re-renders it later. That is wanted for real
+popups, but it also fired for the small floating UI that is nearly always on
+screen: noice's notification toasts, the incline filename label, blink.cmp's
+menus and which-key. A toast over the rows under a cell made the images
+vanish, and they came back from stale positions, which looked like images that
+refuse to clear or stick around after edits. Those windows are now exempt
+(`window_overlap_clear_ft_ignore`, noice and incline added to blink and
+which-key). Any other floating window still hides the images under it until it
+closes; `window_overlap_clear_enabled = false` would remove that entirely, at
+the price of images drawing over popups.
 
-In practice this means *any* floating window — completion, which-key, help, `<leader>jo`'s own popup, anything else — can make every visible cell's rendered image vanish until you move the cursor out of and back into a cell. `image.nvim` has a `window_overlap_clear_ft_ignore` option meant to exempt specific filetypes from counting as "covering," but exempting `blink.cmp`'s and `which-key.nvim`'s own filetypes made no observed difference (confirmed after a full Neovim restart) — the actual mechanism causing this isn't the filetype check, and wasn't tracked down further. **Accepted as an unresolved limitation.**
-
-If this is worse than the garbled-plot-on-rerun problem it's meant to prevent, setting `window_overlap_clear_enabled = false` in `image.lua` removes the disappearing-image behavior entirely (trade-off: re-running a cell whose new plot output overlaps the old one can once again leave stale/garbled images behind).
+Separately, the Molten fork gives every inline image its own anchor, because
+`image.nvim` tracks an image's movement with one extmark per (row, column) and
+all of a cell's images share the same anchor, so after an edit only one of them
+followed. With the fork, adding, removing, replacing and undoing lines in or
+above a cell keeps every image on its reserved rows.
 
 One separate, unrelated caveat remains: inline images are placed via
 Kitty-graphics-protocol escape codes at an absolute screen row computed
