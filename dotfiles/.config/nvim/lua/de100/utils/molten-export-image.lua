@@ -79,6 +79,11 @@ local function export(mode, label)
         vim.notify("Molten export image: this buffer is not a file", vim.log.levels.WARN)
         return
     end
+    if vim.fn.exists(":MoltenExportImage") ~= 2 then
+        vim.notify("Molten export image: this Molten has no :MoltenExportImage yet. Run :Lazy update molten-nvim, " ..
+                       "then :UpdateRemotePlugins, then restart Neovim.", vim.log.levels.WARN)
+        return
+    end
     local normal = vim.api.nvim_get_hl(0, {name = "Normal", link = false})
     local path = ("%s/%s-%s-%s.png"):format(vim.fn.fnamemodify(file, ":h"), vim.fn.fnamemodify(file, ":t:r"),
                                             label, os.date("%Y%m%d-%H%M%S"))
