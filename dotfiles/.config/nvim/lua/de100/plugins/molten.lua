@@ -65,6 +65,7 @@ return {
     config = function()
         require("de100.utils.molten-popup").setup()
         require("de100.utils.molten-clear").setup()
+        require("de100.utils.molten-save").setup()
     end,
     keys = {
         -- <leader>jr (run/create a cell) lives in quarto.lua: it needs
