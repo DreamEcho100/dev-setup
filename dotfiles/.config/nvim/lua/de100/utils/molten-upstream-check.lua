@@ -9,7 +9,7 @@
 local M = {}
 
 local UPSTREAM = "benlubas:main"
-local FORK_BRANCH = "DreamEcho100:fix/inline-image-offset"
+local FORK_BRANCH = "DreamEcho100:de100-integration"
 local API = "https://api.github.com/repos/benlubas/molten-nvim/compare/"
 
 local function state_path()

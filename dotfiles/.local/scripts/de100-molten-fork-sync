@@ -8,7 +8,7 @@ set -euo pipefail
 
 FORK_URL="${MOLTEN_FORK_URL:-https://github.com/DreamEcho100/molten-nvim.git}"
 UPSTREAM_URL="${MOLTEN_UPSTREAM_URL:-https://github.com/benlubas/molten-nvim.git}"
-BRANCH="${MOLTEN_FORK_BRANCH:-fix/inline-image-offset}"
+BRANCH="${MOLTEN_FORK_BRANCH:-de100-integration}"
 WORK_DIR="${MOLTEN_FORK_WORKDIR:-${XDG_CACHE_HOME:-$HOME/.cache}/de100/molten-fork}"
 
 usage() {
