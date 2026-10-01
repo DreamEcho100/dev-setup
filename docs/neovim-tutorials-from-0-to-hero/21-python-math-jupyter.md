@@ -442,17 +442,13 @@ call. `_ipython_display_` avoids this entirely: it short-circuits before any
 per-mimetype formatter runs, for both `display()` calls and a bare trailing
 `Math(...)` expression, so zero messages go out for a buffered call.)
 
-**sympy results go through the same path.** Every `display()` of a sympy
-expression normally emits its own image (sympy's PNG after
-`sympy.init_printing()`, or Molten's own LaTeX renderer for the `text/latex`
-form), and Molten draws all images of a cell at one screen row, so
-`display(x**y); display(x/y)` used to render on top of each other. The hook
-now registers sympy's `Basic` and matrix base classes by name (nothing is
-imported until you import sympy yourself), converts each expression with
-`sympy.latex()`, and stacks it with the `Math()` results into the one themed,
-bordered image. Because those go through real LaTeX, matrices,
-`\operatorname`, integrals and the rest of what sympy emits render as images
-too.
+**sympy and other libraries render the way they normally do.** sympy
+results (and, after `sympy.init_printing()`, even plain floats and ints) emit
+their own images, which Molten shows as-is: unthemed and in sympy's own font
+size, which is why they can look bigger than `Math()` output. They no longer
+overlap each other or the text above them, because Molten now reserves each
+inline image's rows (see "The Molten fork" below). If you want sympy output in
+the same themed, bordered style, wrap it: `display(Math(sympy.latex(expr)))`.
 
 The combined image also gets a thin (1px) border, colored to match the
 rendered text (not a separate theme accent color, so it can't desync from

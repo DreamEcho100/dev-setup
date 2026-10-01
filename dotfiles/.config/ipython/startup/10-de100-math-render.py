@@ -4,9 +4,9 @@ Molten (this Neovim setup's Jupyter runner) only shows real image mimetypes
 (image/png, image/svg+xml) via image.nvim; Math()/Latex() only provide
 text/latex plus a plain repr, so without this a cell showing
 `display(Math("..."))` prints "<IPython.core.display.Math object>" instead
-of rendered math. This registers a formatter for both classes (and for
-sympy expressions/matrices) that renders them with real LaTeX (pdflatex +
-pdftocairo, so amsmath matrices, \\operatorname, aligned, ... all work),
+of rendered math. This registers a formatter for both classes that renders
+them with real LaTeX (pdflatex + pdftocairo, so amsmath matrices,
+\\operatorname, aligned, ... all work),
 falling back to matplotlib's mathtext if LaTeX is unavailable or an item
 fails to compile, and finally to the plain text form. Any
 Math(...)/Latex(...) — via display() or as a cell's last expression —
@@ -380,19 +380,6 @@ def _buffer_math(obj):
     _pending_math.append(obj)
 
 
-def _buffer_sympy(obj):
-    # sympy expressions/matrices emit their own image per display() (sympy's
-    # PNG after init_printing(), or Molten's LaTeX renderer for text/latex),
-    # which Molten stacks at one row. Treat them like Math(): render the
-    # expression's LaTeX through the same themed, stacked path, keeping the
-    # plain repr to show if mathtext can't draw it (matrices, \operatorname).
-    from sympy import latex
-
-    item = Math(latex(obj))
-    item.de100_fallback = repr(obj)
-    _pending_math.append(item)
-
-
 def _clear_pending(_event=None):
     _pending_math.clear()
 
@@ -421,7 +408,7 @@ def _combine_pending(_event=None):
         if png_bytes:
             rendered.append(Image.open(io.BytesIO(png_bytes)))
         else:
-            print(getattr(obj, "de100_fallback", obj.data))
+            print(obj.data)
             if latex_error and "not installed" not in latex_error:
                 print("  (LaTeX: " + latex_error + ")")
 
@@ -458,11 +445,5 @@ _ip = get_ipython()
 if _ip is not None:
     _ip.display_formatter.ipython_display_formatter.for_type(Math, _buffer_math)
     _ip.display_formatter.ipython_display_formatter.for_type(Latex, _buffer_math)
-    # By name, so sympy is only touched if/when the user imports it.
-    for _module, _name in (("sympy.core.basic", "Basic"),
-                           ("sympy.matrices.matrixbase", "MatrixBase"),
-                           ("sympy.matrices.matrices", "MatrixBase")):
-        _ip.display_formatter.ipython_display_formatter.for_type_by_name(
-            _module, _name, _buffer_sympy)
     _ip.events.register("pre_run_cell", _clear_pending)
     _ip.events.register("post_run_cell", _combine_pending)
