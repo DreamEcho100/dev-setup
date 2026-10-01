@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+# Keep the molten-nvim fork branch used by plugins/molten.lua on top of upstream.
+# Lists upstream commits the fork branch lacks, rebases the branch onto
+# upstream main, and (after a prompt) force-pushes just that branch.
+
+set -euo pipefail
+
+FORK_URL="${MOLTEN_FORK_URL:-https://github.com/DreamEcho100/molten-nvim.git}"
+UPSTREAM_URL="${MOLTEN_UPSTREAM_URL:-https://github.com/benlubas/molten-nvim.git}"
+BRANCH="${MOLTEN_FORK_BRANCH:-fix/inline-image-offset}"
+WORK_DIR="${MOLTEN_FORK_WORKDIR:-${XDG_CACHE_HOME:-$HOME/.cache}/de100/molten-fork}"
+
+usage() {
+    cat <<'EOF'
+Usage:
+  de100-molten-fork-sync --check   list upstream commits the fork branch lacks, change nothing
+  de100-molten-fork-sync           rebase the fork branch onto upstream main, ask before pushing
+  de100-molten-fork-sync --yes     same, push without asking
+
+Works in a cache clone (~/.cache/de100/molten-fork), never in the plugin directory.
+After a push run :Lazy update, then :UpdateRemotePlugins and restart Neovim.
+EOF
+}
+
+mode="sync"
+assume_yes=0
+for arg in "$@"; do
+    case "$arg" in
+        --check) mode="check" ;;
+        --yes) assume_yes=1 ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+
+# One-off credential helper through gh, so no git config is changed.
+git_push() {
+    git -c credential.helper= -c credential.helper='!gh auth git-credential' "$@"
+}
+
+if [ ! -d "$WORK_DIR/.git" ]; then
+    mkdir -p "$(dirname "$WORK_DIR")"
+    git clone -q "$FORK_URL" "$WORK_DIR"
+fi
+cd "$WORK_DIR"
+git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$UPSTREAM_URL"
+
+git fetch -q origin "$BRANCH"
+git fetch -q upstream main
+git checkout -q -B "$BRANCH" "origin/$BRANCH"
+
+new_commits="$(git log --oneline "$BRANCH..upstream/main")"
+if [ -z "$new_commits" ]; then
+    echo "Fork branch is up to date with upstream main."
+    exit 0
+fi
+
+count="$(printf '%s\n' "$new_commits" | wc -l)"
+echo "Upstream main has $count commit(s) the fork branch lacks:"
+printf '%s\n' "$new_commits" | sed 's/^/  /'
+[ "$mode" = "check" ] && exit 0
+
+if ! git -c user.name=de100 -c user.email=noreply@example.com rebase -q upstream/main; then
+    git rebase --abort
+    echo
+    echo "Rebase conflicts. Nothing was changed. Resolve them by hand in:"
+    echo "  $WORK_DIR   (git rebase upstream/main on branch $BRANCH)"
+    exit 1
+fi
+
+python3 -m py_compile rplugin/python3/molten/*.py
+find . -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
+echo
+git diff --stat upstream/main | tail -4
+
+if [ "$assume_yes" -ne 1 ]; then
+    read -r -p "Force-push $BRANCH to the fork (only this branch)? [y/N] " answer
+    [ "$answer" = "y" ] || { echo "Not pushed. The rebased branch is in $WORK_DIR."; exit 0; }
+fi
+
+git_push push --force-with-lease origin "$BRANCH"
+echo
+echo "Pushed. In Neovim: :Lazy update, then :UpdateRemotePlugins, then restart."
+echo "Then re-check an inline image cell, and update the PR if the diff changed."

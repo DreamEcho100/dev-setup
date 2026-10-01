@@ -468,6 +468,29 @@ persistent noise on top of an already-inline, always-visible view. It's a
 single global option (no per-cell or per-location override anywhere in
 `molten-nvim`), so this also applies to the `<leader>jo` popup below.
 
+### The Molten fork and keeping it current
+
+`plugins/molten.lua` installs `DreamEcho100/molten-nvim` (branch
+`fix/inline-image-offset`) instead of `benlubas/molten-nvim`. The fork is
+upstream `main` plus one patch, reviewed upstream as PR #365, that reserves an
+inline image's rows in Molten's own output so images stop covering the
+`Out[n]` header and text above them. Molten's author has said he no longer
+fixes bugs himself (issue #324), so the branch is kept current by hand:
+
+- Every 10th Neovim start (`vim.g.de100_molten_upstream_check_every`, `0`
+  turns it off) a background check asks GitHub whether upstream `main` has
+  commits the fork branch lacks and shows a toast listing the newest ones. It
+  never changes anything, stays quiet offline, and doesn't repeat for the same
+  upstream state. `:MoltenUpstreamCheck` runs it on demand.
+- `de100-molten-fork-sync --check` lists the missing commits;
+  `de100-molten-fork-sync` rebases the branch onto upstream `main` in a cache
+  clone (`~/.cache/de100/molten-fork`), compiles the Python, and asks before
+  force-pushing that one branch. On a conflict it changes nothing and says
+  where to resolve it. Afterwards run `:Lazy update`, `:UpdateRemotePlugins`
+  and restart Neovim.
+- Once the PR is merged and released, point the spec back at
+  `benlubas/molten-nvim` with `version = "^1.0.0"`.
+
 ### `<leader>jo`: floating output popup for one cell at a time
 
 The always-inline default above trades exact placement for zero floating
