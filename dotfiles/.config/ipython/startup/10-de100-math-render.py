@@ -340,12 +340,17 @@ def _latex_scaled(img, cell_height, fg=None):
 # size and centred in a whole number of rows, whichever library made them.
 # Large images (plots, photos) are left alone.
 _SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
-# Breathing room around each image, in rows (half above, half below), so stacked
-# images don't touch and nothing collides with the line above in the popup.
-_ROW_MARGIN = 0.5
+# Rows are whole, so spacing comes from fitting an image into its rows with a
+# small gap (a fraction of a row) instead of adding a spare row: a 21px sympy
+# image in 20px rows takes one row, scaled to leave the gap, not two.
+_ROW_GAP = 0.12
+# How much of a row an image may overflow before it takes another one.
+_ROW_OVERFLOW = 0.25
+# Spare space around the combined Math() image, in rows.
+_ROW_MARGIN = 0.35
 # sympy's PNG text is about 15% larger than a terminal row of text at the
 # same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
-_SNAP_TEXT_SCALE = 1.0
+_SNAP_TEXT_SCALE = 0.9
 # A little more stroke weight for those images, which look thin next to the
 # terminal font (0 = as drawn, 1 = about a pixel heavier at 1x).
 _SNAP_WEIGHT_BOOST = 0.7
@@ -399,9 +404,9 @@ def _snap_png(data):
         if img.height > _SNAP_MAX_ROWS * cell_height:
             return data
 
-        scale = _SNAP_TEXT_SCALE
-        rows = max(1, math.ceil((img.height * scale + _ROW_MARGIN * cell_height) / cell_height))
+        rows = max(1, math.ceil((img.height * _SNAP_TEXT_SCALE - _ROW_OVERFLOW * cell_height) / cell_height))
         target = rows * cell_height
+        scale = min(_SNAP_TEXT_SCALE, (target - _ROW_GAP * cell_height) / img.height)
         size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
         if _SNAP_WEIGHT_BOOST:
             img = _snap_embolden(img)

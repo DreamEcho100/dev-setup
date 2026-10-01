@@ -331,7 +331,7 @@ turns the pages into transparent PNGs. So `display(Math("x^2 + y^2 = z^2"))`
 just works, exactly as called, and so does anything LaTeX can typeset:
 matrices (`pmatrix`), `aligned` blocks, `\operatorname`, `\text{...}`, and so
 on — there is no "supported subset". `Latex(...)` may mix prose and `$...$`.
-The glyph weight is nudged up (about half as much again in ink, `_WEIGHT_BOOST`) and the text is a little larger than one terminal row per em (`_LATEX_SIZE_RATIO`, 1.15). The combined image is padded to whole rows with half a row of space (`_ROW_MARGIN`), so it doesn't touch the images above it because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
+The glyph weight is nudged up (about half as much again in ink, `_WEIGHT_BOOST`) and the text is a little larger than one terminal row per em (`_LATEX_SIZE_RATIO`, 1.15). The combined image is padded to whole rows with a little spare space (`_ROW_MARGIN`) because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
 and your theme colour), so re-running a cell is instant; a cold cell of five
 items takes about a third of a second.
 
@@ -472,9 +472,11 @@ extra stroke weight (`_SNAP_WEIGHT_BOOST`, keeping their own colours), their
 edges rebuilt at 4x resolution through a steep alpha curve
 (`_SNAP_EDGE_STEEPNESS`, `_SNAP_EDGE_SHIFT`) so the stair-steps of sympy's tiny
 PNGs become smooth edges instead of blur or pixels,
-and the image is centred in a whole number of rows with at least half a row of
-space around it (`_ROW_MARGIN`), so stacked images and the line above stay
-apart. Larger images (plots, photos) are untouched,
+and the image is centred in a whole number of rows. Rows are whole, so spacing
+comes from fitting the image into them with a small gap (`_ROW_GAP`, a fraction
+of a row) rather than adding a spare row: a 21px sympy image in 20px rows takes
+one row, scaled a little to leave the gap (an image only takes another row once
+it overflows one by `_ROW_OVERFLOW`). Larger images (plots, photos) are untouched,
 and so is the combined `Math()` image. sympy keeps its own colours; if you want
 the themed, bordered style use `display(Math(sympy.latex(expr)))`. Images no
 longer overlap each other or the text above them because Molten reserves each
