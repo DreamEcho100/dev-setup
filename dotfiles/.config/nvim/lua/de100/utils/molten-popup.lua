@@ -78,6 +78,13 @@ end
 -- Same filetypes molten.lua's `ft` loads Molten for.
 local MOLTEN_FILETYPES = { python = true, quarto = true, markdown = true }
 
+--- Drops a cell from the popup-toggle set (used when its output is cleared).
+function M.forget(bufnr, range)
+    local key = range_key(range)
+    if M.toggled[bufnr] then M.toggled[bufnr][key] = nil end
+    if shown_key == key then shown_key = nil end
+end
+
 function M.on_cursor_moved()
     local bufnr = vim.api.nvim_get_current_buf()
     if not MOLTEN_FILETYPES[vim.bo[bufnr].filetype] then return end

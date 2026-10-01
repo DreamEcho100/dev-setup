@@ -6,6 +6,11 @@ return {
     {
         "folke/noice.nvim",
         event = "VeryLazy",
+        keys = {
+            -- Toasts vanish and can't be yanked; this opens every message in
+            -- a real split you jump into (q closes it).
+            { "<leader>un", "<cmd>Noice history<CR>", desc = "Message history (Noice)" }
+        },
         opts = {
             presets = {
                 -- This is the search bar or popup that shows up when you press /
