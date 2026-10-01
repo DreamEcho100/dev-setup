@@ -26,30 +26,7 @@
 -- run, in registration order, so registering ours before calling
 -- jupytext's own setup() (which registers its BufReadCmd) guarantees ours
 -- runs first and seeds the file in time for jupytext's real read.
-local function empty_notebook_json()
-    return '{"cells": [], "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}}, "nbformat": 4, "nbformat_minor": 5}'
-end
-
-local function new_notebook(path)
-    if path == nil or path == "" then
-        vim.notify(
-            "JupytextNew: provide a file path, e.g. :JupytextNew notes/lesson1",
-            vim.log.levels.ERROR)
-        return
-    end
-    if not path:match("%.ipynb$") then path = path .. ".ipynb" end
-
-    local full_path = vim.fn.fnamemodify(path, ":p")
-    if vim.fn.filereadable(full_path) == 1 then
-        vim.notify("JupytextNew: file already exists: " .. full_path,
-                    vim.log.levels.ERROR)
-        return
-    end
-
-    vim.fn.mkdir(vim.fn.fnamemodify(full_path, ":h"), "p")
-    vim.fn.writefile({empty_notebook_json()}, full_path)
-    vim.cmd.edit(vim.fn.fnameescape(full_path))
-end
+local notebook = require("de100.utils.notebook-new")
 
 return {
     "GCBallesteros/jupytext.nvim",
@@ -65,30 +42,33 @@ return {
                                                  {clear = true}),
             callback = function(ev)
                 if vim.fn.getfsize(ev.match) <= 0 then
-                    vim.fn.writefile({empty_notebook_json()}, ev.match)
+                    vim.fn.writefile({notebook.empty_notebook_json()}, ev.match)
                 end
             end
         })
 
         require("jupytext").setup(opts)
 
+        -- Name only: the directory comes from the active explorer (oil,
+        -- mini.files, snacks explorer) or else the current buffer's dir.
+        -- .qmd/.ipynb extensions are kept; anything else becomes .ipynb.
         vim.api.nvim_create_user_command("JupytextNew", function(cmd_opts)
-            new_notebook(cmd_opts.args)
+            notebook.create(cmd_opts.args,
+                            require("de100.utils.explorer-dir").target_dir())
         end, {
             nargs = 1,
-            complete = "file",
-            desc = "Create a new Jupyter notebook (.ipynb) seeded with valid empty-notebook JSON"
+            complete = function(arglead)
+                return notebook.complete(arglead,
+                                         require("de100.utils.explorer-dir").target_dir())
+            end,
+            desc = "Create a new notebook (.ipynb default, or .qmd) in the explorer's directory"
         })
     end,
     keys = {
         {
             "<leader>jn",
-            function()
-                vim.ui.input({prompt = "New notebook path: "}, function(input)
-                    if input then new_notebook(input) end
-                end)
-            end,
-            desc = "Jupyter: new notebook"
+            function() notebook.prompt() end,
+            desc = "Jupyter: new notebook (name only, .ipynb/.qmd)"
         }
     }
 }
