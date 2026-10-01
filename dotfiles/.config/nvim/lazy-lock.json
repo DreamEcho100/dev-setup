@@ -52,7 +52,7 @@
   "mini.splitjoin": { "branch": "main", "commit": "9301717c7612ccb72e89629df89416585dd54c9b" },
   "mini.surround": { "branch": "main", "commit": "33a2ebe5df8eb4751828fcba133e18ed0fbbdfab" },
   "mini.trailspace": { "branch": "main", "commit": "82c4fb7d4336f8824ca6c97068932886b56326d0" },
-  "molten-nvim": { "branch": "de100-integration", "commit": "bed77dce8d40e26e65d0a2a4d073beaed447f31c" },
+  "molten-nvim": { "branch": "de100-integration", "commit": "047882aede84a3049ffff971aca8724f6ac2c542" },
   "monokai-pro.nvim": { "branch": "master", "commit": "a68e38b8e55d69a215d0f02598900a79c356da9d" },
   "multicursor.nvim": { "branch": "1.0", "commit": "704b99f10a72cc05d370cfeb294ff83412a8ab55" },
   "neogit": { "branch": "master", "commit": "70708be9664b7fcdd010eb07bdc3ebc9311c2027" },
