@@ -449,8 +449,8 @@ rows for an image, so a 21px image in 20px rows took two rows while a 15px one
 took one with a different leftover gap, and the spacing looked uneven. The
 hook wraps the kernel's output publisher and re-encodes any `image/png` up to
 `_SNAP_MAX_ROWS` (6) rows tall: text is scaled toward terminal size
-(`_SNAP_TEXT_SCALE`, 0.9, set by eye against `Math()` output), given
-a little extra stroke weight (`_SNAP_WEIGHT_BOOST`, about a third more ink, keeping
+(`_SNAP_TEXT_SCALE`, 0.98, set by eye against `Math()` output), given
+a little extra stroke weight (`_SNAP_WEIGHT_BOOST`, roughly half as much again in ink, keeping
 their own colours), and the image is centred in a whole number of rows, shaving up to 20% of a row to
 avoid a nearly empty extra row. Larger images (plots, photos) are untouched,
 and so is the combined `Math()` image. sympy keeps its own colours; if you want
