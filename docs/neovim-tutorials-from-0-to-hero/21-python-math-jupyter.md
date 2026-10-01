@@ -252,6 +252,24 @@ Clearing output has keymaps (and the commands behind them):
 <leader>jx   :MoltenInterrupt stop the running cell (like Jupyter's "interrupt kernel")
 ```
 
+Saving outputs into the file has commands only (no keymaps):
+
+```text
+:MoltenSaveOutput     save the output of the cell under the cursor
+:MoltenSaveOutputAll  save every cell's output
+```
+
+They write into the notebook that belongs to the file, next to it: the `.ipynb`
+itself when you are editing one, otherwise `<name>.ipynb` beside a `.qmd`/`.py`
+(created if missing; the `jupytext` CLI makes it, and for `.qmd` it needs the
+`quarto` binary). The buffer is saved first and the notebook's cells are
+refreshed from it with `jupytext --update`, because Molten matches each cell to
+the notebook by its code, so unsaved edits would not match. Outputs already in
+the notebook stay for cells you did not save. `:MoltenSaveOutputAll` is
+Molten's `:MoltenExportOutput!`; `:MoltenSaveOutput` is `:MoltenExportCellOutput!`,
+a command added in the molten-nvim fork (identical cells are matched in order,
+as in the full export).
+
 `<leader>jx` sends the kernel an interrupt, so an infinite loop or a slow
 computation stops with a `KeyboardInterrupt`, and the kernel's variables
 survive (unlike `:MoltenRestart`). If several kernels are attached to the
@@ -313,7 +331,7 @@ turns the pages into transparent PNGs. So `display(Math("x^2 + y^2 = z^2"))`
 just works, exactly as called, and so does anything LaTeX can typeset:
 matrices (`pmatrix`), `aligned` blocks, `\operatorname`, `\text{...}`, and so
 on — there is no "supported subset". `Latex(...)` may mix prose and `$...$`.
-The glyph weight is nudged up a little (about a third more ink) and the text size is one terminal row per em (`_LATEX_SIZE_RATIO`) because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
+The glyph weight is nudged up (about half as much again in ink, `_WEIGHT_BOOST`) and the text is a little larger than one terminal row per em (`_LATEX_SIZE_RATIO`, 1.15). The combined image is padded to whole rows with half a row of space (`_ROW_MARGIN`), so it doesn't touch the images above it because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
 and your theme colour), so re-running a cell is instant; a cold cell of five
 items takes about a third of a second.
 
@@ -449,10 +467,14 @@ rows for an image, so a 21px image in 20px rows took two rows while a 15px one
 took one with a different leftover gap, and the spacing looked uneven. The
 hook wraps the kernel's output publisher and re-encodes any `image/png` up to
 `_SNAP_MAX_ROWS` (6) rows tall: text is scaled toward terminal size
-(`_SNAP_TEXT_SCALE`, 0.98, set by eye against `Math()` output), given
-a little extra stroke weight (`_SNAP_WEIGHT_BOOST`, roughly half as much again in ink, keeping
-their own colours), and the image is centred in a whole number of rows, shaving up to 20% of a row to
-avoid a nearly empty extra row. Larger images (plots, photos) are untouched,
+(`_SNAP_TEXT_SCALE`, 1.0, set by eye against `Math()` output), given
+extra stroke weight (`_SNAP_WEIGHT_BOOST`, keeping their own colours), their
+edges rebuilt at 4x resolution through a steep alpha curve
+(`_SNAP_EDGE_STEEPNESS`, `_SNAP_EDGE_SHIFT`) so the stair-steps of sympy's tiny
+PNGs become smooth edges instead of blur or pixels,
+and the image is centred in a whole number of rows with at least half a row of
+space around it (`_ROW_MARGIN`), so stacked images and the line above stay
+apart. Larger images (plots, photos) are untouched,
 and so is the combined `Math()` image. sympy keeps its own colours; if you want
 the themed, bordered style use `display(Math(sympy.latex(expr)))`. Images no
 longer overlap each other or the text above them because Molten reserves each
@@ -701,6 +723,8 @@ python3 -m pip show pylatexenc
 - [ ] Run a cell, then `:MoltenClear` (that cell's output goes away) and
       `:MoltenClearAll` (every cell's output goes away; the kernel and its
       variables are untouched).
+- [ ] Run two cells, then `:MoltenSaveOutput` on one: only that cell's output
+      appears in the `.ipynb` next to the file; `:MoltenSaveOutputAll` writes both.
 - [ ] Navigate between already-run cells with `]j` / `[j`.
 - [ ] Navigate between all code blocks (run or not) with `]b` / `[b`.
 - [ ] Open (or create) a `.qmd` file and run a Python cell in it.

@@ -30,6 +30,8 @@ post_run_cell event) — trading exact inline interleaving with other output
 for a guaranteed non-overlapping result while staying fully inline (no
 floating window).
 """
+import math
+
 from IPython import get_ipython
 from IPython.display import Math, Latex
 
@@ -296,7 +298,7 @@ def _latex_images(objs, fg):
 # thin next to the terminal font after downscaling, so a half step reads as
 # "a little bolder" without blobbing small details (0.35 adds roughly a third
 # more ink; raise toward 1 for bolder, set 0 to turn it off).
-_WEIGHT_BOOST = 0.35
+_WEIGHT_BOOST = 0.5
 
 
 def _embolden(img, fg):
@@ -316,7 +318,7 @@ def _embolden(img, fg):
 
 
 # Size of a 12pt em as a fraction of the terminal row height (1.1 read slightly large).
-_LATEX_SIZE_RATIO = 1.05
+_LATEX_SIZE_RATIO = 1.15
 
 
 def _latex_scaled(img, cell_height, fg=None):
@@ -338,30 +340,42 @@ def _latex_scaled(img, cell_height, fg=None):
 # size and centred in a whole number of rows, whichever library made them.
 # Large images (plots, photos) are left alone.
 _SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
-_SNAP_SHAVE = 0.2           # allowed shrink (fraction of a row) to avoid an extra row
+# Breathing room around each image, in rows (half above, half below), so stacked
+# images don't touch and nothing collides with the line above in the popup.
+_ROW_MARGIN = 0.5
 # sympy's PNG text is about 15% larger than a terminal row of text at the
 # same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
-_SNAP_TEXT_SCALE = 0.98
+_SNAP_TEXT_SCALE = 1.0
 # A little more stroke weight for those images, which look thin next to the
 # terminal font (0 = as drawn, 1 = about a pixel heavier at 1x).
-_SNAP_WEIGHT_BOOST = 0.5
+_SNAP_WEIGHT_BOOST = 0.7
+# Edge rebuild (see _snap_embolden): the alpha S-curve's slope, and how far
+# the weight boost moves its centre below 50% (lower centre = heavier strokes).
+_SNAP_EDGE_STEEPNESS = 7
+_SNAP_EDGE_SHIFT = 0.55
 _SNAP_SUPERSAMPLE = 4
 _snapping = {"skip": False}
 
 
 def _snap_embolden(img):
-    """Thicken strokes slightly, keeping the image's own colours: work at
-    _SNAP_SUPERSAMPLE x, grow the alpha and spread the colour into the new
-    pixels (taken from opaque pixels only, so a white or black transparent
-    background can't tint the edges). The caller downsamples afterwards."""
-    from PIL import Image, ImageChops, ImageFilter
+    """Rebuild a small PNG's edges at _SNAP_SUPERSAMPLE x: upsample, then push the
+    alpha through a steep S-curve centred below 50% (strokes get heavier and the
+    stair-steps of the low-res original turn into smooth edges). The colour is
+    spread outward from opaque pixels only, so a white or black transparent
+    background can't tint the edges. The caller downsamples afterwards."""
+    from PIL import Image, ImageFilter
 
-    big = img.resize((img.width * _SNAP_SUPERSAMPLE, img.height * _SNAP_SUPERSAMPLE), Image.LANCZOS)
-    alpha = big.getchannel("A")
-    grown = alpha.filter(ImageFilter.MaxFilter(2 * _SNAP_SUPERSAMPLE // 2 + 1))
-    alpha = ImageChops.blend(alpha, grown, _SNAP_WEIGHT_BOOST)
-    on_black = Image.composite(big.convert("RGB"), Image.new("RGB", big.size, (0, 0, 0)), alpha.point(lambda v: 255 if v > 0 else 0))
-    rgb = on_black.filter(ImageFilter.MaxFilter(2 * _SNAP_SUPERSAMPLE // 2 + 1))
+    big = img.resize((img.width * _SNAP_SUPERSAMPLE, img.height * _SNAP_SUPERSAMPLE), Image.BICUBIC)
+    middle = 0.5 - _SNAP_EDGE_SHIFT * _SNAP_WEIGHT_BOOST
+    def sigmoid(t):
+        return 1 / (1 + math.exp(-_SNAP_EDGE_STEEPNESS * (t - middle)))
+
+    low, high = sigmoid(0), sigmoid(1)  # stretched so 0 stays 0 and 255 stays 255
+    curve = [round(255 * (sigmoid(v / 255) - low) / (high - low)) for v in range(256)]
+    alpha = big.getchannel("A").point(curve)
+    on_black = Image.composite(big.convert("RGB"), Image.new("RGB", big.size, (0, 0, 0)),
+                               big.getchannel("A").point(lambda v: 255 if v > 0 else 0))
+    rgb = on_black.filter(ImageFilter.MaxFilter(_SNAP_SUPERSAMPLE + 1))
     out = rgb.convert("RGBA")
     out.putalpha(alpha)
     return out
@@ -386,10 +400,8 @@ def _snap_png(data):
             return data
 
         scale = _SNAP_TEXT_SCALE
-        rows = max(1, int(img.height * scale / cell_height + _SNAP_SHAVE))
+        rows = max(1, math.ceil((img.height * scale + _ROW_MARGIN * cell_height) / cell_height))
         target = rows * cell_height
-        if img.height * scale > target:
-            scale = target / img.height
         size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
         if _SNAP_WEIGHT_BOOST:
             img = _snap_embolden(img)
@@ -535,6 +547,12 @@ def _combine_pending(_event=None):
         y += im.height + gap
 
     combined = _add_border(combined, fg or "#000000", fill)
+
+    if cell_height:
+        rows = math.ceil((combined.height + _ROW_MARGIN * cell_height) / cell_height)
+        padded = Image.new("RGBA", (combined.width, round(rows * cell_height)), (0, 0, 0, 0))
+        padded.paste(combined, (0, (padded.height - combined.height) // 2))
+        combined = padded
 
     out = io.BytesIO()
     combined.save(out, format="PNG")
