@@ -315,9 +315,13 @@ def _embolden(img, fg):
     return solid
 
 
+# Size of a 12pt em as a fraction of the terminal row height (1.1 read slightly large).
+_LATEX_SIZE_RATIO = 1.0
+
+
 def _latex_scaled(img, cell_height, fg=None):
     """Scale a 300dpi LaTeX page so a 12pt em is about one terminal row."""
-    scale = (cell_height * 1.1 if cell_height else _LATEX_EM_PX / 2) / _LATEX_EM_PX
+    scale = (cell_height * _LATEX_SIZE_RATIO if cell_height else _LATEX_EM_PX / 2) / _LATEX_EM_PX
     from PIL import Image
 
     if _WEIGHT_BOOST:
@@ -338,7 +342,29 @@ _SNAP_SHAVE = 0.2           # allowed shrink (fraction of a row) to avoid an ext
 # sympy's PNG text is about 15% larger than a terminal row of text at the
 # same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
 _SNAP_TEXT_SCALE = 0.86
+# A little more stroke weight for those images, which look thin next to the
+# terminal font (0 = as drawn, 1 = about a pixel heavier at 1x).
+_SNAP_WEIGHT_BOOST = 0.3
+_SNAP_SUPERSAMPLE = 4
 _snapping = {"skip": False}
+
+
+def _snap_embolden(img):
+    """Thicken strokes slightly, keeping the image's own colours: work at
+    _SNAP_SUPERSAMPLE x, grow the alpha and spread the colour into the new
+    pixels (taken from opaque pixels only, so a white or black transparent
+    background can't tint the edges). The caller downsamples afterwards."""
+    from PIL import Image, ImageChops, ImageFilter
+
+    big = img.resize((img.width * _SNAP_SUPERSAMPLE, img.height * _SNAP_SUPERSAMPLE), Image.LANCZOS)
+    alpha = big.getchannel("A")
+    grown = alpha.filter(ImageFilter.MaxFilter(2 * _SNAP_SUPERSAMPLE // 2 + 1))
+    alpha = ImageChops.blend(alpha, grown, _SNAP_WEIGHT_BOOST)
+    on_black = Image.composite(big.convert("RGB"), Image.new("RGB", big.size, (0, 0, 0)), alpha.point(lambda v: 255 if v > 0 else 0))
+    rgb = on_black.filter(ImageFilter.MaxFilter(2 * _SNAP_SUPERSAMPLE // 2 + 1))
+    out = rgb.convert("RGBA")
+    out.putalpha(alpha)
+    return out
 
 
 def _snap_png(data):
@@ -365,6 +391,8 @@ def _snap_png(data):
         if img.height * scale > target:
             scale = target / img.height
         size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
+        if _SNAP_WEIGHT_BOOST:
+            img = _snap_embolden(img)
         img = img.resize(size, Image.LANCZOS)
 
         canvas = Image.new("RGBA", (size[0], round(target)), (0, 0, 0, 0))

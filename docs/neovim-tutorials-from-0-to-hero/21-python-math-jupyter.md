@@ -313,7 +313,7 @@ turns the pages into transparent PNGs. So `display(Math("x^2 + y^2 = z^2"))`
 just works, exactly as called, and so does anything LaTeX can typeset:
 matrices (`pmatrix`), `aligned` blocks, `\operatorname`, `\text{...}`, and so
 on — there is no "supported subset". `Latex(...)` may mix prose and `$...$`.
-The glyph weight is nudged up a little (about a third more ink) because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
+The glyph weight is nudged up a little (about a third more ink) and the text size is one terminal row per em (`_LATEX_SIZE_RATIO`) because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
 and your theme colour), so re-running a cell is instant; a cold cell of five
 items takes about a third of a second.
 
@@ -449,8 +449,9 @@ rows for an image, so a 21px image in 20px rows took two rows while a 15px one
 took one with a different leftover gap, and the spacing looked uneven. The
 hook wraps the kernel's output publisher and re-encodes any `image/png` up to
 `_SNAP_MAX_ROWS` (6) rows tall: text is scaled toward terminal size
-(`_SNAP_TEXT_SCALE`, calibrated so sympy's text matches `Math()` output), and
-the image is centred in a whole number of rows, shaving up to 20% of a row to
+(`_SNAP_TEXT_SCALE`, calibrated so sympy's text matches `Math()` output), given
+a little extra stroke weight (`_SNAP_WEIGHT_BOOST`, about a third more ink, keeping
+their own colours), and the image is centred in a whole number of rows, shaving up to 20% of a row to
 avoid a nearly empty extra row. Larger images (plots, photos) are untouched,
 and so is the combined `Math()` image. sympy keeps its own colours; if you want
 the themed, bordered style use `display(Math(sympy.latex(expr)))`. Images no
