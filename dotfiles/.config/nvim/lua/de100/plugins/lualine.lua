@@ -56,7 +56,18 @@ return {
             -- cond = hide_in_width,
         }
 
-        local filename = {'filename', file_status = true, path = 0}
+        -- Path style is per-target, change with :PathStyle lualine
+        local filename = {
+            function()
+                local name = require("de100.utils.path-style").format(
+                                 vim.api.nvim_buf_get_name(0), "lualine")
+                if vim.bo.modified then name = name .. " [+]" end
+                if not vim.bo.modifiable or vim.bo.readonly then
+                    name = name .. " [-]"
+                end
+                return name
+            end
+        }
 
         local branch = {'branch', icon = {'', color = {fg = '#A6D4DE'}}, '|'}
 

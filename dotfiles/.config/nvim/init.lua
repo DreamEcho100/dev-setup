@@ -1,4 +1,5 @@
 require("de100.core")
 require("de100.lazy")
 require("de100.utils.render-context")
+require("de100.utils.path-style").setup()
 require("current-theme")
