@@ -326,6 +326,82 @@ def _latex_scaled(img, cell_height, fg=None):
     return img.convert("RGBA").resize(size, Image.LANCZOS)
 
 
+# --- Snapping small images to the terminal's row grid ----------------------
+# Molten can only reserve whole terminal rows for an image, so a 21px image
+# in 20px rows takes two rows while a 15px one takes one with a different
+# leftover gap, which looks uneven. Small images (formulas, sympy output,
+# floats after sympy.init_printing()) are rescaled toward the terminal's text
+# size and centred in a whole number of rows, whichever library made them.
+# Large images (plots, photos) are left alone.
+_SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
+_SNAP_SHAVE = 0.2           # allowed shrink (fraction of a row) to avoid an extra row
+# sympy's PNG text is about 15% larger than a terminal row of text at the
+# same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
+_SNAP_TEXT_SCALE = 0.86
+_snapping = {"skip": False}
+
+
+def _snap_png(data):
+    """Returns the PNG (bytes or base64 str, as given) snapped to whole rows, or
+    the input unchanged if it is large, unreadable, or there is no cell size."""
+    import base64
+    import io
+
+    _bg, _fg, cell_height = _render_context()
+    if not cell_height:
+        return data
+    try:
+        from PIL import Image
+
+        was_text = isinstance(data, str)
+        raw = base64.b64decode(data) if was_text else data
+        img = Image.open(io.BytesIO(raw)).convert("RGBA")
+        if img.height > _SNAP_MAX_ROWS * cell_height:
+            return data
+
+        scale = _SNAP_TEXT_SCALE
+        rows = max(1, int(img.height * scale / cell_height + _SNAP_SHAVE))
+        target = rows * cell_height
+        if img.height * scale > target:
+            scale = target / img.height
+        size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
+        img = img.resize(size, Image.LANCZOS)
+
+        canvas = Image.new("RGBA", (size[0], round(target)), (0, 0, 0, 0))
+        canvas.paste(img, (0, (canvas.height - size[1]) // 2), img)
+        out = io.BytesIO()
+        canvas.save(out, format="PNG")
+        png = out.getvalue()
+        return base64.b64encode(png).decode("ascii") if was_text else png
+    except Exception:
+        return data
+
+
+def _snap_bundle(bundle):
+    if isinstance(bundle, dict) and "image/png" in bundle and not _snapping["skip"]:
+        bundle = dict(bundle)
+        bundle["image/png"] = _snap_png(bundle["image/png"])
+    return bundle
+
+
+def _install_snapping(ip):
+    pub = ip.display_pub
+    original_publish = pub.publish
+
+    def publish(data, *args, **kwargs):
+        return original_publish(_snap_bundle(data), *args, **kwargs)
+
+    pub.publish = publish
+
+    hook = ip.displayhook
+    original_write = hook.write_format_data
+
+    def write_format_data(format_dict, *args, **kwargs):
+        return original_write(_snap_bundle(format_dict), *args, **kwargs)
+
+    hook.write_format_data = write_format_data
+
+
 # A thin border around the combined image, colored to match the rendered
 # text (not the theme's own border/accent color) so it reads as "this output
 # belongs together" without introducing a second color to track/desync from
@@ -438,12 +514,18 @@ def _combine_pending(_event=None):
     from IPython.display import Image as IPyImage
     from IPython.display import display
 
-    display(IPyImage(data=out.getvalue(), format="png"))
+    # our image is already sized to the terminal; don't snap it again
+    _snapping["skip"] = True
+    try:
+        display(IPyImage(data=out.getvalue(), format="png"))
+    finally:
+        _snapping["skip"] = False
 
 
 _ip = get_ipython()
 if _ip is not None:
     _ip.display_formatter.ipython_display_formatter.for_type(Math, _buffer_math)
     _ip.display_formatter.ipython_display_formatter.for_type(Latex, _buffer_math)
+    _install_snapping(_ip)
     _ip.events.register("pre_run_cell", _clear_pending)
     _ip.events.register("post_run_cell", _combine_pending)
