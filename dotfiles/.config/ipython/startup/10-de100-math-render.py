@@ -4,8 +4,11 @@ Molten (this Neovim setup's Jupyter runner) only shows real image mimetypes
 (image/png, image/svg+xml) via image.nvim; Math()/Latex() only provide
 text/latex plus a plain repr, so without this a cell showing
 `display(Math("..."))` prints "<IPython.core.display.Math object>" instead
-of rendered math. This registers a formatter for both classes using
-matplotlib's mathtext (no system LaTeX/dvipng required), so any
+of rendered math. This registers a formatter for both classes (and for
+sympy expressions/matrices) that renders them with real LaTeX (pdflatex +
+pdftocairo, so amsmath matrices, \\operatorname, aligned, ... all work),
+falling back to matplotlib's mathtext if LaTeX is unavailable or an item
+fails to compile, and finally to the plain text form. Any
 Math(...)/Latex(...) — via display() or as a cell's last expression —
 renders as an image automatically, with no change needed to the calling
 code. The rendered colors and size track the active Neovim colorscheme and
@@ -141,6 +144,188 @@ def _math_to_png(obj):
         return None
 
 
+# --- Real LaTeX rendering -------------------------------------------------
+# One pdflatex run per cell: a `standalone` document with `multi=mathitem`
+# makes every item its own tightly-cropped PDF page, and pdftocairo turns
+# the pages into transparent PNGs (no dvipng needed). Results are cached on
+# disk by content so re-running a cell costs nothing.
+_LATEX_TIMEOUT_SECONDS = 15
+_LATEX_DPI = 300
+# One 12pt em at _LATEX_DPI, in pixels; used to scale every item by the same
+# factor so a fraction or matrix stays proportionally bigger than a one-line
+# formula instead of being squashed to the same height.
+_LATEX_EM_PX = 12 * _LATEX_DPI / 72
+_LATEX_PREAMBLE = (
+    "\\documentclass[multi=mathitem,border=2pt,12pt]{standalone}\n"
+    "\\usepackage{amsmath,amssymb,amsfonts,xcolor}\n"
+)
+
+
+def _latex_available():
+    import shutil
+
+    return bool(shutil.which("pdflatex") and shutil.which("pdftocairo"))
+
+
+def _latex_body(obj):
+    text = obj.data.strip()
+    if isinstance(obj, Latex):
+        return text  # may mix prose and $...$, so leave it in text mode
+    if text.startswith("$$") and text.endswith("$$") and len(text) > 4:
+        text = text[2:-2]
+    elif text.startswith("$") and text.endswith("$") and len(text) > 2:
+        text = text[1:-1]
+    return "$\\displaystyle " + text + "$"
+
+
+def _latex_cache_dir():
+    import os
+
+    base = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
+    path = os.path.join(base, "de100", "math")
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
+def _latex_first_error(log_text):
+    lines = log_text.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith("!"):
+            detail = next((l for l in lines[i + 1:i + 6] if l.startswith("l.")), "")
+            return (line + " " + detail).strip()
+    return "LaTeX failed (see the .log)"
+
+
+def _latex_compile(bodies, color):
+    """Compiles the bodies into one document. Returns (list of PNG paths, None)
+    or (None, first LaTeX error message)."""
+    import glob
+    import os
+    import re
+    import subprocess
+    import tempfile
+
+    doc = (
+        _LATEX_PREAMBLE + "\\color[HTML]{" + color + "}\n\\begin{document}\n" +
+        "\n".join("\\begin{mathitem}" + b + "\\end{mathitem}" for b in bodies) +
+        "\n\\end{document}\n")
+    with tempfile.TemporaryDirectory(prefix="de100-math-") as tmp:
+        with open(os.path.join(tmp, "d.tex"), "w") as f:
+            f.write(doc)
+        try:
+            subprocess.run(
+                ["pdflatex", "-no-shell-escape", "-interaction=nonstopmode",
+                 "-halt-on-error", "d.tex"],
+                cwd=tmp, capture_output=True, timeout=_LATEX_TIMEOUT_SECONDS,
+                stdin=subprocess.DEVNULL)
+        except subprocess.TimeoutExpired:
+            return None, "LaTeX timed out"
+        if not os.path.exists(os.path.join(tmp, "d.pdf")):
+            try:
+                with open(os.path.join(tmp, "d.log"), errors="replace") as f:
+                    return None, _latex_first_error(f.read())
+            except OSError:
+                return None, "pdflatex failed"
+        subprocess.run(
+            ["pdftocairo", "-png", "-transp", "-r", str(_LATEX_DPI), "d.pdf", "p"],
+            cwd=tmp, capture_output=True, timeout=_LATEX_TIMEOUT_SECONDS,
+            stdin=subprocess.DEVNULL)
+        pages = sorted(
+            glob.glob(os.path.join(tmp, "p-*.png")),
+            key=lambda path: int(re.search(r"p-(\d+)\.png$", path).group(1)))
+        if len(pages) != len(bodies):
+            return None, "LaTeX produced %d pages for %d items" % (len(pages), len(bodies))
+        return [open(path, "rb").read() for path in pages], None
+
+
+def _latex_images(objs, fg):
+    """Renders each object with real LaTeX. Returns (images, errors): parallel
+    lists, image None (and an error message) for items that couldn't be
+    rendered. A bad item never takes the others down with it."""
+    import hashlib
+    import io
+    import os
+
+    from PIL import Image
+
+    count = len(objs)
+    images = [None] * count
+    errors = [None] * count
+    if not _latex_available():
+        return images, ["LaTeX (pdflatex/pdftocairo) not installed"] * count
+
+    color = (fg or "#000000").lstrip("#").upper()
+    cache_dir = _latex_cache_dir()
+    todo = []
+    for i, obj in enumerate(objs):
+        body = _latex_body(obj)
+        key = hashlib.sha1(
+            (_LATEX_PREAMBLE + color + str(_LATEX_DPI) + body).encode()).hexdigest()
+        path = os.path.join(cache_dir, key + ".png")
+        if os.path.exists(path):
+            images[i] = Image.open(path)
+            images[i].load()
+        else:
+            todo.append((i, body, path))
+
+    def store(i, path, data):
+        with open(path, "wb") as f:
+            f.write(data)
+        images[i] = Image.open(io.BytesIO(data))
+        images[i].load()
+
+    if todo:
+        pngs, error = _latex_compile([b for _, b, _ in todo], color)
+        if pngs is not None:
+            for (i, _, path), data in zip(todo, pngs):
+                store(i, path, data)
+        elif len(todo) == 1:
+            errors[todo[0][0]] = error
+        else:
+            for i, body, path in todo:
+                pngs, error = _latex_compile([body], color)
+                if pngs is not None:
+                    store(i, path, pngs[0])
+                else:
+                    errors[i] = error
+    return images, errors
+
+
+# How much heavier to make the glyphs: 0 = LaTeX's own weight, 1 = a full
+# 1px (at _LATEX_DPI) dilation of every stroke. Real LaTeX at this size looks
+# thin next to the terminal font after downscaling, so a half step reads as
+# "a little bolder" without blobbing small details (0.35 adds roughly a third
+# more ink; raise toward 1 for bolder, set 0 to turn it off).
+_WEIGHT_BOOST = 0.35
+
+
+def _embolden(img, fg):
+    """Thicken strokes slightly by growing the alpha channel, keeping the
+    colour solid (transparent pixels carry no usable colour of their own)."""
+    from PIL import Image, ImageChops, ImageFilter
+
+    rgba = img.convert("RGBA")
+    alpha = rgba.getchannel("A")
+    grown = alpha.filter(ImageFilter.MaxFilter(3))
+    alpha = ImageChops.blend(alpha, grown, _WEIGHT_BOOST)
+    hex_color = (fg or "#000000").lstrip("#")
+    rgb = tuple(int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+    solid = Image.new("RGBA", rgba.size, rgb + (255,))
+    solid.putalpha(alpha)
+    return solid
+
+
+def _latex_scaled(img, cell_height, fg=None):
+    """Scale a 300dpi LaTeX page so a 12pt em is about one terminal row."""
+    scale = (cell_height * 1.1 if cell_height else _LATEX_EM_PX / 2) / _LATEX_EM_PX
+    from PIL import Image
+
+    if _WEIGHT_BOOST:
+        img = _embolden(img, fg)
+    size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
+    return img.convert("RGBA").resize(size, Image.LANCZOS)
+
+
 # A thin border around the combined image, colored to match the rendered
 # text (not the theme's own border/accent color) so it reads as "this output
 # belongs together" without introducing a second color to track/desync from
@@ -195,6 +380,19 @@ def _buffer_math(obj):
     _pending_math.append(obj)
 
 
+def _buffer_sympy(obj):
+    # sympy expressions/matrices emit their own image per display() (sympy's
+    # PNG after init_printing(), or Molten's LaTeX renderer for text/latex),
+    # which Molten stacks at one row. Treat them like Math(): render the
+    # expression's LaTeX through the same themed, stacked path, keeping the
+    # plain repr to show if mathtext can't draw it (matrices, \operatorname).
+    from sympy import latex
+
+    item = Math(latex(obj))
+    item.de100_fallback = repr(obj)
+    _pending_math.append(item)
+
+
 def _clear_pending(_event=None):
     _pending_math.clear()
 
@@ -209,13 +407,23 @@ def _combine_pending(_event=None):
 
     from PIL import Image
 
-    bg, fg, _cell_height = _render_context()
+    bg, fg, cell_height = _render_context()
 
+    # Real LaTeX first, then matplotlib mathtext, then plain text, so an item
+    # is only ever shown as text when nothing could draw it.
+    latex_images, latex_errors = _latex_images(objs, fg)
     rendered = []
-    for obj in objs:
+    for obj, latex_image, latex_error in zip(objs, latex_images, latex_errors):
+        if latex_image is not None:
+            rendered.append(_latex_scaled(latex_image, cell_height, fg))
+            continue
         png_bytes = _math_to_png(obj)
         if png_bytes:
             rendered.append(Image.open(io.BytesIO(png_bytes)))
+        else:
+            print(getattr(obj, "de100_fallback", obj.data))
+            if latex_error and "not installed" not in latex_error:
+                print("  (LaTeX: " + latex_error + ")")
 
     if not rendered:
         return
@@ -250,5 +458,11 @@ _ip = get_ipython()
 if _ip is not None:
     _ip.display_formatter.ipython_display_formatter.for_type(Math, _buffer_math)
     _ip.display_formatter.ipython_display_formatter.for_type(Latex, _buffer_math)
+    # By name, so sympy is only touched if/when the user imports it.
+    for _module, _name in (("sympy.core.basic", "Basic"),
+                           ("sympy.matrices.matrixbase", "MatrixBase"),
+                           ("sympy.matrices.matrices", "MatrixBase")):
+        _ip.display_formatter.ipython_display_formatter.for_type_by_name(
+            _module, _name, _buffer_sympy)
     _ip.events.register("pre_run_cell", _clear_pending)
     _ip.events.register("post_run_cell", _combine_pending)
