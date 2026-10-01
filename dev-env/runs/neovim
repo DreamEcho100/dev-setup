@@ -150,7 +150,7 @@ if [[ -f /etc/debian_version ]]; then
     
     optional_packages=(
         lazygit tree-sitter-cli ascii-image-converter
-        texlive-latex-base texlive-latex-extra texlive-fonts-recommended latexmk dvipng
+        texlive-latex-base texlive-latex-extra texlive-fonts-recommended latexmk dvipng poppler-utils
     )
     
     execute sudo apt install -y "${core_packages[@]}"

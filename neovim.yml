@@ -73,6 +73,7 @@
       - texlive-latex-extra
       - texlive-fonts-recommended
       - latexmk
+      - poppler-utils # pdftocairo: turns pdflatex output into the PNGs the Math()/sympy render hook shows in Molten
       - dvipng # LaTeX->PNG rasterizer for sympy.preview()/matplotlib usetex math rendering in Molten (not needed by vimtex)
       - fzf
       - wordnet
