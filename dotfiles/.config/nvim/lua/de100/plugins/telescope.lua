@@ -16,7 +16,8 @@ return {
 
         telescope.setup({
             defaults = {
-                path_display = {"smart"},
+                -- Per-target style, change with :PathStyle search
+                path_display = require("de100.utils.path-style").telescope,
                 mappings = {
                     i = {
                         ["<C-k>"] = actions.move_selection_previous,

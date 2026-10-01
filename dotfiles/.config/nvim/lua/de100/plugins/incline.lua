@@ -12,14 +12,14 @@ return {
                 hide = {only_win = false},
                 render = function(props)
                     local bufname = vim.api.nvim_buf_get_name(props.buf)
-                    local filename = vim.fn.fnamemodify(bufname, ":t")
-                    if filename == '' then
-                        filename = '[No Name]'
-                    end
+                    -- Label style is per-target, change with :PathStyle incline
+                    local filename = require("de100.utils.path-style").format(
+                                         bufname, "incline")
 
                     local ext = vim.fn.fnamemodify(bufname, ":e")
                     local icon, icon_color =
-                        devicons.get_icon(filename, ext, {default = true})
+                        devicons.get_icon(vim.fn.fnamemodify(bufname, ":t"), ext,
+                                          {default = true})
 
                     local modified = vim.bo[props.buf].modified
 

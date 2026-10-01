@@ -33,6 +33,8 @@ opt.sidescrolloff = 8 -- Columns to keep beside cursor (default: 0)
 opt.wrap = true -- Wrap long lines (default: true)
 opt.linebreak = true -- Don't break words when wrapping (default: false)
 opt.showtabline = 2 -- Always show tabline (default: 1)
+-- Full per-target path labels instead of Neovim's abbreviated default tabline (:PathStyle changes the style)
+opt.tabline = "%!v:lua.require'de100.utils.path-style'.tabline()"
 opt.cmdheight = 1 -- Command line height (default: 1)
 opt.pumheight = 10 -- Popup menu height (default: 0)
 opt.conceallevel = 0 -- Show `` in markdown (default: 1)
