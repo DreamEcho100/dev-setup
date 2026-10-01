@@ -275,6 +275,11 @@ molten-nvim fork (`outputimage.py`); `utils/molten-export-image.lua` only picks
 the name, colours and font. To put outputs into the `.ipynb` instead, use
 Molten's own `:MoltenExportOutput!`.
 
+A fork command like `:MoltenExportImage` is new to Neovim only after
+`:Lazy update molten-nvim`, then `:UpdateRemotePlugins` (Neovim keeps a
+manifest of remote-plugin commands, so a new one is `E492: Not an editor
+command` until it is regenerated), then a restart.
+
 `<leader>jx` sends the kernel an interrupt, so an infinite loop or a slow
 computation stops with a `KeyboardInterrupt`, and the kernel's variables
 survive (unlike `:MoltenRestart`). If several kernels are attached to the
