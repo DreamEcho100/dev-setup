@@ -269,6 +269,37 @@ At a glance you know what each pane is showing. This is especially valuable when
 3 or 4 windows open and you are navigating between them with `Ctrl+H/J/K/L` — the labels tell
 you exactly where you are without having to look at the file contents or the statusline.
 
+### How paths are displayed — `:PathStyle`
+
+Neovim's *default* tab line abbreviates every parent directory (`p/_.ipynb`), which makes files
+with the same name (`_.ipynb`, `index.ts`) impossible to tell apart. This config replaces it with
+its own tab line and lets each place that shows a path pick its own style:
+
+| Target | Where you see it | Default |
+|---|---|---|
+| `tabline` | the tab labels along the top | `relative` |
+| `incline` | the floating label in each window's top-right corner | `parent` |
+| `lualine` | the file name in the status line | `parent` |
+| `search` | Telescope results | `relative` |
+
+| Style | Example for `~/proj/notes/week2/_.ipynb` (cwd `~/proj`) |
+|---|---|
+| `relative` | `notes/week2/_.ipynb` (outside the cwd it falls back to `~/...`) |
+| `parent` | `week2/_.ipynb` |
+| `absolute` | `~/proj/notes/week2/_.ipynb` |
+| `project` | path relative to the project root (`.git`, `package.json`, ...) |
+| `tail` | `_.ipynb` |
+
+```vim
+:PathStyle                   " pick a target, then a style from a list
+:PathStyle tabline           " cycle only the tab line to its next style
+:PathStyle incline tail      " set one target directly
+```
+
+Only the target you name changes; everything else keeps its own style. The setting lasts for the
+current session — to change a default permanently, edit `M.defaults` in
+`lua/de100/utils/path-style.lua`. Oil listings show their directory in the tab label (they don't get a second header line). Snacks pickers and `fff` keep their own path layout for now.
+
 ---
 
 ## 3. Windows — The Viewport Layer

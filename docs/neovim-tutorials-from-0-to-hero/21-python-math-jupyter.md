@@ -48,7 +48,8 @@ If you're not sure, verify each:
 ```sh
 python3 -m pip show pynvim jupyter_client ipykernel jupytext pylatexenc matplotlib sympy
 dpkg -l | grep libmagickwand-dev   # Debian/Ubuntu
-dpkg -l | grep dvipng              # Debian/Ubuntu — needed for §6a's full-LaTeX math output
+dpkg -l | grep dvipng              # Debian/Ubuntu — only for the optional ;sympymath snippet in §6a
+which pdflatex pdftocairo          # real-LaTeX math rendering in §6a (texlive-latex-extra + poppler-utils)
 ```
 
 Then, inside Neovim, run once (only needed after installing/updating
@@ -77,6 +78,53 @@ set -ga update-environment TERM
 Without this, tmux swallows the Kitty graphics protocol escape sequences and
 plots render as blank space or garbled text instead of an image.
 
+### Per-project environment (venv + kernel) for course work
+
+The packages above are for the editor tooling. The code in a notebook runs in
+whatever **kernel** you attach, and a kernel only sees the packages installed
+into the Python it was started from. `import sympy` failing with
+`ModuleNotFoundError` inside a cell means *that kernel's Python* lacks
+`sympy`, regardless of what's installed elsewhere. Check which Python a
+kernel uses:
+
+```sh
+python3 -m jupyter kernelspec list          # names and folders
+cat ~/.local/share/jupyter/kernels/<name>/kernel.json   # "argv[0]" is its Python
+```
+
+For a course or project with its own dependencies, give it its own virtual
+environment and kernel instead of installing into the system Python (Ubuntu
+24.04 blocks that with `externally-managed-environment`, and
+`--break-system-packages` risks breaking OS tools). From the project root:
+
+```sh
+sudo apt install python3-venv            # once per machine, if `python3 -m venv` complains
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m ipykernel install --user --name=my-project --display-name "My Project"
+```
+
+Then attach it in Neovim with `:MoltenInit my-project` and restart it with
+`:MoltenRestart` after changing packages. Pyright finds the project's `.venv`
+automatically (`:LspRestart` if the "import could not be resolved" warnings
+stay). Things to know:
+
+- `requirements.txt` is just a list; nothing is installed until you run
+  `pip install -r` against it, and the venv has to exist before `source
+  .venv/bin/activate` (or `.venv/bin/pip`) can work.
+- Add a package by appending its name to `requirements.txt` and re-running
+  `.venv/bin/pip install -r requirements.txt`. Avoid `pip freeze >
+  requirements.txt`: it overwrites the short list with every package in
+  whatever Python is active (and the `>` empties the file even if `pip`
+  then fails).
+- Re-running `ipykernel install` with an existing `--name` replaces that
+  kernel, which is how you point an old kernel at a new venv.
+- The `udemy-master-math-by-coding-in-python` course repo follows exactly
+  this layout; its README has the course-specific commands.
+- To remove a project's setup, unregister the kernel and delete the venv
+  (they're separate): `python3 -m jupyter kernelspec remove -f <name>` and
+  `rm -rf .venv`. Removing only the venv leaves a kernel that can't start.
+
 ## 3. Opening a Notebook
 
 Open any existing `.ipynb` file normally:
@@ -85,18 +133,33 @@ Open any existing `.ipynb` file normally:
 :e notebook.ipynb
 ```
 
-To create a brand-new, empty notebook, use `:JupytextNew` instead of just
-touching a file (a genuinely empty `.ipynb` isn't valid JSON, so a plain
-`:e new.ipynb` on a file that doesn't exist yet, or one created empty by
-something like oil.nvim, would otherwise be nothing to convert):
+To create a brand-new, empty notebook, use `:JupytextNew` or `<leader>jn`
+instead of just touching a file (a genuinely empty `.ipynb` isn't valid JSON,
+so a plain `:e new.ipynb` on a file that doesn't exist yet, or one created
+empty by something like oil.nvim, would otherwise be nothing to convert).
+You only type a **name** — the directory is inferred from where you are:
+
+| You're in | New notebook goes in |
+|---|---|
+| oil, cursor on a directory | that directory |
+| oil, cursor on a file (or `..`) | the directory oil is listing |
+| mini.files / snacks explorer, on a directory | that directory |
+| mini.files / snacks explorer, on a file | that file's directory |
+| a normal buffer | that buffer's directory (cwd if it has no file) |
 
 ```vim
-:JupytextNew notebooks/lesson1
+:JupytextNew lesson1            " <dir>/lesson1.ipynb
+:JupytextNew week2/lesson1.qmd  " <dir>/week2/lesson1.qmd (Quarto, with front matter)
+:JupytextNew ~/notes/scratch    " absolute / ~ paths ignore the inferred dir
 ```
 
-Path can be relative or absolute; `.ipynb` is appended if you leave it off,
-and it refuses to overwrite an existing file. `<leader>jn` does the same
-thing but prompts for the path interactively.
+The format follows the extension: `.qmd` creates a Quarto file, `.ipynb` a
+notebook, and anything else (including no extension, or something like
+`.py`) gets `.ipynb` appended. Missing directories are created, and an
+existing file is never overwritten. `<leader>jn` prompts for just the name
+(the prompt shows the inferred directory); completion
+(`<C-x><C-u>`) lists the entries relative to that directory; `:JupytextNew`
+completes the same way on the command line.
 
 `jupytext.nvim` intercepts the read, converts the notebook to a Markdown
 buffer behind the scenes (this config uses jupytext's `"markdown"` style, not
@@ -180,12 +243,26 @@ kernel returned: printed text, a DataFrame's repr, a traceback, or — for
 matplotlib/sympy plots — the actual rendered image, drawn inline via
 `image.nvim` and the Kitty graphics protocol.
 
+Clearing output has keymaps (and the commands behind them):
+
+```text
+<leader>jc   :MoltenClear     clear the output of the cell under the cursor
+<leader>jC   :MoltenClearAll  clear the output of every cell in this file
+<leader>jd   :MoltenDelete    Molten's own delete (what :MoltenClear wraps; prefer jc)
+<leader>jx   :MoltenInterrupt stop the running cell (like Jupyter's "interrupt kernel")
+```
+
+`<leader>jx` sends the kernel an interrupt, so an infinite loop or a slow
+computation stops with a `KeyboardInterrupt`, and the kernel's variables
+survive (unlike `:MoltenRestart`). If several kernels are attached to the
+buffer it asks which one. Clearing a cell that is still running isn't allowed
+by Molten, so interrupt first, then clear.
+
 Rare/occasional output actions, invoked directly (no keymap):
 
 ```vim
 :MoltenShowOutput
 :MoltenHideOutput
-:MoltenDelete
 :MoltenExportOutput
 :MoltenImportOutput
 :MoltenOpenInBrowser
@@ -229,14 +306,24 @@ Out[7]: <IPython.core.display.Math object>
 `dotfiles/.config/ipython/startup/10-de100-math-render.py` (deployed by
 `neovim.yml`/`dev-env/runs/neovim` into
 `~/.ipython/profile_default/startup/`, which every IPython/Jupyter kernel
-runs at startup) registers an `image/png` formatter for both classes, using
-matplotlib's mathtext parser to rasterize the LaTeX automatically. So
-`display(Math("x^2 + y^2 = z^2"))` just works, exactly as called, with a real
-rendered image — confirmed via a real kernel round-trip, not just a
-standalone script. Covers most course notation (fractions, exponents, Greek
-letters, sums, integrals) but only mathtext's subset of LaTeX — no arbitrary
-packages or custom macros; if the string can't be parsed, it silently falls
-back to the plain-text repr rather than erroring.
+runs at startup) takes over both classes and renders them with **real
+LaTeX**: one `pdflatex` run per cell (a `standalone` document, one cropped
+page per item, with `amsmath`/`amssymb`/`xcolor` loaded), then `pdftocairo`
+turns the pages into transparent PNGs. So `display(Math("x^2 + y^2 = z^2"))`
+just works, exactly as called, and so does anything LaTeX can typeset:
+matrices (`pmatrix`), `aligned` blocks, `\operatorname`, `\text{...}`, and so
+on — there is no "supported subset". `Latex(...)` may mix prose and `$...$`.
+The glyph weight is nudged up a little (about a third more ink) because LaTeX's thin strokes look light next to the terminal font after downscaling; tune or disable it with `_WEIGHT_BOOST` in the script. Results are cached under `~/.cache/de100/math/` (keyed by the LaTeX source
+and your theme colour), so re-running a cell is instant; a cold cell of five
+items takes about a third of a second.
+
+Fallbacks, in order, so something is always shown: if `pdflatex` or
+`pdftocairo` isn't installed, or one item fails to compile, that item is drawn
+with matplotlib's mathtext (a smaller subset of LaTeX); if even that can't,
+its source text is printed, followed by the first LaTeX error line (for
+example `! Missing } inserted. l.1`) so you can fix the string. One bad item
+never takes the rest of the cell with it. The usual LaTeX rule still holds:
+spaces inside math mode are ignored, so write words as `\text{some words}`.
 
 The rendered image's colors and size track your active Neovim setup rather
 than being hardcoded: `dotfiles/.config/nvim/lua/de100/utils/render-context.lua`
@@ -278,8 +365,8 @@ plugin patches. The custom hook here, where colors are fully under our
 control, is the better fit for this config's needs.
 
 For math that isn't already wrapped in `Math()`/`Latex()`, or when you want
-full LaTeX fidelity (arbitrary packages/macros) rather than mathtext's
-subset, two more options:
+a different pipeline than the automatic one (the `Math()`/`Latex()` hook
+above already uses real LaTeX), two more options:
 
 - **`;mathimg`** (LuaSnip snippet, no extra system dependencies) — the same
   matplotlib mathtext approach, spelled out manually for a one-off plot-style
@@ -307,10 +394,12 @@ If a cell running `Math(...)`/`Latex(...)` still shows
 `<IPython.core.display.Math object>` instead of an image, confirm the
 startup script actually loaded for this kernel: `:MoltenInfo` or check
 `~/.ipython/profile_default/startup/10-de100-math-render.py` exists and
-`matplotlib` is installed for the same Python the kernel uses
-(`python3 -m pip show matplotlib`). A syntax matplotlib's mathtext genuinely
-can't parse (arbitrary LaTeX packages/macros) falls back to the plain repr by
-design — reach for `;sympymath` for those instead.
+`pdflatex`/`pdftocairo` are on `PATH` (`which pdflatex pdftocairo`;
+`sudo apt install texlive-latex-extra poppler-utils`). Without them the hook
+falls back to matplotlib's smaller mathtext subset (so `matplotlib` must be
+installed for the kernel's Python: `python3 -m pip show matplotlib`), and an
+item neither can draw prints its source plus a `(LaTeX: ! ...)` error line —
+that line is the LaTeX compiler's first complaint about your string.
 
 ### All output displays inline, below the cell — no floating window
 
@@ -352,6 +441,18 @@ had nothing useful to render from that and printed
 call. `_ipython_display_` avoids this entirely: it short-circuits before any
 per-mimetype formatter runs, for both `display()` calls and a bare trailing
 `Math(...)` expression, so zero messages go out for a buffered call.)
+
+**sympy results go through the same path.** Every `display()` of a sympy
+expression normally emits its own image (sympy's PNG after
+`sympy.init_printing()`, or Molten's own LaTeX renderer for the `text/latex`
+form), and Molten draws all images of a cell at one screen row, so
+`display(x**y); display(x/y)` used to render on top of each other. The hook
+now registers sympy's `Basic` and matrix base classes by name (nothing is
+imported until you import sympy yourself), converts each expression with
+`sympy.latex()`, and stacks it with the `Math()` results into the one themed,
+bordered image. Because those go through real LaTeX, matrices,
+`\operatorname`, integrals and the rest of what sympy emits render as images
+too.
 
 The combined image also gets a thin (1px) border, colored to match the
 rendered text (not a separate theme accent color, so it can't desync from
@@ -497,6 +598,12 @@ Save                                 -> :w (jupytext converts back to .ipynb)
    the Kitty graphics protocol).
 3. If inside tmux, confirm `allow-passthrough` (see §2).
 
+### `ModuleNotFoundError` inside a cell
+
+The kernel's Python doesn't have the package. See "Per-project environment"
+in §2: find the kernel's Python (`kernel.json`), install into the project's
+venv (not system Python), and `:MoltenRestart`.
+
 ### `:MoltenInit` can't find a kernel
 
 ```sh
@@ -543,6 +650,11 @@ python3 -m pip show pylatexenc
       math output (an image), not `<... object>` repr text.
 - [ ] Run `:JupytextNew scratch/test`, confirm it opens as an empty converted
       notebook with no error.
+- [ ] From an oil buffer with the cursor on a directory, press `<leader>jn`,
+      type only a name, and confirm the notebook lands in that directory.
+- [ ] Run a cell, then `:MoltenClear` (that cell's output goes away) and
+      `:MoltenClearAll` (every cell's output goes away; the kernel and its
+      variables are untouched).
 - [ ] Navigate between already-run cells with `]j` / `[j`.
 - [ ] Navigate between all code blocks (run or not) with `]b` / `[b`.
 - [ ] Open (or create) a `.qmd` file and run a Python cell in it.
