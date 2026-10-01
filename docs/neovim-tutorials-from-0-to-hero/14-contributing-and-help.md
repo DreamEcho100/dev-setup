@@ -583,6 +583,19 @@ If `noice.nvim` is installed in this config (check `lua/de100/plugins/noice.lua`
 
 The `:NoiceTelescope` command is particularly useful. You can fuzzy-search through all past messages, filter by type (error, warning, info), and see which messages came from which source.
 
+**The toast in the corner can't be selected or copied** — it's a transient overlay (this config uses
+noice's unobtrusive `mini` view, which fades after about 5 seconds), not a text buffer. When you need to
+read, scroll or yank a message, open it as a real buffer instead:
+
+```vim
+:Noice history   " every message/notification in a bottom split you jump into
+:Noice last      " just the most recent one
+:Noice errors    " only errors
+```
+
+These open a normal split with the cursor inside it, so `j`/`k`, `/` search, visual mode and `y`
+all work (`q` closes it). `<leader>un` is mapped to `:Noice history`.
+
 ### `vim.notify()` — How Plugins Communicate
 
 Most well-written plugins use `vim.notify()` to send messages. This function takes a message, a level, and options:

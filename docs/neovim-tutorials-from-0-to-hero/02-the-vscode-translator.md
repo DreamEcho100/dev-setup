@@ -1982,7 +1982,7 @@ This config includes **incline.nvim** which shows the current filename in the to
 
 > **💡 In VSCode you'd...** see the file name in the tab at the top of each split editor.
 >
-> **In Neovim you...** see the filename (with git status) floating at the top-right of each window via incline.
+> **In Neovim you...** see the filename (with git status) floating at the top-right of each window via incline. How much of the path it shows (and the tab line, status line, etc.) is controlled per place with `:PathStyle` — see the files/buffers/windows/tabs tutorial.
 
 It shows:
 
