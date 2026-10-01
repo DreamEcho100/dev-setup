@@ -341,10 +341,10 @@ _SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
 _SNAP_SHAVE = 0.2           # allowed shrink (fraction of a row) to avoid an extra row
 # sympy's PNG text is about 15% larger than a terminal row of text at the
 # same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
-_SNAP_TEXT_SCALE = 0.9
+_SNAP_TEXT_SCALE = 0.98
 # A little more stroke weight for those images, which look thin next to the
 # terminal font (0 = as drawn, 1 = about a pixel heavier at 1x).
-_SNAP_WEIGHT_BOOST = 0.3
+_SNAP_WEIGHT_BOOST = 0.5
 _SNAP_SUPERSAMPLE = 4
 _snapping = {"skip": False}
 
