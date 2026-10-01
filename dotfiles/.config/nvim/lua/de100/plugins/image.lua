@@ -48,18 +48,6 @@ return {
         -- acknowledge images can still shift until you scroll — that part
         -- is an upstream, unresolved issue, not something configurable here.
         window_overlap_clear_enabled = true,
-        -- window_overlap_clear_enabled hides ANY image whose screen
-        -- position is covered by ANY window (floating included) — a
-        -- completion popup, a which-key hint menu, anything — and only
-        -- re-renders it on a later cursor move, not automatically when
-        -- that window closes. Tried exempting blink.cmp's/which-key's
-        -- filetypes via window_overlap_clear_ft_ignore; confirmed (after a
-        -- full Neovim restart) it made no difference, so the real
-        -- mechanism causing this isn't the filetype check. See
-        -- docs/neovim-tutorials-from-0-to-hero/21-python-math-jupyter.md's
-        -- "Known limitation" section — accepted as-is rather than chased
-        -- further; window_overlap_clear_enabled = false removes it
-        -- entirely if the garbled-plot-on-rerun trade-off is preferred.
         -- window_overlap_clear_enabled hides any image whose screen position is
         -- covered by a window, and re-renders it later. That is wanted for real
         -- popups, but the floating UI that is almost always on screen here was
