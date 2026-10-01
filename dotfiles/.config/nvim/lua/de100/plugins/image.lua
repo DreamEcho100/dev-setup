@@ -60,5 +60,20 @@ return {
         -- "Known limitation" section — accepted as-is rather than chased
         -- further; window_overlap_clear_enabled = false removes it
         -- entirely if the garbled-plot-on-rerun trade-off is preferred.
+        -- window_overlap_clear_enabled hides any image whose screen position is
+        -- covered by a window, and re-renders it later. That is wanted for real
+        -- popups, but the floating UI that is almost always on screen here was
+        -- also counted: noice's notification toasts (they sit over the rows
+        -- under a cell), the incline filename label, blink.cmp's menus and
+        -- which-key. Each toast made every image under it vanish and come back
+        -- later from stale positions, which looked like images "refusing to
+        -- clear" or sticking around after edits. Found by replaying the raw
+        -- Kitty graphics stream Neovim sends. The first five entries restate
+        -- image.nvim's own default, because assigning the option replaces it.
+        window_overlap_clear_ft_ignore = {
+            "cmp_menu", "cmp_docs", "snacks_notif", "scrollview",
+            "scrollview_sign", "blink-cmp-menu", "blink-cmp-documentation",
+            "blink-cmp-signature", "wk", "noice", "incline",
+        },
     },
 }
