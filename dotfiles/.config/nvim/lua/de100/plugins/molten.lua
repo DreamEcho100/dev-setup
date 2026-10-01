@@ -5,8 +5,14 @@
 -- After first install, run :UpdateRemotePlugins once and restart Neovim.
 -- https://github.com/benlubas/molten-nvim
 return {
-    "benlubas/molten-nvim",
-    version = "^1.0.0",
+    -- Fork of benlubas/molten-nvim carrying one fix (upstream PR #365):
+    -- inline images were drawn over the "Out[n]" header and any text printed
+    -- before them (the popup was fine) because image.nvim's separate padding
+    -- extmark gets dropped on redraw. The fork reserves the image's rows in
+    -- Molten's own extmark and draws the image on them. Switch back to
+    -- "benlubas/molten-nvim" with `version = "^1.0.0"` once it's released.
+    "DreamEcho100/molten-nvim",
+    branch = "fix/inline-image-offset",
     build = ":UpdateRemotePlugins",
     ft = { "python", "quarto", "markdown" },
     dependencies = { "3rd/image.nvim" },
@@ -56,6 +62,7 @@ return {
     end,
     config = function()
         require("de100.utils.molten-popup").setup()
+        require("de100.utils.molten-clear").setup()
     end,
     keys = {
         -- <leader>jr (run/create a cell) lives in quarto.lua: it needs
@@ -66,6 +73,10 @@ return {
         -- of a "cell"); nothing to jump to until at least one has been run.
         { "]j", "<cmd>MoltenNext<CR>", desc = "Jupyter: next cell/output" },
         { "[j", "<cmd>MoltenPrev<CR>", desc = "Jupyter: prev cell/output" },
+        { "<leader>jc", "<cmd>MoltenClear<CR>", desc = "Jupyter: clear this cell's output" },
+        { "<leader>jC", "<cmd>MoltenClearAll<CR>", desc = "Jupyter: clear all outputs in file" },
+        { "<leader>jd", "<cmd>MoltenDelete<CR>", desc = "Jupyter: delete this cell's output (raw MoltenDelete)" },
+        { "<leader>jx", "<cmd>MoltenInterrupt<CR>", desc = "Jupyter: interrupt the running cell" },
         {
             "<leader>jo",
             function() require("de100.utils.molten-popup").toggle() end,
