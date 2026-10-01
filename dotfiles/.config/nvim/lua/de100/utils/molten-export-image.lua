@@ -87,8 +87,10 @@ local function export(mode, label)
     local normal = vim.api.nvim_get_hl(0, {name = "Normal", link = false})
     local path = ("%s/%s-%s-%s.png"):format(vim.fn.fnamemodify(file, ":h"), vim.fn.fnamemodify(file, ":t:r"),
                                             label, os.date("%Y%m%d-%H%M%S"))
-    local args = vim.tbl_map(vim.fn.fnameescape,
-                             {mode, path, hex(normal.bg) or "#1f1f1f", hex(normal.fg) or "#d4d4d4", font_file()})
+    -- the command splits its arguments like <f-args>: only a space and a backslash need escaping
+    -- (fnameescape would also turn "#" in the colours into "\#", which arrives as a literal backslash)
+    local function arg(value) return (value:gsub("\\", "\\\\"):gsub(" ", "\\ ")) end
+    local args = vim.tbl_map(arg, {mode, path, hex(normal.bg) or "#1f1f1f", hex(normal.fg) or "#d4d4d4", font_file()})
     local ok, err = pcall(vim.cmd, "MoltenExportImage " .. table.concat(args, " "))
     if not ok then vim.notify("Molten export image: " .. tostring(err), vim.log.levels.WARN) end
 end
