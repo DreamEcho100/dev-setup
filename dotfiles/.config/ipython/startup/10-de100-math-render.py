@@ -316,7 +316,7 @@ def _embolden(img, fg):
 
 
 # Size of a 12pt em as a fraction of the terminal row height (1.1 read slightly large).
-_LATEX_SIZE_RATIO = 1.0
+_LATEX_SIZE_RATIO = 1.05
 
 
 def _latex_scaled(img, cell_height, fg=None):
@@ -341,7 +341,7 @@ _SNAP_MAX_ROWS = 6          # images taller than this many rows are not touched
 _SNAP_SHAVE = 0.2           # allowed shrink (fraction of a row) to avoid an extra row
 # sympy's PNG text is about 15% larger than a terminal row of text at the
 # same cell height (measured: sympy's "x" is 11px, ours 9.5px at 20px rows).
-_SNAP_TEXT_SCALE = 0.86
+_SNAP_TEXT_SCALE = 0.9
 # A little more stroke weight for those images, which look thin next to the
 # terminal font (0 = as drawn, 1 = about a pixel heavier at 1x).
 _SNAP_WEIGHT_BOOST = 0.3
