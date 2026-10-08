@@ -6,14 +6,16 @@
 > covers five specialized git tools — Gitsigns, Diffview, Neogit, LazyGit, and Fugitive —
 > and explains when and why to reach for each one.
 
-> **Keymap update:** `<leader>gdo/gdc/gdh/gdH` (Diffview), `<leader>gn`
-> (Neogit), and `<leader>gpr`/`<leader>gup` (Fugitive) were commented out —
-> each was a bare passthrough to an Ex command the plugin already provides, so
-> the config now calls that command directly (see tutorial 13, section 4.6).
-> Wherever those keys appear below in a worked example, type the equivalent
-> `:Command` instead (`:DiffviewOpen`, `:Neogit`, `:Git pull --rebase`, etc. —
-> see each tool's reference table for the full mapping). `<leader>gP` and
-> `<leader>lg` are unaffected and still work as shown.
+> **Keymap update:** Diffview (`<leader>gdo/gdc/gdh/gdH`), Neogit (`<leader>gn`) and
+> the Fugitive pull/push-upstream keys (`<leader>gpr`, `<leader>gup`) no longer have
+> keymaps: each was a bare passthrough to an Ex command the plugin already provides,
+> so the config calls the command directly (see tutorial 13, section 4.6). This
+> chapter uses the commands: `:DiffviewOpen`, `:DiffviewClose`, `:DiffviewFileHistory %`
+> (this file) / `:DiffviewFileHistory` (repo), `:Neogit`, `:Git pull --rebase`,
+> `:Git push -u origin HEAD`. The git keys that exist are `<leader>lg` (LazyGit),
+> `<leader>gl` (LazyGit log), `<leader>gbr` (branch picker), `<leader>gf` (Fugitive
+> status in its own tab), `<leader>gP` (push, inside a Fugitive buffer) and the
+> Gitsigns keys below (`]h`/`[h`, `<leader>gs/gr/gS/gR/gu/gp/gbl/gB/gdi/gD`, `ih`).
 
 ---
 
@@ -66,16 +68,16 @@ What do I want to do?
 │     → Gitsigns (<leader>gbl for this line, <leader>gB to toggle all)
 │
 ├── Commit, push, pull in a visual workflow?
-│     → Neogit (<leader>gn — like VSCode Source Control)
+│     → Neogit (:Neogit — like VSCode Source Control)
 │
 ├── Visual diff of the whole working tree vs HEAD?
-│     → Diffview (<leader>gdo)
+│     → Diffview (:DiffviewOpen)
 │
 ├── See the history of a specific file?
-│     → Diffview (<leader>gdh — all commits that touched this file)
+│     → Diffview (:DiffviewFileHistory % — all commits that touched this file)
 │
 ├── Resolve merge conflicts?
-│     → Diffview (<leader>gdo — shows 3-pane conflict view)
+│     → Diffview (:DiffviewOpen — shows 3-pane conflict view)
 │
 ├── Interactive rebase, squash, cherry-pick, bisect?
 │     → LazyGit (<leader>lg — full TUI for complex operations)
@@ -279,15 +281,15 @@ many files, or understanding how a file evolved over time.
 ### Opening Diffview
 
 ```
-<leader>gdo  → open Diffview (working tree vs HEAD — shows ALL changed files)
-<leader>gdc  → close Diffview (return to your previous layout)
-<leader>gdh  → file history for the CURRENT file (all commits that touched it)
-<leader>gdH  → full repository history (ALL commits, all files)
+:DiffviewOpen  → open Diffview (working tree vs HEAD — shows ALL changed files)
+:DiffviewClose  → close Diffview (return to your previous layout)
+:DiffviewFileHistory %  → file history for the CURRENT file (all commits that touched it)
+:DiffviewFileHistory  → full repository history (ALL commits, all files)
 ```
 
 ### The Diffview interface
 
-When you open `<leader>gdo`, Diffview replaces your window layout with its own:
+When you run `:DiffviewOpen`, Diffview replaces your window layout with its own:
 
 ```
 ┌────────────────────┬──────────────────────────────────────────────┐
@@ -311,13 +313,13 @@ When you open `<leader>gdo`, Diffview replaces your window layout with its own:
 j / k (in file list)   → move through the list of changed files
 Enter (on a file)      → open that file's diff in the right panel
 ]c / [c                → jump to next/prev change hunk within the current diff
-q                      → close Diffview (same as <leader>gdc)
+q                      → close Diffview (same as :DiffviewClose)
 ```
 
 ### File history — understanding how a file evolved
 
 ```
-<leader>gdh  → open commit history for the current file
+:DiffviewFileHistory %  → open commit history for the current file
 ```
 
 The file history view shows every commit that modified the current file, with a full diff
@@ -340,8 +342,8 @@ and see exactly what each commit did to this specific file.
 
 > 💡 **VSCode equivalent**
 >
-> `<leader>gdh` is equivalent to VS Code's "Timeline" view (in the Explorer panel, at the
-> bottom) — a per-file history with diffs for each entry. `<leader>gdo` is equivalent to
+> `:DiffviewFileHistory %` is equivalent to VS Code's "Timeline" view (in the Explorer panel, at the
+> bottom) — a per-file history with diffs for each entry. `:DiffviewOpen` is equivalent to
 > the Source Control diff view, but shows all files in a navigable panel rather than individual
 > file comparisons.
 
@@ -350,7 +352,7 @@ and see exactly what each commit did to this specific file.
 When you run `git merge` or `git rebase` and encounter conflicts, Diffview provides the most
 powerful conflict resolution interface available in Neovim.
 
-Open Diffview during a merge conflict (`<leader>gdo`) and it automatically shows a **3-pane
+Open Diffview during a merge conflict (`:DiffviewOpen`) and it automatically shows a **3-pane
 view** for each conflicted file:
 
 ```
@@ -405,7 +407,7 @@ It gives you a structured, keyboard-driven overview of your entire repository st
 ### Opening Neogit
 
 ```
-<leader>gn   → open the Neogit status buffer
+:Neogit   → open the Neogit status buffer
 ```
 
 ### The Neogit interface
@@ -737,8 +739,8 @@ This config adds additional keymaps for use within the Fugitive context:
 
 ```
 <leader>gP    → push (git push)
-<leader>gpr   → pull with rebase (git pull --rebase)
-<leader>gup   → push and set upstream (git push -u origin HEAD)
+:Git pull --rebase   → pull with rebase (git pull --rebase)
+:Git push -u origin HEAD   → push and set upstream (git push -u origin HEAD)
                (use for new branches that do not have a remote yet)
 ```
 
@@ -796,7 +798,7 @@ Multiple ways to create a branch depending on which tool you are in:
 
 ```
 # Via Neogit:
-<leader>gn → b → c → type branch name → Enter
+:Neogit → b → c → type branch name → Enter
 
 # Via LazyGit:
 <leader>lg → 3 (branches panel) → n → type branch name → Enter
@@ -852,7 +854,7 @@ Option A — Stage by hunk (recommended for clean commits):
   Repeat for each hunk you want in this commit.
 
 Option B — Stage entire files:
-  Open <leader>gn (Neogit).
+  Run :Neogit.
   Press s on each file you want to stage.
 
 Option C — Stage everything:
@@ -860,7 +862,7 @@ Option C — Stage everything:
   Or in Neogit: press S to stage all unstaged changes at once.
 
 STEP 3: Write the commit message
-<leader>gn → cc (create commit)
+:Neogit → cc (create commit)
 Write a clear, present-tense commit message:
   feat: add validation for user email field
 
@@ -880,7 +882,7 @@ Before a commit, do a thorough review of everything you are about to commit:
 
 ```
 STEP 1: Open the full diff overview
-<leader>gdo   → Diffview opens showing ALL changed files
+:DiffviewOpen   → Diffview opens showing ALL changed files
 
 STEP 2: Navigate through each file
 j/k (in file list)   → move to each changed file
@@ -893,7 +895,7 @@ STEP 3: For each file, ask yourself:
 - Does the code make sense without additional context?
 
 STEP 4: Return to your editor
-<leader>gdc   → close Diffview
+:DiffviewClose   → close Diffview
 
 STEP 5: Clean up anything you found, then commit per Workflow 1
 ```
@@ -904,7 +906,7 @@ You ran `git merge feature-branch` or `git pull` and there are conflicts:
 
 ```
 STEP 1: Open Diffview to see the conflict view
-<leader>gdo
+:DiffviewOpen
 Conflicted files appear with a special indicator (C or !)
 
 STEP 2: Open a conflicted file
@@ -933,7 +935,7 @@ STEP 5: Continue the merge/rebase
 :Git rebase --continue   (if rebasing)
 
 STEP 6: Commit the merge
-<leader>gn → cc → write merge commit message if needed
+:Neogit → cc → write merge commit message if needed
 ```
 
 ### Workflow 4 — Fixing the Last Commit (Amend)
@@ -947,7 +949,7 @@ Stage the forgotten changes:
   <leader>gs (on the hunks/files you forgot)
 
 Amend the commit:
-  Option 1 — Via Neogit:  <leader>gn → c → a (amend)
+  Option 1 — Via Neogit:  :Neogit → c → a (amend)
   Option 2 — Via Fugitive: <leader>gf → ca
   Option 3 — Command: :Git commit --amend --no-edit
              (--no-edit keeps the existing message)
@@ -955,13 +957,13 @@ Amend the commit:
 The staged changes are folded into the last commit. No new commit is created.
 
 IMPORTANT: If you have already pushed this commit, you will need to force push:
-  <leader>gup     (push with upstream set)
+  :Git push -u origin HEAD     (push with upstream set)
   Or: :Git push --force-with-lease   (safer than --force)
   Coordinate with your team — force pushing rewrites shared history.
 
 Case B: Just fix the commit message (no code changes)
 
-  Option 1 — Via Neogit:  <leader>gn → c → w (reword)
+  Option 1 — Via Neogit:  :Neogit → c → w (reword)
   Option 2 — Via Fugitive: <leader>gf → cw
   Option 3 — Command: :Git commit --amend
              (opens editor with current message for editing)
@@ -993,7 +995,7 @@ Via LazyGit:
   <leader>lg → 5 → navigate to your stash → g (pop — apply and remove)
 
 Via Neogit:
-  <leader>gn → z → p (pop stash)
+  :Neogit → z → p (pop stash)
 
 Via command:
   :Git stash pop       → apply and remove the top stash
@@ -1045,9 +1047,9 @@ STEP 5: Verify your work is restored
 
 ### Neogit
 
-> **Note:** `<leader>gn` is commented out in `plugins/neogit.lua` — it was a
-> bare passthrough to `:Neogit` (already declared in the plugin's `cmd`), so
-> just type `:Neogit` directly.
+> **Note:** there is no Neogit keymap (the old `<leader>gn` was a bare passthrough
+> to `:Neogit`, which `plugins/neogit.lua` already declares in `cmd`), so type
+> `:Neogit` directly.
 
 | Key / Command | Action                                     |
 | ------------- | ------------------------------------------ |
@@ -1088,10 +1090,10 @@ STEP 5: Verify your work is restored
 
 ### Fugitive
 
-> **Note:** `<leader>gpr` and `<leader>gup` are commented out in
-> `plugins/gitstuff.lua` — they're rarer, manual actions, so type the `:Git`
-> command directly instead. `<leader>gP` (push) stays, since it's used often
-> enough to be worth the key.
+> **Note:** pull with rebase and push with upstream no longer have keymaps in
+> `plugins/gitstuff.lua` (`<leader>gpr`, `<leader>gup`): they are rarer, manual actions,
+> so type `:Git pull --rebase` or `:Git push -u origin HEAD`. `<leader>gP` (push,
+> in the Fugitive buffer) stays, since it is used often enough to be worth the key.
 
 | Key / Command                  | Action                                    |
 | ------------------------------ | ----------------------------------------- |
@@ -1158,15 +1160,15 @@ These exercises use a real git repository. If you do not have one handy, initial
 
 1. Open any file in a git repository that has multiple commits in its history.
    If it is a new repository, make at least 3 commits that modify the same file.
-2. Press `<leader>gdh` to open the file's commit history.
+2. Run `:DiffviewFileHistory %` to open the file's commit history.
 3. Navigate through the commit list with `j/k`. For each commit, observe the diff shown in
    the right panel — what exactly changed in that commit?
 4. Navigate to the oldest visible commit for this file. What was the state of the file then?
 5. Press `q` to close the history view.
-6. Now press `<leader>gdo` to open the full working tree diff. If you have uncommitted
+6. Now run `:DiffviewOpen` to open the full working tree diff. If you have uncommitted
    changes, you will see them here. Navigate to your changed file with `j/k` and press Enter.
 7. Jump between diff hunks with `]c` and `[c`.
-8. Press `<leader>gdc` to close Diffview.
+8. Run `:DiffviewClose` to close Diffview.
 
 ---
 
@@ -1177,7 +1179,7 @@ These exercises use a real git repository. If you do not have one handy, initial
 1. Make two logically separate changes to two different files in a real project:
    - Change A: edit `file1.ts` (a feature change)
    - Change B: edit `file2.ts` (a different feature or fix)
-2. Open Neogit: `<leader>gn`
+2. Open Neogit: `:Neogit`
 3. In the "Unstaged changes" section, press `Tab` on `file1.ts` to expand and see its hunks.
 4. Stage only the hunks related to one logical change by pressing `s` on specific hunks.
 5. Do the same for `file2.ts` — expand with Tab, stage the relevant hunks.
@@ -1234,14 +1236,14 @@ These exercises use a real git repository. If you do not have one handy, initial
 
    This should create a conflict.
 
-4. Open `<leader>gdo` — Diffview should show the conflicted file.
+4. Run `:DiffviewOpen` — Diffview should show the conflicted file.
 5. Open the conflicted file. Observe the 3-pane layout.
 6. Read both sides. Decide on the correct resolution (either one, or a combination).
 7. Edit the center panel to contain the resolved content (remove conflict markers).
 8. Save with `:w`.
 9. Stage the resolved file with `<leader>gS`.
-10. Close Diffview with `<leader>gdc`.
-11. Open Neogit: `<leader>gn`. You should see the resolved file staged.
+10. Close Diffview with `:DiffviewClose`.
+11. Open Neogit: `:Neogit`. You should see the resolved file staged.
 12. Create the merge commit: `cc` → write "Merge feature-a" → `:w`.
 
 ---

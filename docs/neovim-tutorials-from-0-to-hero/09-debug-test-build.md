@@ -94,7 +94,7 @@ leader keys with no reliable F-key/Ex-command equivalent remain:
 | `<leader>dapl` | rerun the last configuration                                        |
 | `<leader>dapO` | step out (kept: `<S-F11>` is unreliable for Shift+F-key under tmux) |
 | `<leader>dapp` | pause                                                               |
-| `<leader>dapt` | debug the nearest test for the current filetype                     |
+| `<leader>dapt` | debug the nearest test for the current filetype (`:De100DapDebugNearestTest`) |
 | `<leader>dapb` | conditional breakpoint (interactive input, no Ex equivalent)        |
 | `<leader>dapL` | log point (interactive input, no Ex equivalent)                     |
 | `<leader>dapr` | open DAP REPL                                                       |
@@ -109,6 +109,11 @@ Removed as redundant (use the F-key or Ex command shown instead):
 `<leader>daph` (`:De100DapHealth`).
 
 Use `:WhichKey <leader>dap` if you forget a mapping.
+
+The config also defines four commands: `:De100DapHealth` (adapter and configuration check),
+`:De100DapLoadProject` (confirm and load the nearest `.nvim/dap.lua`),
+`:De100DapDebugNearestTest` (what `<leader>dapt` runs) and `:De100DapLuaServer` (start the OSV
+server for Neovim Lua debugging).
 
 ## 3. The Normal Debug Loop
 

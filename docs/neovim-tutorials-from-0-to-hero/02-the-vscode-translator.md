@@ -340,7 +340,7 @@ This config has an excellent Git workflow, arguably better than VSCode's default
 
 | Action                       | VSCode               | Neovim (this config)                  |
 | ---------------------------- | -------------------- | ------------------------------------- |
-| Open Git UI                  | `Ctrl+Shift+G`       | `<leader>gn` (Neogit)                 |
+| Open Git UI                  | `Ctrl+Shift+G`       | `:Neogit` (Neogit)                 |
 | Open LazyGit (full TUI)      | (GitLens extension)  | `<leader>lg`                          |
 | View git log                 | GitLens panel        | `<leader>gl` (Snacks lazygit log)     |
 | Stage current hunk           | Stage hunk button    | `<leader>gs`                          |
@@ -351,13 +351,13 @@ This config has an excellent Git workflow, arguably better than VSCode's default
 | Preview hunk (inline diff)   | Hover on gutter      | `<leader>gp`                          |
 | Toggle line blame            | GitLens inline blame | `<leader>gB` (toggle on/off)          |
 | Show full line blame         | GitLens hover        | `<leader>gbl`                         |
-| Open diff view               | Diff view panel      | `<leader>gdo` (Diffview open)         |
-| Close diff view              | Close diff panel     | `<leader>gdc`                         |
-| View current file history    | GitLens timeline     | `<leader>gdh` (Diffview file history) |
-| View repo history            | GitLens repo history | `<leader>gdH`                         |
+| Open diff view               | Diff view panel      | `:DiffviewOpen` (Diffview open)         |
+| Close diff view              | Close diff panel     | `:DiffviewClose`                         |
+| View current file history    | GitLens timeline     | `:DiffviewFileHistory %` (Diffview file history) |
+| View repo history            | GitLens repo history | `:DiffviewFileHistory`                         |
 | Open fugitive                | —                    | `<leader>gf` (fullscreen tab)         |
 | Git push (in fugitive)       | Push button          | `<leader>gP` (in fugitive buffer)     |
-| Git pull --rebase (fugitive) | Pull button          | `<leader>gpr` (in fugitive buffer)    |
+| Git pull --rebase (fugitive) | Pull button          | `:Git pull --rebase` (in fugitive buffer)    |
 | Next hunk                    | —                    | `]h`                                  |
 | Previous hunk                | —                    | `[h`                                  |
 | Pick/switch git branch       | —                    | `<leader>gbr` (Snacks branch picker)  |
@@ -375,7 +375,7 @@ For the 80% case (stage hunk, commit, push), here's the typical flow:
 
 1. Make your code changes
 2. `<leader>gs` — stage the current hunk (or `<leader>gS` to stage the whole file)
-3. `<leader>gn` — open Neogit
+3. `:Neogit` — open Neogit
 4. In Neogit: press `c` then `cc` to open the commit dialog
 5. Type your commit message
 6. `Ctrl+C` to commit (or Neogit's commit key)
@@ -393,14 +393,14 @@ This config uses **nvim-dap** (Debug Adapter Protocol) with **nvim-dap-ui** for 
 
 | Action                      | VSCode                 | Neovim (this config)                   |
 | --------------------------- | ---------------------- | -------------------------------------- |
-| Toggle breakpoint           | `F9`                   | `F9` or `<leader>daptb`                |
+| Toggle breakpoint           | `F9`                   | `F9`                |
 | Set conditional breakpoint  | Right-click breakpoint | `<leader>dapb` (prompts for condition) |
 | Start / Continue debug      | `F5`                   | `F5`                                   |
 | Stop                        | `Shift+F5`             | `Shift+F5`                             |
 | Step over (next line)       | `F10`                  | `F10`                                  |
 | Step into (into function)   | `F11`                  | `F11`                                  |
 | Step out (out of function)  | `Shift+F11`            | `Shift+F11`                            |
-| Toggle debug UI panels      | Run and Debug panel    | `F7` or `<leader>dapu`                 |
+| Toggle debug UI panels      | Run and Debug panel    | `F7`                 |
 | Show debug UI automatically | Yes                    | Yes (auto-opens on debug start)        |
 
 ### Supported Languages (Auto-Configured)
@@ -427,7 +427,7 @@ editors, but VS Code extension commands are not DAP features and may not carry
 over. A project `.nvim/dap.lua` is executable code: this config loads it only
 after `<leader>dapP`/`:De100DapLoadProject` shows its path and asks for trust.
 
-Run `<leader>daph` in a source buffer to inspect the selected configurations,
+Run `:De100DapHealth` in a source buffer to inspect the selected configurations,
 adapter executables, project files, and DAP log path.
 
 ---
@@ -633,7 +633,7 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 | `<leader>D`     | Show buffer diagnostics (Snacks picker)                 |
 | `<leader>dd`    | Open floating diagnostic message                        |
 | `<leader>df`    | Open floating diagnostic (same as dd — from LSP config) |
-| `<leader>daptb` | DAP: Toggle breakpoint                                  |
+| `F9` | DAP: Toggle breakpoint                                  |
 | `<leader>dapb`  | DAP: Set conditional breakpoint                         |
 | `[d`            | Go to previous diagnostic                               |
 | `]d`            | Go to next diagnostic                                   |
@@ -665,7 +665,7 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 
 | Keybinding    | Action                         |
 | ------------- | ------------------------------ |
-| `<leader>gn`  | Open Neogit                    |
+| `:Neogit`  | Open Neogit                    |
 | `<leader>lg`  | Open LazyGit (Snacks)          |
 | `<leader>gl`  | LazyGit log view               |
 | `<leader>gs`  | Stage hunk                     |
@@ -678,10 +678,10 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 | `<leader>gB`  | Toggle line blame (inline)     |
 | `<leader>gdi` | Diff this (inline)             |
 | `<leader>gD`  | Diff this ~                    |
-| `<leader>gdo` | Open Diffview                  |
-| `<leader>gdc` | Close Diffview                 |
-| `<leader>gdh` | Diffview: current file history |
-| `<leader>gdH` | Diffview: repo history         |
+| `:DiffviewOpen` | Open Diffview                  |
+| `:DiffviewClose` | Close Diffview                 |
+| `:DiffviewFileHistory %` | Diffview: current file history |
+| `:DiffviewFileHistory` | Diffview: repo history         |
 | `<leader>gbr` | Pick and switch git branch     |
 | `<leader>gf`  | Fugitive fullscreen tab        |
 | `]h`          | Next git hunk                  |
@@ -955,7 +955,7 @@ Open any TypeScript or JavaScript file (or your language of choice with LSP supp
 5. Press `<leader>gs` — stage just that hunk
 6. Navigate to another changed area
 7. Press `<leader>gr` — reset (undo) that hunk, reverting just that change
-8. Press `<leader>gn` — open Neogit. Verify the staged hunk is there.
+8. Run `:Neogit` — open Neogit. Verify the staged hunk is there.
 9. Press `q` to close Neogit.
 10. Press `<leader>lg` — open LazyGit. Explore for 2 minutes. Press `q` to close.
 
@@ -993,7 +993,7 @@ For each of these VSCode actions, perform the Neovim equivalent without looking 
 9. "Open a diff view of the current file's history" → What leader key combo?
 10. "Toggle the symbols outline (like VSCode's Outline panel)" → What key?
 
-_(Answers: `<leader>pc`, `<leader>mp`, `<leader>xd`, `<leader>rn`, `<leader>gB`, `gd` then `Ctrl+O`, `<leader>ef`, `<leader>cm`, `<leader>gdh`, `<leader>lo`)_
+_(Answers: `<leader>pc`, `<leader>mp`, `<leader>xd`, `<leader>rn`, `<leader>gB`, `gd` then `Ctrl+O`, `<leader>ef`, `<leader>cm`, `:DiffviewFileHistory %`, `<leader>lo`)_
 
 ---
 
@@ -1344,7 +1344,7 @@ Let's walk through a realistic multi-file workflow to see how all the pieces fit
    <leader>gs       ← stage the hunk you're on
 
 10. Open Neogit to review and commit
-    <leader>gn      ← Neogit opens
+    :Neogit      ← Neogit opens
     c → cc          ← commit
     Type message
     <leader>gP      ← push (or use LazyGit: <leader>lg)
@@ -2068,13 +2068,13 @@ For those who want a single lookup table covering the most-used VSCode shortcuts
 ║  Ctrl+F12     — Go to impl.           ║  gi                           ║
 ║  F2           — Rename symbol         ║  <leader>rn                   ║
 ║  Ctrl+.       — Code actions          ║  <leader>ca                   ║
-║  F9           — Toggle breakpoint     ║  <leader>daptb                  ║
+║  F9           — Toggle breakpoint     ║  F9                  ║
 ║  F5           — Start/continue debug  ║  F5                           ║
 ║  F10          — Step over             ║  F2                           ║
 ║  F11          — Step into             ║  F1                           ║
 ║  Shift+F11    — Step out              ║  F3                           ║
 ║  Shift+Alt+F  — Format document       ║  <leader>mp                   ║
-║  Ctrl+Shift+G — Source control        ║  <leader>gn (neogit)          ║
+║  Ctrl+Shift+G — Source control        ║  :Neogit (neogit)          ║
 ║  Ctrl+Shift+E — File explorer         ║  <leader>ee or -              ║
 ║  Ctrl+\       — Split right           ║  <leader>sv                   ║
 ║  Ctrl+K Ctrl+S — Keyboard shortcuts   ║  <leader>pk                   ║

@@ -929,7 +929,7 @@ nvim filename.txt
 
 **Why does this matter?**
 
-It explains **lazy loading**. Many plugins only load when they're first needed. This is why Neovim starts fast even with 50+ plugins — most aren't loaded until you actually use them. When you press `<leader>daptb` for the first time, that's when the DAP plugin actually loads. Press `<leader>gn` for the first time and that's when Neogit loads.
+It explains **lazy loading**. Many plugins only load when they're first needed. This is why Neovim starts fast even with 50+ plugins — most aren't loaded until you actually use them. When you press `F9` for the first time, that's when the DAP plugin actually loads. Run `:Neogit` for the first time and that's when Neogit loads.
 
 You'll sometimes notice a tiny delay the _first_ time you use a feature. That's the lazy load. Subsequent uses are instant.
 
@@ -1571,7 +1571,7 @@ Here's a concrete plan for building Neovim fluency without overwhelming yourself
 
 - `<leader>pf` for files, `<leader>pg` for grep
 - `gd`/`gR`/`K` for LSP features
-- `<leader>gn` for Neogit
+- `:Neogit` for Neogit
 - `<leader>ca` for code actions
 - `<leader>xd` for Trouble diagnostics
 
@@ -2120,7 +2120,7 @@ TIER 2 — COMPETENCE (Weeks 2-3):
 
 TIER 3 — PROFICIENCY (Weeks 4-6):
   [ ] Harpoon: <leader>ha, <leader>h1-4
-  [ ] Git workflow: <leader>gs, <leader>gn, <leader>lg
+  [ ] Git workflow: <leader>gs, :Neogit, <leader>lg
   [ ] Trouble diagnostics: <leader>xw, <leader>xd
   [ ] Marks: ma, `a
   [ ] Macros: q{letter}, @{letter}
@@ -2129,7 +2129,7 @@ TIER 3 — PROFICIENCY (Weeks 4-6):
   [ ] Registers: "0, "+, "_, named registers
 
 TIER 4 — MASTERY (Months 2-3):
-  [ ] Debugging: F5, F1/F2/F3, <leader>daptb
+  [ ] Debugging: F5, F9, F10, F11
   [ ] Testing: <leader>tN, <leader>tF, <leader>tL, <leader>tS
   [ ] Custom snippets: LuaSnip
   [ ] Aerial + Treesitter navigation

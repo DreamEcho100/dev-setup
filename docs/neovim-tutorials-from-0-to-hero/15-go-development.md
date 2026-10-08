@@ -252,17 +252,17 @@ The debugger is Delve through `nvim-dap-go`.
 | Step over             | `F10`                   |
 | Step into             | `F11`                   |
 | Step out              | `Shift+F11`             |
-| Toggle breakpoint     | `F9` or `<leader>daptb` |
+| Toggle breakpoint     | `F9` |
 | Debug nearest Go test | `<leader>dapt`          |
 | Rerun last session    | `<leader>dapl`          |
-| Toggle debug UI       | `F7` or `<leader>dapu`  |
-| Inspect DAP setup     | `<leader>daph`          |
+| Toggle debug UI       | `F7`  |
+| Inspect DAP setup     | `:De100DapHealth`          |
 
 Beginner debugging flow:
 
 1. Open a Go test file.
 2. Put cursor inside a test.
-3. Press `<leader>daptb` on a line you want to stop at.
+3. Press `F9` on a line you want to stop at.
 4. Press `<leader>dapt`.
 5. Use `F10` to step over and `F5` to continue.
 
