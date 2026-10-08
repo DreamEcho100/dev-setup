@@ -89,17 +89,6 @@ bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 bindkey '^[[3~' delete-char
 
-de100_fix_wordchars() {
-    # zsh treats "/" as a word character by default. Removing it makes Ctrl-w
-    # kill one path segment instead of the whole path, without a custom widget.
-    if [[ -z "${WORDCHARS:-}" ]]; then
-        WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>'
-    fi
-    WORDCHARS="${WORDCHARS//\//}"
-}
-
-de100_fix_wordchars
-
 # Keep Ctrl-S available for zsh-autocomplete menu search in terminals that
 # otherwise use it for software flow control.
 [[ -t 0 ]] && stty -ixon 2>/dev/null || true
@@ -256,7 +245,9 @@ case "$DE100_ZSH_PLUGIN_MANAGER" in
     ;;
 esac
 
-de100_fix_wordchars
+# Ctrl-w and friends stop at every non-alphanumeric character (so 11-22/33 loses
+# only "33"). Oh My Zsh already sets this; the other plugin-manager branches don't.
+WORDCHARS=''
 
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word

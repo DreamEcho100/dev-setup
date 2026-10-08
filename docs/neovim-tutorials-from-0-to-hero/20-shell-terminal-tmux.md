@@ -84,7 +84,7 @@ different completion stack. History/search behavior:
 
 - `Ctrl+r`: zsh-autocomplete history search.
 - `Ctrl+s`: menu text search / forward search.
-- `Ctrl+w`: deletes one path segment because `/` is removed from zsh `WORDCHARS`.
+- `Ctrl+w`: deletes back to the previous `-`, `/`, `.` or other punctuation (`WORDCHARS=''` in `.zshrc`, same as Oh My Zsh), so `11-22/33` loses only `33`.
 
 Preserved compatibility hooks:
 
