@@ -15,29 +15,31 @@ return {
         -- Requires cmake-tools.nvim to build before running tests.
         "orjangj/neotest-ctest",
     },
+    -- Capital letters: lowercase <leader>t{o,x,n,p,f} are the tab keys in core/keymaps.lua,
+    -- and lazy.nvim would install these over them.
     keys = {
         {
-            "<leader>tn",
+            "<leader>tN",
             function() require("neotest").run.run() end,
             desc = "Test: Run nearest",
         },
         {
-            "<leader>tf",
+            "<leader>tF",
             function() require("neotest").run.run(vim.fn.expand("%")) end,
             desc = "Test: Run file",
         },
         {
-            "<leader>tl",
+            "<leader>tL",
             function() require("neotest").run.run_last() end,
             desc = "Test: Run last",
         },
         {
-            "<leader>to",
+            "<leader>tO",
             function() require("neotest").output.open({ enter = true }) end,
             desc = "Test: Open output",
         },
         {
-            "<leader>ts",
+            "<leader>tS",
             function() require("neotest").summary.toggle() end,
             desc = "Test: Toggle summary",
         },

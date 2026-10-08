@@ -99,6 +99,7 @@ Here's the complete layout of the Neovim config. Every file you'll ever touch li
 │           ├── oil.lua               ← File explorer as buffer
 │           ├── qmk.lua               ← QMK keyboard layout editor
 │           ├── remote-nvim.lua       ← Remote Neovim support
+│           ├── rainbow-delimiters.lua← Nested brackets colored by depth
 │           ├── render-markdown.lua   ← Rendered markdown view
 │           ├── search-replace.lua    ← Search/replace helpers
 │           ├── showkeys.lua          ← Keystroke display for screencasts
@@ -393,12 +394,12 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv",
 
 These two keymaps override `J` and `K` in Visual mode. Normally `J` in visual mode joins lines. Here it moves the selected block down one line. Note the `gv=gv` at the end: `gv` re-selects the previous selection, `=` re-indents it. So after moving the block, you stay in visual mode with the same selection.
 
-A terminal-mode keymap example:
+A terminal-mode keymap (this one is in `core/keymaps.lua`):
 
 ```lua
--- Exit terminal mode with Escape (terminal buffers otherwise trap you)
+-- Leave terminal mode with Esc Esc (terminal buffers otherwise trap you)
 keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>',
-           tbl_merge(opts, {desc = 'Exit terminal mode'}))
+           tbl_merge(opts, {desc = 'Leave terminal mode'}))
 ```
 
 In terminal mode, `<C-\\><C-n>` is the sequence to return to Normal mode. Mapping `<Esc><Esc>` to that lets you press Escape twice to exit terminal buffers, which is far more natural.
@@ -426,7 +427,7 @@ spec = {
     {"<leader>u", group = "ui/toggles"},
     {"<leader>v", group = "view/help"},
     {"<leader>w", group = "workspace/session"},
-    {"<leader>x", group = "trouble/lists"},
+    {"<leader>x", group = "trouble/emmet"},
     {"<leader>y", group = "yank"},
     {"<leader>k", group = "keys/show"},
 }
@@ -1914,11 +1915,12 @@ Prefix        Group             What's There
 <leader>y     yank              yanky history, clipboard operations
 ```
 
-Note: `mcm` (cmake), `x` (trouble/lists), and `k` (keys/show) used to be
-separate groups here. Their member keymaps were commented out per the
-Ex-command test in 4.6 (call `:CMake*`, `:Trouble ...`, `:ShowkeysToggle`
-directly instead), so those groups have no members left and were removed from
-`which-key.lua`.
+Note: `mcm` (cmake) and `k` (keys/show) used to be separate groups here. Their
+member keymaps were commented out per the Ex-command test in 4.6 (call
+`:CMake*`, `:ShowkeysToggle` directly instead), so those groups have no members
+left and were removed from `which-key.lua`. `x` is back, with only
+`<leader>xw` / `<leader>xd` (Trouble diagnostics) and `<leader>xe` (Emmet); the
+other Trouble lists are called as `:Trouble quickfix|loclist|todo toggle`.
 
 ### 11.4 Naming Conventions
 

@@ -24,7 +24,8 @@ return {
         vim.keymap.set("n", "-", "<CMD>Oil<CR>",
                        {desc = "Open parent directory"})
         -- open parent dir in float window
-        vim.keymap.set("n", "<leader>-", require("oil").toggle_float)
+        vim.keymap.set("n", "<leader>-", require("oil").toggle_float,
+                       {desc = "Open parent directory (float)"})
 
         vim.api.nvim_create_autocmd("FileType", {
             pattern = "oil", -- Adjust if Oil uses a specific file type identifier

@@ -38,7 +38,8 @@ vim.api.nvim_create_autocmd("CmdlineLeave", {
 })
 
 -- Disable the spacebar key's default behavior in Normal and Visual modes
-keymap.set({'n', 'v'}, '<Space>', '<Nop>', {silent = true})
+keymap.set({'n', 'v'}, '<Space>', '<Nop>',
+           {silent = true, desc = 'Leader key (no default action)'})
 
 -- Save file
 keymap.set('n', '<C-s>', save_current_buffer, save_opts)
@@ -105,7 +106,8 @@ keymap.set('n', '<C-h>', ':wincmd h<CR>',
 keymap.set('n', '<C-l>', ':wincmd l<CR>',
            tbl_merge(opts, {desc = 'Move to right split window'}))
 
--- Tabs
+-- Tabs (lowercase <leader>t*). Tests use capitals (<leader>tN/tF/tL/tO/tS in
+-- plugins/testing.lua), <leader>tt is tasks and <leader>th the theme picker.
 keymap.set('n', '<leader>to', ':tabnew<CR>',
            tbl_merge(opts, {desc = 'Open new tab'}))
 keymap.set('n', '<leader>tx', ':tabclose<CR>',
@@ -116,6 +118,11 @@ keymap.set('n', '<leader>tp', ':tabp<CR>',
            tbl_merge(opts, {desc = 'Go to previous tab'}))
 keymap.set('n', '<leader>tf', ':tabnew %<CR>',
            tbl_merge(opts, {desc = 'Open current buffer in new tab'}))
+
+-- Leave terminal mode with Esc Esc (a single Esc still reaches TUIs such as
+-- lazygit or fzf; the built-in way out is <C-\><C-n>)
+keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>',
+           tbl_merge(opts, {desc = 'Leave terminal mode'}))
 
 -- Toggle line wrapping
 keymap.set('n', '<leader>lw', '<cmd>set wrap!<CR>',
@@ -146,9 +153,10 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv",
                {desc = "moves lines up in visual selection"})
 
 -- ctrl c as escape cuz Im lazy _(XD)_ to reach up to the esc key
-vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set("i", "<C-c>", "<Esc>", {desc = "Escape (Ctrl-c)"})
 -- Stars new tmux session from in here
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>",
+               {desc = "Start a tmux session (tmux-sessionizer)"})
 
 -- Hightlight yanking
 vim.api.nvim_create_autocmd("TextYankPost", {

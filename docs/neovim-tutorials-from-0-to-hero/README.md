@@ -83,7 +83,7 @@ docs/neovim-tutorials-from-0-to-hero/
 │   └── nvim-dap, adapters, tests, tasks, launch.json, trusted project config
 │
 ├── 11-terminal-and-tasks.md
-│   └── Toggleterm / snacks terminal, overseer tasks, tmux workflow
+│   └── `:terminal`, overseer tasks, tmux workflow
 │
 ├── 12-language-extras.md
 │   └── Per-filetype config (after/ftplugin/), emmet, kulala (HTTP), dadbod

@@ -429,7 +429,7 @@ dotfiles/.config/nvim/
 │           │                      - LSP references and definitions
 │           │                      - Quickfix list
 │           │                      - Location list
-│           │                      <leader>xx, <leader>xb, <leader>xq
+│           │                      <leader>xw, <leader>xd (others: :Trouble ...)
 │           │
 │           ├── grug-far.lua    ← Interactive search-and-replace across files.
 │           │                      Like VSCode's find-and-replace but with preview

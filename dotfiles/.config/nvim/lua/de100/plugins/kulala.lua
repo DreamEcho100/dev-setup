@@ -10,6 +10,14 @@ return {
             require("kulala.config.parser").setup()
         end, { desc = "Install/build Kulala HTTP Treesitter parser explicitly" })
     end,
+    -- Kulala's own lazy.lua also loads it on VimLeavePre/SessionLoadPost (to hook
+    -- session save/restore). Its setup then checks kulala-core and, when the
+    -- backend is missing or outdated, asks for a license token with a blocking
+    -- prompt, so quitting Neovim waited for Enter. Skip setup while exiting.
+    config = function(_, opts)
+        if vim.v.exiting ~= vim.NIL then return end
+        require("kulala").setup(opts)
+    end,
     keys = {
         {
             "<leader>Hr",

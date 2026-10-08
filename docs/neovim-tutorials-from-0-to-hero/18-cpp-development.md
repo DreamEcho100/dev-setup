@@ -58,7 +58,7 @@ Before diving in, here's a map of every tool in play and how they connect:
 │       │                                                                  │  │
 │       └─── neotest + neotest-ctest ──────────────────────────────────── │  │
 │             runs CTest (GoogleTest / Catch2 / doctest)                  │  │
-│             <leader>tn run nearest test, <leader>ts toggle summary       │  │
+│             <leader>tN run nearest test, <leader>tS toggle summary       │  │
 │                                                                          │  │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -1004,24 +1004,25 @@ TEST_F(MylibFixture, SomeFixtureTest) {
 
 | Key          | Action                     |
 | ------------ | -------------------------- |
-| `<leader>tn` | Run test nearest to cursor |
-| `<leader>tf` | Run tests in current file  |
-| `<leader>tl` | Run last test (repeat)     |
-| `<leader>to` | Open test output panel     |
-| `<leader>ts` | Toggle test summary panel  |
+| `<leader>tN` | Run test nearest to cursor |
+| `<leader>tF` | Run tests in current file  |
+| `<leader>tL` | Run last test (repeat)     |
+| `<leader>tO` | Open test output panel     |
+| `<leader>tS` | Toggle test summary panel  |
 
-> **Note:** `<leader>tr`, `<leader>tt`, `<leader>ta` are **Overseer** keymaps
-> (run task, toggle tasks, quick action) — not neotest.
+> **Note:** `<leader>tt` is the **Overseer** task list (not neotest); run a task
+> with `:OverseerRun`. Test keys are capitals (Shift + letter) so they never
+> clash with the lowercase tab keys (`<leader>to/tx/tn/tp/tf`).
 
 ### The Test Workflow
 
 1. Write tests using `;gtest` or `;gtest_f` snippets
 2. Build: `:CMakeBuild`
 3. Position cursor inside a test function
-4. Run: `<leader>tn` (run nearest test)
+4. Run: `<leader>tN` (run nearest test)
 5. A green gutter marker appears for pass, red for fail
-6. `<leader>to` opens the output panel to see assertion failures
-7. Fix the code, save, `<leader>tl` to re-run the last test
+6. `<leader>tO` opens the output panel to see assertion failures
+7. Fix the code, save, `<leader>tL` to re-run the last test
 
 ### Limitation: Compile Before Test
 
@@ -1030,7 +1031,7 @@ binary to already be compiled. The workflow is:
 
 1. Code change
 2. `:CMakeBuild` (build)
-3. `<leader>tl` (run last test)
+3. `<leader>tL` (run last test)
 
 The build step is manual — there is no watch mode that auto-compiles.
 
@@ -1410,7 +1411,7 @@ In Neovim:
    ↓
 3. :CMakeBuild                     ← Build (overseer shows output)
    ↓
-4. <leader>tn                     ← Run nearest test
+4. <leader>tN                     ← Run nearest test
    ↓
 5. Test fails (red gutter marker) ← Expected: you haven't implemented yet
    ↓
@@ -1418,11 +1419,11 @@ In Neovim:
    ↓
 7. :CMakeBuild                     ← Build again
    ↓
-8. <leader>tl                     ← Re-run last test
+8. <leader>tL                     ← Re-run last test
    ↓
 9. Test passes (green gutter)
    ↓
-10. <leader>ts                    ← Toggle summary to see all tests green
+10. <leader>tS                    ← Toggle summary to see all tests green
    ↓
 11. <leader>mp                    ← Format file (clang-format)
    ↓
@@ -1473,7 +1474,7 @@ auto-implementation options (clangd can generate the stub in `.cpp`).
 | "Go to Header/Source" (right-click)        | `<leader>lh`                                         |
 | IntelliSense (msvc/clangd)                 | clangd (identical engine)                            |
 | clang-format on save                       | `:w` + conform.nvim format-on-save (or `<leader>mp`) |
-| Test Explorer extension                    | neotest (`<leader>tn/tl/ts`)                         |
+| Test Explorer extension                    | neotest (`<leader>tN/tL/tS`)                         |
 | C/C++ extension pack                       | clangd + cmake-tools.nvim + clangd_extensions.nvim   |
 | compile_commands.json (auto)               | compile_commands.json via cmake-tools.nvim           |
 
@@ -1571,10 +1572,10 @@ In the project from Exercise 1:
 2. Create `tests/calculator_test.cpp` using the `;gtest` snippet
 3. Write 2-3 test cases for your Calculator class
 4. Build: `:CMakeBuild`
-5. Run nearest test: `<leader>tn` (cursor inside a test function)
-6. Toggle summary to see all tests: `<leader>ts`
+5. Run nearest test: `<leader>tN` (cursor inside a test function)
+6. Toggle summary to see all tests: `<leader>tS`
 7. Intentionally break a test (change the expected value) — observe the red
-   gutter marker and `<leader>to` output
+   gutter marker and `<leader>tO` output
 
 **Goal:** Run your first test in Neovim with inline pass/fail feedback.
 

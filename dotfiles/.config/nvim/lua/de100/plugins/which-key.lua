@@ -21,12 +21,13 @@ return {
             {"<leader>p", group = "pick/search"},
             {"<leader>r", group = "rename/refactor"},
             {"<leader>s", group = "splits/session"},
-            {"<leader>t", group = "tabs/tests/tasks"},
+            {"<leader>t", group = "tabs/tests/tasks/theme"},
             {"<leader>u", group = "ui/toggles"},
             {"<leader>v", group = "view/help"},
             {"<leader>w", group = "workspace/session"},
-            -- "trouble/lists" group removed: trouble.lua's <leader>x* keys were
-            -- commented out (call :Trouble directly), no members left.
+            -- "trouble/lists" group: only <leader>xw/xd are live now (trouble.lua's
+            -- xq/xl/xt stay commented out, call :Trouble directly); Emmet's xe shares it.
+            {"<leader>x", group = "trouble/emmet"},
             {"<leader>y", group = "yank"}
             -- "keys/show" group removed: showkeys.lua's <leader>ks was the only
             -- member and was commented out (call :ShowkeysToggle directly).

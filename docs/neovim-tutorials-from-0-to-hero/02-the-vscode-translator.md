@@ -240,8 +240,8 @@ This is where Neovim has genuinely caught up to — and in some ways surpassed �
 | Rename file (preserving imports)    | Right-click > Rename      | `<leader>rN` (Snacks rename)            |
 | Show workspace diagnostics          | Problems panel            | `<leader>xw` (Trouble workspace)        |
 | Show file diagnostics               | Problems panel (filtered) | `<leader>xd` (Trouble document)         |
-| Open todos/fixmes list              | (extension)               | `<leader>xt` (Trouble + todo-comments)  |
-| Open quickfix list                  | Quick fix panel           | `<leader>xq` (Trouble quickfix)         |
+| Open todos/fixmes list              | (extension)               | `:Trouble todo toggle`                  |
+| Open quickfix list                  | Quick fix panel           | `:Trouble quickfix toggle`              |
 | Show diagnostic float               | Hover on error            | `<leader>df` or `<leader>dd`            |
 | Toggle virtual text (inline errors) | Settings: inline hints    | `<leader>lv` (toggle virtual text)      |
 | Toggle inlay hints                  | Settings: inlay hints     | `<leader>li` (toggle inlay hints)       |
@@ -253,7 +253,7 @@ This is where Neovim has genuinely caught up to — and in some ways surpassed �
 
 > **💡 In VSCode you'd...** see inlay hints (TypeScript parameter names, return types, etc.) automatically if your extension supports them.
 >
-> **In Neovim you...** can toggle inlay hints with `<leader>li`. However, **inlay hints are disabled by default in this config** because of a bug in Neovim 0.12 where certain LSP servers returning end-of-line hint positions crash the extmark renderer. If you're on a newer Neovim version where this is fixed, enable them per-buffer with `<leader>li`.
+> **In Neovim you...** can toggle inlay hints with `<leader>li`. However, **inlay hints are disabled by default in this config** because of a bug in Neovim 0.12 where certain LSP servers returning end-of-line hint positions crash the extmark renderer. Still applicable on 0.12.5 (checked: `runtime/lua/vim/lsp/inlay_hint.lua` sets the extmark at the server's column with no guard). After a Neovim upgrade, re-check by reading that file or by toggling `<leader>li` on a TypeScript/clangd file and watching for an `Invalid 'col'` error; if it is fixed, enable them per-buffer with `<leader>li`.
 
 ### About Trouble.nvim
 
@@ -262,9 +262,14 @@ Trouble is the VSCode "Problems" panel equivalent, but much more powerful. It ag
 ```
 <leader>xw  →  workspace diagnostics (all files)
 <leader>xd  →  document diagnostics (current file only)
-<leader>xq  →  quickfix list
-<leader>xl  →  location list
-<leader>xt  →  TODO/FIXME/HACK comments across project
+```
+
+The other lists have no key (they are plain wrappers); type the command:
+
+```
+:Trouble quickfix toggle   →  quickfix list
+:Trouble loclist toggle    →  location list
+:Trouble todo toggle       →  TODO/FIXME/HACK comments across project
 ```
 
 ---
@@ -441,6 +446,7 @@ This config uses **neotest** for a unified testing interface. It supports multip
 | Run all tests in file | "Run File" button   | `<leader>tF`         |
 | View test output      | Output panel        | `<leader>tO`         |
 | Toggle test summary   | Test Explorer panel | `<leader>tS`         |
+| Re-run last test      | Re-run button       | `<leader>tL`         |
 
 ### Supported Test Frameworks
 
@@ -785,8 +791,13 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 | `<leader>tf` | Open current buffer in new tab |
 | `<leader>tN` | Neotest: run nearest test      |
 | `<leader>tF` | Neotest: run all tests in file |
+| `<leader>tL` | Neotest: run last test         |
 | `<leader>tO` | Neotest: open output panel     |
 | `<leader>tS` | Neotest: toggle summary panel  |
+| `<leader>tt` | Toggle the task list (Overseer) |
+| `<leader>th` | Colorscheme picker             |
+
+Lowercase `<leader>t…` is tabs, capital is tests (Shift + the letter), so the two never clash.
 
 ---
 
@@ -816,9 +827,9 @@ _(Session management via auto-session — check `auto-session.lua` for bindings)
 | ------------ | ------------------------------ |
 | `<leader>xw` | Trouble: workspace diagnostics |
 | `<leader>xd` | Trouble: document diagnostics  |
-| `<leader>xq` | Trouble: quickfix list         |
-| `<leader>xl` | Trouble: location list         |
-| `<leader>xt` | Trouble: TODO/FIXME list       |
+| `<leader>xe` | Emmet: wrap with abbreviation  |
+
+Quickfix, location list and TODO list: `:Trouble quickfix toggle`, `:Trouble loclist toggle`, `:Trouble todo toggle`.
 
 ---
 
@@ -1088,6 +1099,8 @@ When the completion menu appears:
 | `Ctrl+N`     | Next completion item                  |
 | `Ctrl+P`     | Previous completion item              |
 
+The `:` command-line completion menu uses the same keys: `Ctrl+N` / `Tab` down, `Ctrl+P` / `Shift+Tab` up. Don't reach for `Ctrl+Shift+<letter>` in Neovim: Kitty owns those (`Ctrl+Shift+N` opens a new window), so Neovim never sees them.
+
 ### Snippet Navigation
 
 When you accept a snippet completion (e.g., a function template), the cursor lands in a "snippet tabstop". You can jump between tabstops with:
@@ -1161,6 +1174,8 @@ Once in Normal mode within the terminal buffer, you can copy text, navigate with
 ### Terminal Mode Status Line
 
 The status line shows `TERMINAL` when you're in terminal mode. This is your visual indicator that keypresses are going to the shell process, not Neovim commands.
+
+To get back to Normal mode press `Esc Esc` (mapped in `core/keymaps.lua`; a single `Esc` still goes to programs like lazygit or fzf). The built-in `Ctrl+\` `Ctrl+n` works too.
 
 ---
 
@@ -1449,7 +1464,7 @@ Enabled features:
 - Tailwind CSS class completions (tailwindcss LSP)
 - Emmet expansion for JSX (emmet_language_server)
 
-**Workflow note:** The inlay hints for TypeScript are rich — you'll see parameter names inline, inferred types, and more. However they're off by default due to the Neovim 0.12 bug. Toggle with `<leader>li` when you want them.
+**Workflow note:** The inlay hints for TypeScript are rich — you'll see parameter names inline, inferred types, and more. However they're off by default due to the Neovim 0.12 bug (still there on 0.12.5). Toggle with `<leader>li` when you want them.
 
 ### Go
 
@@ -2021,7 +2036,7 @@ And in `snacks.lua`:
 -- NOTE: Options
 ```
 
-Press `<leader>xt` to see ALL todo comments in the current project via Trouble. You can navigate between them, jump to each location, and track your technical debt systematically.
+Run `:Trouble todo toggle` to see ALL todo comments in the current project via Trouble. You can navigate between them, jump to each location, and track your technical debt systematically.
 
 ---
 

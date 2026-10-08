@@ -90,7 +90,7 @@ Here's a diagram of the main modes and how you travel between them:
   TERMINAL MODE (bonus):
   ┌──────────────────────────────────────────────────────────────┐
   │  Enter terminal: via :terminal or snacks terminal plugin     │
-  │  Exit terminal (back to Normal): Ctrl+\ then Ctrl+N          │
+  │  Exit terminal (back to Normal): Esc Esc (or Ctrl+\ Ctrl+N)  │
   └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -2130,7 +2130,7 @@ TIER 3 — PROFICIENCY (Weeks 4-6):
 
 TIER 4 — MASTERY (Months 2-3):
   [ ] Debugging: F5, F1/F2/F3, <leader>daptb
-  [ ] Testing: <leader>tN, <leader>tF, <leader>tS
+  [ ] Testing: <leader>tN, <leader>tF, <leader>tL, <leader>tS
   [ ] Custom snippets: LuaSnip
   [ ] Aerial + Treesitter navigation
   [ ] Config customization: adding plugins, keybindings

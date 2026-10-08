@@ -8,8 +8,8 @@ return {
     dependencies = {"neovim/nvim-lspconfig"},
     opts = {
         inlay_hints = {
-            -- Disabled by default: Neovim 0.12.2 has a crash in the inlay hint
-            -- extmark renderer when servers return end-of-line positions.
+            -- Disabled by default: Neovim 0.12 (still 0.12.5) can crash in the
+            -- inlay hint extmark renderer when servers return end-of-line positions.
             -- Toggle with <leader>li when you want to try them.
             inline = false,
             show_parameter_hints = true,

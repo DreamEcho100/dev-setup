@@ -449,9 +449,10 @@ For a persistent overview of problems, Trouble provides a dedicated bottom panel
 ```
 <leader>xw   → workspace diagnostics (ALL errors across ALL files in the project)
 <leader>xd   → document diagnostics (all errors in the current file only)
-<leader>xq   → quickfix list displayed in Trouble format
-<leader>xt   → TODO/FIXME comments across the project (from todo-comments.nvim)
 ```
+
+The other lists have no key; type the command: `:Trouble quickfix toggle` (quickfix list),
+`:Trouble loclist toggle`, `:Trouble todo toggle` (TODO/FIXME comments from todo-comments.nvim).
 
 `<leader>xw` (workspace diagnostics) is particularly valuable when you open a new or legacy
 codebase for the first time — you can see the full scope of issues across every file at once.
@@ -554,6 +555,11 @@ press `Enter` to apply.
 ```
 
 ### Python actions (pyright + ruff)
+
+Pyright resolves imports from the `python` on your `PATH`. For a project with its own
+`.venv`, either start Neovim with the venv activated or add a `pyrightconfig.json`
+next to `requirements.txt`: `{"venvPath": ".", "venv": ".venv"}`. Otherwise
+`import numpy` shows "could not be resolved" and `np.` has no completions.
 
 ```
 # On an unused import:
@@ -744,6 +750,10 @@ K           → hover documentation for the symbol under the cursor
 <C-p> or Arrow Up     → select PREVIOUS item in the list (move cursor up)
 <C-n> or Arrow Down   → select NEXT item in the list (move cursor down)
 ```
+
+The `:` command-line menu works the same way: `<C-n>` / `<Tab>` down, `<C-p>` / `<S-Tab>` up.
+Avoid `Ctrl+Shift+<letter>` for Neovim keys: Kitty owns them (`Ctrl+Shift+N` opens a new window),
+so Neovim never receives them.
 
 ### Accepting completions — Ctrl+Y, NOT Enter
 
@@ -1310,6 +1320,12 @@ kulala.nvim brings an HTTP client into Neovim. Instead of switching to Postman, 
 HTTPie, or a browser tab to test an API endpoint, you write the request in a `.http` file and
 run it from the editor. The response appears in a split buffer next to your request.
 
+> **Heads-up (kulala-core license token):** recent Kulala releases (6.32+) download a
+> backend, `kulala-core`, and ask for a license token (`KULALA_CORE_LICENSE_TOKEN`, or the
+> prompt the first time an `.http` file is used) when it is missing or outdated. Kulala's own
+> spec also loads it on quit, which made Neovim wait for Enter; `plugins/kulala.lua` now skips
+> Kulala's setup while Neovim is exiting, so quitting never prompts.
+
 This fits Neovim's philosophy completely: everything is a text buffer. Your API test cases are
 version-controlled text files. They live in your repository next to the code that uses the API.
 You can copy, edit, commit, and review them with the same tools you use for code.
@@ -1507,8 +1523,7 @@ verify the API is working. The `.http` files and the source code evolve together
 | `<leader>li` | Toggle inlay hints                               |
 | `<leader>xw` | Trouble: workspace diagnostics (all files)       |
 | `<leader>xd` | Trouble: document diagnostics (current file)     |
-| `<leader>xq` | Trouble: quickfix list                           |
-| `<leader>xt` | Trouble: TODOs and FIXMEs                        |
+| `<leader>xe` | Emmet: wrap with abbreviation                    |
 
 ### blink.cmp Completion
 

@@ -3,20 +3,21 @@ return {
     "folke/trouble.nvim",
     dependencies = {"nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim"},
     cmd = "Trouble",
-    -- Removed lazy.nvim `keys` entries: all 5 are 1:1 wrappers around Ex
+    -- Removed lazy.nvim `keys` entries: these are 1:1 wrappers around Ex
     -- commands (`:Trouble diagnostics/quickfix/loclist/todo toggle`) already
-    -- covered by `cmd` above — just call them directly.
-    -- keys = {
-    --     {
-    --         "<leader>xw",
-    --         "<cmd>Trouble diagnostics toggle<CR>",
-    --         desc = "Open trouble workspace diagnostics"
-    --     },
-    --     {
-    --         "<leader>xd",
-    --         "<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
-    --         desc = "Open trouble document diagnostics"
-    --     },
+    -- covered by `cmd` above — just call them directly. Only the two
+    -- diagnostics keys (<leader>xw / <leader>xd) are kept live.
+    keys = {
+        {
+            "<leader>xw",
+            "<cmd>Trouble diagnostics toggle<CR>",
+            desc = "Open trouble workspace diagnostics"
+        },
+        {
+            "<leader>xd",
+            "<cmd>Trouble diagnostics toggle filter.buf=0<CR>",
+            desc = "Open trouble document diagnostics"
+        },
     --     {
     --         "<leader>xq",
     --         "<cmd>Trouble quickfix toggle<CR>",
@@ -32,7 +33,7 @@ return {
     --         "<cmd>Trouble todo toggle<CR>",
     --         desc = "Open todos in trouble"
     --     },
-    -- },
+    },
     -- The `<esc>`/`<leader>ca` bindings below used to live as hash entries
     -- inside the lazy.nvim `keys` table above — but lazy.nvim's `keys` spec
     -- only processes the array part, so they were silently inert. They

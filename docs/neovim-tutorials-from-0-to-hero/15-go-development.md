@@ -224,6 +224,7 @@ Neovim test UI:
 | ------------------- | ------------ |
 | Run nearest test    | `<leader>tN` |
 | Run file tests      | `<leader>tF` |
+| Run last test       | `<leader>tL` |
 | Open test output    | `<leader>tO` |
 | Toggle test summary | `<leader>tS` |
 

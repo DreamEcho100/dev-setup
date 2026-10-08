@@ -23,7 +23,8 @@ return {
             -- which correctly matches plain fences (confirmed by running
             -- `jupytext --to markdown` directly on a real course notebook).
             chunks = "plain",
-            diagnostics = { enabled = true, triggers = { "BufWritePost" } },
+            -- InsertLeave too: with only BufWritePost a fixed error stayed until :w
+            diagnostics = { enabled = true, triggers = { "BufWritePost", "InsertLeave" } },
             completion = { enabled = true },
         },
         codeRunner = { enabled = true, default_method = "molten" },

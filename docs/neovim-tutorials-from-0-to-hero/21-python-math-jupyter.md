@@ -105,9 +105,13 @@ python3 -m venv .venv
 ```
 
 Then attach it in Neovim with `:MoltenInit my-project` and restart it with
-`:MoltenRestart` after changing packages. Pyright finds the project's `.venv`
-automatically (`:LspRestart` if the "import could not be resolved" warnings
-stay). Things to know:
+`:MoltenRestart` after changing packages. Pyright does **not** find a `.venv` by
+itself (it only uses the `python` on your `PATH`, or what a config file names), so
+add a `pyrightconfig.json` next to `requirements.txt`:
+`{"venvPath": ".", "venv": ".venv"}` (or start Neovim with the venv activated).
+Without it `import sympy` is flagged "could not be resolved" and `sym.` has no
+completions; with it both work (`:LspRestart` after creating the venv). Cell
+diagnostics refresh when you leave insert mode and on save. Things to know:
 
 - `requirements.txt` is just a list; nothing is installed until you run
   `pip install -r` against it, and the venv has to exist before `source
@@ -568,6 +572,16 @@ anywhere in `molten-nvim`'s Python plugin, so scrolling the window without
 moving the cursor to a new cell never re-triggers that placement — the
 image (combined or not) stays visually pinned to its old screen row while
 the text scrolls under it. Not fixable here either.
+
+### Bracket pair colors
+
+Nested brackets are colored by depth (gold, orchid, sky blue, then repeating),
+like VSCode's bracket pair colorization, so in
+`display(Math("q= %s" %(str(sym.latex(sym.solve(expr, q))))))` each `)` has the
+color of the `(` it closes. This is `rainbow-delimiters.nvim` (treesitter based,
+no keymaps), and it works inside notebook cells because the cell code is an
+injected Python fence. Matching-bracket highlight (`matchparen`) is still off;
+`%` jumps to the partner bracket.
 
 ## 7. When to Reach for `.qmd` Instead of `.ipynb`
 

@@ -644,20 +644,21 @@ You have two choices for running shell commands alongside Neovim:
 
 | Option              | How                           | Best For                                      |
 | ------------------- | ----------------------------- | --------------------------------------------- |
-| **Neovim terminal** | `:ToggleTerm` or `<leader>tt` | Quick one-off commands, short output          |
+| **Neovim terminal** | `:terminal`                   | Quick one-off commands, short output          |
 | **tmux pane**       | `<prefix>-` or `<prefix>\|`   | Long-running processes, servers, build output |
 
-### Neovim Terminal (`:ToggleTerm`)
+### Neovim Terminal (`:terminal`)
 
-Opened with `<leader>tt` or `:ToggleTerm`. It's a real bash terminal embedded
-in a Neovim buffer. Use it for:
+Opened with `:terminal` (there is no ToggleTerm plugin in this config, and
+`<leader>tt` is the Overseer task list). It's a real shell embedded in a Neovim
+buffer. Use it for:
 
 - Running a single command and seeing the output
 - `git add` / `git commit` (though Neogit is better for this)
 - Quick `ls` or file manipulation
 - Things that take < 5 seconds
 
-Exit terminal insert mode: `<C-\><C-n>` (back to normal mode), then navigate
+Exit terminal insert mode: `Esc Esc` (or `<C-\><C-n>`) to get back to normal mode, then navigate
 or close normally.
 
 **When NOT to use it:** Long-running servers, build watchers, test runners. These
@@ -855,7 +856,7 @@ impactful Neovim-specific tmux setting.
 
 | Use This                           | When                                              |
 | ---------------------------------- | ------------------------------------------------- |
-| `:ToggleTerm` (`<leader>tt`)       | Short commands, one-off output, git ops           |
+| `:terminal`                        | Short commands, one-off output, git ops           |
 | tmux pane (`<prefix>-` or `\|`)    | Long-running servers, watchers, build output      |
 | Separate tmux window (`<prefix>c`) | Completely separate workflows within same project |
 | Separate tmux session (`<C-f>`)    | Switching to a different project entirely         |
@@ -944,7 +945,7 @@ Write a `.ready-tmux.sh` for any project you work on regularly:
 | VSCode Workflow                                 | This Workflow                                                   |
 | ----------------------------------------------- | --------------------------------------------------------------- |
 | Multiple VS Code windows for multiple projects  | Multiple tmux sessions, one per project                         |
-| Cmd+` to toggle terminal                        | `<C-j>` to move to pane below (or `<leader>tt` for toggleterm)  |
+| Cmd+` to toggle terminal                        | `<C-j>` to move to pane below (or `:terminal`)                   |
 | VS Code terminal (always disappears on restart) | tmux pane (survives detach, survives restart with resurrect)    |
 | VS Code workspace saved on disk                 | auto-session saves Neovim state per directory                   |
 | Cmd+Shift+P → "Switch Project"                  | `<C-f>` → fzf → instant session switch                          |

@@ -162,9 +162,11 @@ return {
                     vim.keymap.set("n", "<leader>lspch",
                                    "<cmd>ClangdSwitchSourceHeader<CR>", opts)
                 end
-                -- Inlay hints are off by default due to a Neovim 0.12.2 bug where
-                -- LSP servers returning end-of-line hint positions crash the extmark
-                -- renderer. Toggle on/off with <leader>li when needed.
+                -- Inlay hints are off by default due to a Neovim 0.12 bug where LSP
+                -- servers returning end-of-line hint positions crash the extmark
+                -- renderer (still there in 0.12.5: lsp/inlay_hint.lua sets the
+                -- extmark at the server's column unguarded). Toggle on/off with
+                -- <leader>li when needed.
             end
         })
 

@@ -1194,7 +1194,7 @@ In the Trouble window:
 
 - Navigate with `↑`/`↓` or `j`/`k`
 - Press `Enter` to jump to that location in the code
-- Press `q` or `<leader>xx` to close Trouble
+- Press `q` or `<Esc>` to close Trouble
 
 ### 8.4 The Comment Types: When to Use What
 
