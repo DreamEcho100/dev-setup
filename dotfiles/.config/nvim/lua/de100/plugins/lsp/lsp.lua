@@ -90,6 +90,27 @@ return {
             vim.cmd.edit(vim.fn.fnameescape(malformed_diagnostics_log))
         end, {desc = "Open malformed LSP diagnostics trace log"})
 
+        -- Neovim 0.11.2+ ships a native `:lsp {enable,disable,restart,stop}`
+        -- command. nvim-lspconfig detects it (`exists(':lsp') == 2`) and skips
+        -- defining its own `:LspRestart`/`:LspInfo`/`:LspStart`/`:LspStop`, so
+        -- those familiar uppercase names no longer exist on their own. Keep
+        -- `:LspRestart` around as a thin alias for muscle memory and older docs.
+        vim.api.nvim_create_user_command("LspRestart", function(info)
+            vim.cmd("lsp restart" ..
+                        (info.args ~= "" and (" " .. info.args) or ""))
+        end, {
+            desc = "Alias for `:lsp restart` (restart attached LSP client(s))",
+            nargs = "*",
+            complete = function(arg_lead)
+                local names = vim.iter(vim.lsp.get_clients()):map(
+                                  function(client) return client.name end)
+                                  :totable()
+                return vim.tbl_filter(function(name)
+                    return vim.startswith(name, arg_lead)
+                end, names)
+            end
+        })
+
         local function snacks_picker(method, fallback)
             return function()
                 local ok, snacks = pcall(require, "snacks")

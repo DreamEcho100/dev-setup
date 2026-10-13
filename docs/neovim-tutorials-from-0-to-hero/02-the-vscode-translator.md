@@ -338,30 +338,30 @@ This config has an excellent Git workflow, arguably better than VSCode's default
 >
 > **In Neovim you...** have multiple powerful options. The most approachable (closest to VSCode) is Neogit. The fastest is using gitsigns keybindings for hunk-level operations. The most powerful is LazyGit for complex operations.
 
-| Action                       | VSCode               | Neovim (this config)                  |
-| ---------------------------- | -------------------- | ------------------------------------- |
-| Open Git UI                  | `Ctrl+Shift+G`       | `:Neogit` (Neogit)                 |
-| Open LazyGit (full TUI)      | (GitLens extension)  | `<leader>lg`                          |
-| View git log                 | GitLens panel        | `<leader>gl` (Snacks lazygit log)     |
-| Stage current hunk           | Stage hunk button    | `<leader>gs`                          |
-| Unstage/reset current hunk   | Discard hunk         | `<leader>gr`                          |
-| Stage entire file/buffer     | Stage file           | `<leader>gS`                          |
-| Reset entire file/buffer     | Discard all changes  | `<leader>gR`                          |
-| Undo last stage              | —                    | `<leader>gu` (undo stage hunk)        |
-| Preview hunk (inline diff)   | Hover on gutter      | `<leader>gp`                          |
-| Toggle line blame            | GitLens inline blame | `<leader>gB` (toggle on/off)          |
-| Show full line blame         | GitLens hover        | `<leader>gbl`                         |
-| Open diff view               | Diff view panel      | `:DiffviewOpen` (Diffview open)         |
-| Close diff view              | Close diff panel     | `:DiffviewClose`                         |
+| Action                       | VSCode               | Neovim (this config)                             |
+| ---------------------------- | -------------------- | ------------------------------------------------ |
+| Open Git UI                  | `Ctrl+Shift+G`       | `:Neogit` (Neogit)                               |
+| Open LazyGit (full TUI)      | (GitLens extension)  | `<leader>lg`                                     |
+| View git log                 | GitLens panel        | `<leader>gl` (Snacks lazygit log)                |
+| Stage current hunk           | Stage hunk button    | `<leader>gs`                                     |
+| Unstage/reset current hunk   | Discard hunk         | `<leader>gr`                                     |
+| Stage entire file/buffer     | Stage file           | `<leader>gS`                                     |
+| Reset entire file/buffer     | Discard all changes  | `<leader>gR`                                     |
+| Undo last stage              | —                    | `<leader>gu` (undo stage hunk)                   |
+| Preview hunk (inline diff)   | Hover on gutter      | `<leader>gp`                                     |
+| Toggle line blame            | GitLens inline blame | `<leader>gB` (toggle on/off)                     |
+| Show full line blame         | GitLens hover        | `<leader>gbl`                                    |
+| Open diff view               | Diff view panel      | `:DiffviewOpen` (Diffview open)                  |
+| Close diff view              | Close diff panel     | `:DiffviewClose`                                 |
 | View current file history    | GitLens timeline     | `:DiffviewFileHistory %` (Diffview file history) |
-| View repo history            | GitLens repo history | `:DiffviewFileHistory`                         |
-| Open fugitive                | —                    | `<leader>gf` (fullscreen tab)         |
-| Git push (in fugitive)       | Push button          | `<leader>gP` (in fugitive buffer)     |
-| Git pull --rebase (fugitive) | Pull button          | `:Git pull --rebase` (in fugitive buffer)    |
-| Next hunk                    | —                    | `]h`                                  |
-| Previous hunk                | —                    | `[h`                                  |
-| Pick/switch git branch       | —                    | `<leader>gbr` (Snacks branch picker)  |
-| Diff this file (inline)      | Split diff           | `<leader>gdi`                         |
+| View repo history            | GitLens repo history | `:DiffviewFileHistory`                           |
+| Open fugitive                | —                    | `<leader>gf` (fullscreen tab)                    |
+| Git push (in fugitive)       | Push button          | `<leader>gP` (in fugitive buffer)                |
+| Git pull --rebase (fugitive) | Pull button          | `:Git pull --rebase` (in fugitive buffer)        |
+| Next hunk                    | —                    | `]h`                                             |
+| Previous hunk                | —                    | `[h`                                             |
+| Pick/switch git branch       | —                    | `<leader>gbr` (Snacks branch picker)             |
+| Diff this file (inline)      | Split diff           | `<leader>gdi`                                    |
 
 ### LazyGit Integration
 
@@ -393,14 +393,14 @@ This config uses **nvim-dap** (Debug Adapter Protocol) with **nvim-dap-ui** for 
 
 | Action                      | VSCode                 | Neovim (this config)                   |
 | --------------------------- | ---------------------- | -------------------------------------- |
-| Toggle breakpoint           | `F9`                   | `F9`                |
+| Toggle breakpoint           | `F9`                   | `F9`                                   |
 | Set conditional breakpoint  | Right-click breakpoint | `<leader>dapb` (prompts for condition) |
 | Start / Continue debug      | `F5`                   | `F5`                                   |
 | Stop                        | `Shift+F5`             | `Shift+F5`                             |
 | Step over (next line)       | `F10`                  | `F10`                                  |
 | Step into (into function)   | `F11`                  | `F11`                                  |
 | Step out (out of function)  | `Shift+F11`            | `Shift+F11`                            |
-| Toggle debug UI panels      | Run and Debug panel    | `F7`                 |
+| Toggle debug UI panels      | Run and Debug panel    | `F7`                                   |
 | Show debug UI automatically | Yes                    | Yes (auto-opens on debug start)        |
 
 ### Supported Languages (Auto-Configured)
@@ -553,48 +553,48 @@ The `<leader>th` picker lets you preview themes live as you move through the lis
 
 Here's the big reference table: every popular VSCode extension mapped to its Neovim equivalent in this config (or the recommended Neovim equivalent).
 
-| VSCode Extension               | Neovim Equivalent                     | Plugin in This Config?             | Notes                                           |
-| ------------------------------ | ------------------------------------- | ---------------------------------- | ----------------------------------------------- |
-| **Prettier**                   | conform.nvim + prettierd              | Yes (`formatting.lua`)             | Format on save, `<leader>mp`                    |
-| **ESLint**                     | nvim-lint + eslint_d                  | Yes (`linting.lua`)                | Auto-lint on save                               |
-| **GitLens**                    | gitsigns.nvim + neogit                | Yes (`gitstuff.lua`, `neogit.lua`) | Inline blame, hunk ops, full UI                 |
-| **GitHub Copilot**             | copilot.lua                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_COPILOT=1` env var    |
-| **GitHub Copilot Chat**        | CodeCompanion.nvim                    | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_CODECOMPANION=1`      |
-| **Avante (Cursor-like AI)**    | avante.nvim                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_AVANTE=1`             |
-| **Thunder Client**             | kulala.nvim                           | Yes (`kulala.lua`)                 | `.http` file REST client, `<leader>H` group     |
-| **SQLTools**                   | vim-dadbod-ui                         | Yes (`dadbod-ui.lua`)              | Database explorer and query runner              |
-| **Remote SSH**                 | remote-nvim.nvim                      | Yes (`remote-nvim.lua`)            | Edit files on remote servers                    |
-| **Live Server**                | (not needed in Neovim)                | N/A                                | Run your own dev server externally              |
-| **Bracket Pair Colorizer**     | Built-in Neovim 0.10+                 | N/A — built-in                     | `vim.opt.set_indent_with_tab = true`            |
-| **Auto Rename Tag**            | nvim-ts-autotag                       | Via languages.lua                  | Auto-closes and renames HTML/JSX tags           |
-| **Path Intellisense**          | blink.cmp path source                 | Yes (`blink-cmp.lua`)              | Auto-completes file paths                       |
-| **Todo Highlight**             | todo-comments.nvim                    | Yes (loaded via trouble)           | Highlights TODO/FIXME/HACK/NOTE                 |
-| **Error Lens**                 | Diagnostics virtual text + Trouble    | Yes (built-in + trouble.lua)       | `<leader>lv` to toggle, `<leader>xw` for panel  |
-| **File Icons**                 | nvim-web-devicons                     | Yes (as dependency)                | Icons in file pickers, explorer, lualine        |
-| **Rainbow Brackets**           | Treesitter highlights                 | Yes (`treesitter.lua`)             | Built into treesitter — no extra config needed  |
-| **indent-rainbow**             | indent-blankline (not in this config) | Not installed                      | Can be added if desired                         |
-| **Better Comments**            | todo-comments.nvim                    | Yes                                | `TODO:`, `FIXME:`, `HACK:`, `NOTE:` highlighted |
-| **Code Spell Checker**         | codespell (in conform.nvim)           | Yes (`formatting.lua`)             | Runs as a formatter via `["*"] = {"codespell"}` |
-| **Markdown Preview**           | markdown-preview.nvim                 | Yes (`markdown-preview.lua`)       | Opens in browser                                |
+| VSCode Extension               | Neovim Equivalent                     | Plugin in This Config?             | Notes                                                                         |
+| ------------------------------ | ------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------- |
+| **Prettier**                   | conform.nvim + prettierd              | Yes (`formatting.lua`)             | Format on save, `<leader>mp`                                                  |
+| **ESLint**                     | nvim-lint + eslint_d                  | Yes (`linting.lua`)                | Auto-lint on save                                                             |
+| **GitLens**                    | gitsigns.nvim + neogit                | Yes (`gitstuff.lua`, `neogit.lua`) | Inline blame, hunk ops, full UI                                               |
+| **GitHub Copilot**             | copilot.lua                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_COPILOT=1` env var                                  |
+| **GitHub Copilot Chat**        | CodeCompanion.nvim                    | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_CODECOMPANION=1`                                    |
+| **Avante (Cursor-like AI)**    | avante.nvim                           | Yes (`ai.lua`)                     | Enable with `DE100_ENABLE_AVANTE=1`                                           |
+| **Thunder Client**             | kulala.nvim                           | Yes (`kulala.lua`)                 | `.http` file REST client, `<leader>H` group                                   |
+| **SQLTools**                   | vim-dadbod-ui                         | Yes (`dadbod-ui.lua`)              | Database explorer and query runner                                            |
+| **Remote SSH**                 | remote-nvim.nvim                      | Yes (`remote-nvim.lua`)            | Edit files on remote servers                                                  |
+| **Live Server**                | (not needed in Neovim)                | N/A                                | Run your own dev server externally                                            |
+| **Bracket Pair Colorizer**     | Built-in Neovim 0.10+                 | N/A — built-in                     | `vim.opt.set_indent_with_tab = true`                                          |
+| **Auto Rename Tag**            | nvim-ts-autotag                       | Via languages.lua                  | Auto-closes and renames HTML/JSX tags                                         |
+| **Path Intellisense**          | blink.cmp path source                 | Yes (`blink-cmp.lua`)              | Auto-completes file paths                                                     |
+| **Todo Highlight**             | todo-comments.nvim                    | Yes (loaded via trouble)           | Highlights TODO/FIXME/HACK/NOTE                                               |
+| **Error Lens**                 | Diagnostics virtual text + Trouble    | Yes (built-in + trouble.lua)       | `<leader>lv` to toggle, `<leader>xw` for panel                                |
+| **File Icons**                 | nvim-web-devicons                     | Yes (as dependency)                | Icons in file pickers, explorer, lualine                                      |
+| **Rainbow Brackets**           | Treesitter highlights                 | Yes (`treesitter.lua`)             | Built into treesitter — no extra config needed                                |
+| **indent-rainbow**             | indent-blankline (not in this config) | Not installed                      | Can be added if desired                                                       |
+| **Better Comments**            | todo-comments.nvim                    | Yes                                | `TODO:`, `FIXME:`, `HACK:`, `NOTE:` highlighted                               |
+| **Code Spell Checker**         | codespell (in conform.nvim)           | Yes (`formatting.lua`)             | Runs as a formatter via `["*"] = {"codespell"}`                               |
+| **Markdown Preview**           | markdown-preview.nvim                 | Yes (`markdown-preview.lua`)       | Opens in browser                                                              |
 | **Render Markdown**            | render-markdown.nvim                  | Yes (`render-markdown.lua`)        | Inline markdown rendering in Neovim, off by default — `<leader>ur` toggles it |
-| **Image Preview**              | snacks.image                          | Yes (in `snacks.lua`)              | Images in markdown buffers                      |
-| **Kubernetes**                 | kubectl.nvim                          | Yes (`kubectl.lua`)                | Kubernetes management from Neovim               |
-| **REST Client**                | kulala.nvim                           | Yes (`kulala.lua`)                 | Same as Thunder Client replacement              |
-| **Draw.io / Diagrams**         | (none great)                          | Not installed                      | Consider PlantUML via CLI                       |
-| **Live Share**                 | (no equivalent)                       | N/A                                | Use tmux with `pair` or `tmate`                 |
-| **Vim**                        | Neovim itself                         | N/A                                | You're already here                             |
-| **Which Key**                  | (no equivalent)                       | Yes (`which-key.lua`)              | Shows all leader key options on pause           |
-| **Auto Save**                  | auto-save.nvim                        | Yes (`auto-save.lua`)              | Currently disabled (`enabled = false`)          |
-| **Surround**                   | mini.surround                         | Yes (`mini.lua`)                   | `sa`, `ds`, `ca` for surround operations        |
-| **Text Objects**               | mini.ai                               | Yes (`mini.lua`)                   | Enhanced text objects for selections            |
-| **Harpoon**                    | (no equivalent)                       | Yes (`harpoon.lua`)                | Bookmark + instantly jump to 4 files            |
-| **Session Manager**            | auto-session                          | Yes (`auto-session.lua`)           | Saves/restores window layouts                   |
-| **Status Bar**                 | lualine                               | Yes (`lualine.lua`)                | Mode, git branch, diagnostics, file info        |
-| **Fuzzy Finder (like Ctrl+P)** | snacks.picker                         | Yes (`snacks.lua`)                 | Replaces Telescope for most use cases           |
-| **Treesitter**                 | nvim-treesitter                       | Yes (`treesitter.lua`)             | Syntax, text objects, highlights                |
-| **Flash / Leap**               | (no equivalent)                       | Yes (`flash.lua`)                  | Jump anywhere on screen with 2 chars            |
-| **Noice**                      | (no equivalent)                       | Yes (`noice.lua`)                  | Beautiful command line and notifications        |
-| **Multicursor**                | VSCode native                         | Yes (`multicursor.lua`)            | `<leader>cm` / `<leader>cM`                     |
+| **Image Preview**              | snacks.image                          | Yes (in `snacks.lua`)              | Images in markdown buffers                                                    |
+| **Kubernetes**                 | kubectl.nvim                          | Yes (`kubectl.lua`)                | Kubernetes management from Neovim                                             |
+| **REST Client**                | kulala.nvim                           | Yes (`kulala.lua`)                 | Same as Thunder Client replacement                                            |
+| **Draw.io / Diagrams**         | (none great)                          | Not installed                      | Consider PlantUML via CLI                                                     |
+| **Live Share**                 | (no equivalent)                       | N/A                                | Use tmux with `pair` or `tmate`                                               |
+| **Vim**                        | Neovim itself                         | N/A                                | You're already here                                                           |
+| **Which Key**                  | (no equivalent)                       | Yes (`which-key.lua`)              | Shows all leader key options on pause                                         |
+| **Auto Save**                  | auto-save.nvim                        | Yes (`auto-save.lua`)              | Currently disabled (`enabled = false`)                                        |
+| **Surround**                   | mini.surround                         | Yes (`mini.lua`)                   | `sa`, `ds`, `ca` for surround operations                                      |
+| **Text Objects**               | mini.ai                               | Yes (`mini.lua`)                   | Enhanced text objects for selections                                          |
+| **Harpoon**                    | (no equivalent)                       | Yes (`harpoon.lua`)                | Bookmark + instantly jump to 4 files                                          |
+| **Session Manager**            | auto-session                          | Yes (`auto-session.lua`)           | Saves/restores window layouts                                                 |
+| **Status Bar**                 | lualine                               | Yes (`lualine.lua`)                | Mode, git branch, diagnostics, file info                                      |
+| **Fuzzy Finder (like Ctrl+P)** | snacks.picker                         | Yes (`snacks.lua`)                 | Replaces Telescope for most use cases                                         |
+| **Treesitter**                 | nvim-treesitter                       | Yes (`treesitter.lua`)             | Syntax, text objects, highlights                                              |
+| **Flash / Leap**               | (no equivalent)                       | Yes (`flash.lua`)                  | Jump anywhere on screen with 2 chars                                          |
+| **Noice**                      | (no equivalent)                       | Yes (`noice.lua`)                  | Beautiful command line and notifications                                      |
+| **Multicursor**                | VSCode native                         | Yes (`multicursor.lua`)            | `<leader>cm` / `<leader>cM`                                                   |
 
 ---
 
@@ -628,16 +628,16 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 
 ### `<leader>d` — Diagnostics / Debug
 
-| Keybinding      | Action                                                  |
-| --------------- | ------------------------------------------------------- |
-| `<leader>D`     | Show buffer diagnostics (Snacks picker)                 |
-| `<leader>dd`    | Open floating diagnostic message                        |
-| `<leader>df`    | Open floating diagnostic (same as dd — from LSP config) |
-| `F9` | DAP: Toggle breakpoint                                  |
-| `<leader>dapb`  | DAP: Set conditional breakpoint                         |
-| `[d`            | Go to previous diagnostic                               |
-| `]d`            | Go to next diagnostic                                   |
-| `<leader>q`     | Open diagnostics list (loclist)                         |
+| Keybinding     | Action                                                  |
+| -------------- | ------------------------------------------------------- |
+| `<leader>D`    | Show buffer diagnostics (Snacks picker)                 |
+| `<leader>dd`   | Open floating diagnostic message                        |
+| `<leader>df`   | Open floating diagnostic (same as dd — from LSP config) |
+| `F9`           | DAP: Toggle breakpoint                                  |
+| `<leader>dapb` | DAP: Set conditional breakpoint                         |
+| `[d`           | Go to previous diagnostic                               |
+| `]d`           | Go to next diagnostic                                   |
+| `<leader>q`    | Open diagnostics list (loclist)                         |
 
 ---
 
@@ -663,29 +663,29 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 
 ### `<leader>g` — Git
 
-| Keybinding    | Action                         |
-| ------------- | ------------------------------ |
-| `:Neogit`  | Open Neogit                    |
-| `<leader>lg`  | Open LazyGit (Snacks)          |
-| `<leader>gl`  | LazyGit log view               |
-| `<leader>gs`  | Stage hunk                     |
-| `<leader>gr`  | Reset hunk                     |
-| `<leader>gS`  | Stage entire buffer            |
-| `<leader>gR`  | Reset entire buffer            |
-| `<leader>gu`  | Undo stage hunk                |
-| `<leader>gp`  | Preview hunk                   |
-| `<leader>gbl` | Show full blame for line       |
-| `<leader>gB`  | Toggle line blame (inline)     |
-| `<leader>gdi` | Diff this (inline)             |
-| `<leader>gD`  | Diff this ~                    |
-| `:DiffviewOpen` | Open Diffview                  |
-| `:DiffviewClose` | Close Diffview                 |
+| Keybinding               | Action                         |
+| ------------------------ | ------------------------------ |
+| `:Neogit`                | Open Neogit                    |
+| `<leader>lg`             | Open LazyGit (Snacks)          |
+| `<leader>gl`             | LazyGit log view               |
+| `<leader>gs`             | Stage hunk                     |
+| `<leader>gr`             | Reset hunk                     |
+| `<leader>gS`             | Stage entire buffer            |
+| `<leader>gR`             | Reset entire buffer            |
+| `<leader>gu`             | Undo stage hunk                |
+| `<leader>gp`             | Preview hunk                   |
+| `<leader>gbl`            | Show full blame for line       |
+| `<leader>gB`             | Toggle line blame (inline)     |
+| `<leader>gdi`            | Diff this (inline)             |
+| `<leader>gD`             | Diff this ~                    |
+| `:DiffviewOpen`          | Open Diffview                  |
+| `:DiffviewClose`         | Close Diffview                 |
 | `:DiffviewFileHistory %` | Diffview: current file history |
-| `:DiffviewFileHistory` | Diffview: repo history         |
-| `<leader>gbr` | Pick and switch git branch     |
-| `<leader>gf`  | Fugitive fullscreen tab        |
-| `]h`          | Next git hunk                  |
-| `[h`          | Previous git hunk              |
+| `:DiffviewFileHistory`   | Diffview: repo history         |
+| `<leader>gbr`            | Pick and switch git branch     |
+| `<leader>gf`             | Fugitive fullscreen tab        |
+| `]h`                     | Next git hunk                  |
+| `[h`                     | Previous git hunk              |
 
 ---
 
@@ -782,20 +782,20 @@ _(Navigate buffers: `Tab` for next, `Shift+Tab` for previous)_
 
 ### `<leader>t` — Tabs / Tests / Tasks
 
-| Keybinding   | Action                         |
-| ------------ | ------------------------------ |
-| `<leader>to` | Open new tab                   |
-| `<leader>tx` | Close current tab              |
-| `<leader>tn` | Go to next tab                 |
-| `<leader>tp` | Go to previous tab             |
-| `<leader>tf` | Open current buffer in new tab |
-| `<leader>tN` | Neotest: run nearest test      |
-| `<leader>tF` | Neotest: run all tests in file |
-| `<leader>tL` | Neotest: run last test         |
-| `<leader>tO` | Neotest: open output panel     |
-| `<leader>tS` | Neotest: toggle summary panel  |
+| Keybinding   | Action                          |
+| ------------ | ------------------------------- |
+| `<leader>to` | Open new tab                    |
+| `<leader>tx` | Close current tab               |
+| `<leader>tn` | Go to next tab                  |
+| `<leader>tp` | Go to previous tab              |
+| `<leader>tf` | Open current buffer in new tab  |
+| `<leader>tN` | Neotest: run nearest test       |
+| `<leader>tF` | Neotest: run all tests in file  |
+| `<leader>tL` | Neotest: run last test          |
+| `<leader>tO` | Neotest: open output panel      |
+| `<leader>tS` | Neotest: toggle summary panel   |
 | `<leader>tt` | Toggle the task list (Overseer) |
-| `<leader>th` | Colorscheme picker             |
+| `<leader>th` | Colorscheme picker              |
 
 Lowercase `<leader>t…` is tabs, capital is tests (Shift + the letter), so the two never clash.
 

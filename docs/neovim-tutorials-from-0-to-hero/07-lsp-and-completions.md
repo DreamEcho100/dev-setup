@@ -11,6 +11,7 @@
 1. [The Language Intelligence Stack](#1-the-language-intelligence-stack)
 2. [Mason — Your Language Server Manager](#2-mason--your-language-server-manager)
 3. [LSP Navigation — The Core Commands](#3-lsp-navigation--the-core-commands)
+   - [3.1 LSP client management & troubleshooting](#31-lsp-client-management--troubleshooting)
 4. [Diagnostics — Your Error and Warning System](#4-diagnostics--your-error-and-warning-system)
 5. [Code Actions — The Smart Fix Menu](#5-code-actions--the-smart-fix-menu)
 6. [Rename — LSP-Aware Refactoring](#6-rename--lsp-aware-refactoring)
@@ -199,7 +200,51 @@ These keymaps are **buffer-local** — they activate only when a language server
 the current buffer. When you open a TypeScript file and `vtsls` connects (usually within a
 second or two), all these bindings become live. Open a plain `.txt` file and they do nothing.
 
-Verify LSP is attached and see which server is running: `:LspInfo`
+Verify LSP is attached and see which server is running: `:checkhealth vim.lsp`
+(see [§3.1 LSP client management](#31-lsp-client-management--troubleshooting) if you are
+looking for the old `:LspInfo`/`:LspRestart` commands)
+
+### 3.1 LSP client management & troubleshooting
+
+Neovim 0.11.2+ ships a **native** `:lsp {enable,disable,restart,stop}` command (lowercase,
+subcommand style — `vim/_core/ex_cmd.lua` in the Neovim runtime). nvim-lspconfig detects it
+and deliberately skips defining its old uppercase `:LspInfo`/`:LspStart`/`:LspRestart`/
+`:LspStop` commands to avoid clashing with it. If you come from an older Neovim config or a
+tutorial that predates this, those commands will silently not exist — command-line
+completion on `:LspRestart` shows nothing, and the Pyright/ruff/etc. diagnostic you were
+trying to clear stays stale.
+
+```
+:checkhealth vim.lsp     → show every attached client: name, root dir, capabilities, health
+                            (this is what :LspInfo used to do)
+
+:lsp restart              → restart every LSP client attached to the current buffer
+:lsp restart pyright       → restart only the named client
+:lsp enable pyright        → (re)enable a configured server
+:lsp disable pyright       → disable a configured server
+:lsp stop                  → stop clients attached to the current buffer
+```
+
+This config keeps one alias for muscle memory and older habits:
+
+```
+:LspRestart [name]   → forwards to `:lsp restart [name]`
+                        Tab-completes attached client names.
+```
+
+Defined in `dotfiles/.config/nvim/lua/de100/plugins/lsp/lsp.lua`, next to the other
+`De100*` custom commands:
+
+```
+:De100Doctor              → buffer diagnostic: filetype, cwd, attached LSP clients,
+                             Go workspace root detection
+:De100LspBadDiagnostics   → open the trace log for malformed LSP diagnostics this
+                             config intercepts and drops (see the publishDiagnostics
+                             override earlier in lsp.lua)
+```
+
+If a diagnostic looks stale after a restart, the buffer itself may be out of sync with
+disk (e.g., it was edited by an external tool) — run `:e!` first, then `:lsp restart`.
 
 ### gd — Go to definition
 
@@ -1510,6 +1555,17 @@ verify the API is working. The `.http` files and the source code evolve together
 | `<leader>rN` | Rename current file                  | Explorer context |
 | `<leader>ls` | Signature help                       | Ctrl+Shift+Space |
 
+### LSP Client Management
+
+| Command                   | Action                                                         |
+| ------------------------- | -------------------------------------------------------------- |
+| `:checkhealth vim.lsp`    | Show attached clients, root dir, capabilities (old `:LspInfo`) |
+| `:lsp restart [name]`     | Native command — restart attached client(s)                    |
+| `:LspRestart [name]`      | Alias for `:lsp restart` kept for muscle memory                |
+| `:lsp enable/disable`     | Native command — (re)enable or disable a configured server     |
+| `:De100Doctor`            | Buffer diagnostic: filetype, cwd, attached LSP clients         |
+| `:De100LspBadDiagnostics` | Open trace log for malformed LSP diagnostics                   |
+
 ### Diagnostics
 
 | Key          | Action                                           |
@@ -1579,8 +1635,8 @@ verify the API is working. The `.http` files and the source code evolve together
 ## 13. Exercises
 
 Work through these exercises with a real project open. LSP and completion features need actual
-code with a real language server attached to be meaningful. Run `:LspInfo` first to confirm
-your language server is connected.
+code with a real language server attached to be meaningful. Run `:checkhealth vim.lsp` first
+to confirm your language server is connected.
 
 ---
 
@@ -1589,7 +1645,8 @@ your language server is connected.
 **Goal:** Build the reflex to use LSP navigation instead of searching manually.
 
 1. Open a TypeScript (or Go, Python, Rust) file in a real project.
-2. Run `:LspInfo` and read which language server is attached and the root directory it detected.
+2. Run `:checkhealth vim.lsp` and read which language server is attached and the root
+   directory it detected.
 3. Find a function that is called in the current file but defined elsewhere. Place your cursor
    on the function name. Press `gd`. Did you jump to its definition? Press `Ctrl+O` to jump
    back. (Ctrl+O is Neovim's native "jump back" — not a config key, but essential.)
